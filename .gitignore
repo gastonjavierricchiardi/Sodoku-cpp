@@ -1,0 +1,22 @@
+# Builds / outputs
+build/
+bin/
+obj/
+dist/
+
+# Temporales compilación
+*.o
+*.obj
+*.exe
+*.out
+
+# Logs / temp
+*.log
+*.tmp
+
+# SO / editor
+.DS_Store
+Thumbs.db
+
+# Backups de editor
+*~
