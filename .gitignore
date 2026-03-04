@@ -20,3 +20,9 @@ Thumbs.db
 
 # Backups de editor
 *~
+
+# Notas / borradores locales (no publicar por ahora)
+*.txt
+*.TXT
+_INVENTARIO_*.md
+temp.txt
