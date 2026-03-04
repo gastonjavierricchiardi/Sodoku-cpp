@@ -26,3 +26,6 @@ Thumbs.db
 *.TXT
 _INVENTARIO_*.md
 temp.txt
+
+# herramientas locales
+inventario_repo.sh
