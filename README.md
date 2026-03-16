@@ -99,12 +99,3 @@ En `docs/` se conserva documentación de trabajo del proyecto:
 ## Licencia
 
 Este proyecto se distribuye bajo licencia **MIT**. Ver archivo `LICENSE`.
-
-## Nota de mantenimiento
-
-El repositorio fue reorganizado para trabajar fuera de Dropbox y mantener un único repo Git activo.
-La ubicación de trabajo actual es la carpeta local del proyecto, y GitHub funciona como remoto principal.
-
-```
-
-```
