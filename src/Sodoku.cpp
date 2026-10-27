@@ -3,7 +3,7 @@
 // #include <algorithm> // para random_shuffle
 #include <chrono> // Para calcular el tiempo
 // #include <cstdlib>   // exit() está aquí, sin importar el sistema y srand, rand
-// #include <cctype>  // std::toupper
+#include <cctype>  // std::toupper
 #include <cstring> // para strlen, strncpy
 #include <ctime>   // time
 #include <filesystem>
@@ -461,13 +461,17 @@ void jugarPartida(int nivel) {
 
             // (scores retro)  —— sin cambios
             char inic[4];
+            std::string iniciales;
             do {
                 cout << "Ingresá tus 3 iniciales (A–Z, 0–9): ";
-                std::cin >> inic;
-                for (int k = 0; k < 3; ++k)
-                    inic[k] = toupper(inic[k]);
-                inic[3] = '\0';
-            } while (strlen(inic) != 3);
+                if (!(std::cin >> iniciales))
+                    return;
+                if (iniciales.size() != 3)
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            } while (iniciales.size() != 3);
+            for (int k = 0; k < 3; ++k)
+                inic[k] = std::toupper(static_cast<unsigned char>(iniciales[k]));
+            inic[3] = '\0';
 
             ScoreEntry nueva;
             strncpy(nueva.iniciales, inic, 4);
