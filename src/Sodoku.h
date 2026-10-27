@@ -52,7 +52,7 @@ bool numeroAgotadoGlobal(int numero);
 bool numeroPresenteEnCuadro(int fila, int columna, int numero); // NUEVA 01
 int cantidadRestante(int numero);
 void menuPrincipal();
-void subMenuBackdoor(int nivel); // 0 = Básico, 1 = Avanzado, 2 = SuperUsuario
+void subMenuBackDoor(int nivel); // 0 = Básico, 1 = Avanzado, 2 = SuperUsuario
 int main();
 void mostrarMatriz(int matriz[TAM][TAM], std::string titulo); // 👈 declaración necesaria para otros módulos
 // Nuevo: función auxiliar para procesar ingreso de fila/columna/valor
