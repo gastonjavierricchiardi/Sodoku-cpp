@@ -551,6 +551,8 @@ void cargarScores() {
 // ----------------------------------------------------------------
 void actualizarScores(const ScoreEntry& entrada) {
     int lvl = entrada.nivel;
+    if (lvl < 0 || lvl > 2)
+        return;
     for (int i = 0; i < 5; ++i) {
         // Encuentra la posición donde entra la nueva entrada
         if (entrada.erroresFallidos < scores[lvl][i].erroresFallidos ||
