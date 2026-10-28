@@ -54,13 +54,14 @@ string generarNombreArchivo() {
 // Listar archivos guardados en orden cronológico (por nombre)
 vector<string> listarArchivosGuardados() {
     vector<string> archivos;
-    string patron = "2025"; // Cambiar si en el futuro el año cambia
 
     namespace fs = std::filesystem;
 
     for (const auto& entrada : fs::directory_iterator(".")) {
         string nombre = entrada.path().filename().string();
-        if (nombre.find(patron) == 0 && nombre.size() > 4 && nombre.substr(nombre.size() - 4) == ".txt") {
+        if (nombre.size() == 19 && nombre[8] == '-' && nombre.substr(15) == ".txt" &&
+            nombre.substr(0, 8).find_first_not_of("0123456789") == string::npos &&
+            nombre.substr(9, 6).find_first_not_of("0123456789") == string::npos) {
             archivos.push_back(nombre);
         }
     }
