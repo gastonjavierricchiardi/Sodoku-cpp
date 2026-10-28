@@ -715,7 +715,6 @@ void menuPrincipal() {
             cout << "¿Deseas continuar? (S/N): " << flush;
             char confirma;
             std::cin >> confirma;
-            SODOKU_RESUELTO = true; // Variable para saber si el Sudoku fue resuelto
             confirma = toupper(static_cast<unsigned char>(confirma));
             if (confirma != 'S') {
                 break; // volvemos al menú
