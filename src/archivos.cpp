@@ -225,9 +225,9 @@ void cargarPartidaDesdeArchivo() {
         mostrarError("Nivel fuera de rango en partida guardada.");
         return;
     }
-    partidaEnCurso = true;
+    bool partidaEnCursoTemporal = true;
     // 0 (libre) queda 0; 1..3 -> 0..2
-    nivelCargado = (nivelLeido > 0 ? nivelLeido - 1 : 0);
+    int nivelCargadoTemporal = (nivelLeido > 0 ? nivelLeido - 1 : 0);
 
     // 2) Leer MATRIZ (9 filas)
     int matrizTemporal[TAM][TAM];
@@ -289,16 +289,20 @@ void cargarPartidaDesdeArchivo() {
         return;
     }
 
-    // 5) Copiar a estructuras reales
+    // 5) Preparar el estado candidato
+    int solucionTemporal[TAM][TAM];
     for (int f = 0; f < TAM; ++f) {
         for (int c = 0; c < TAM; ++c) {
-            MATRIZ[f][c] = matrizTemporal[f][c];
-            CELDAFIJA[f][c] = fijaTemporal[f][c];
+            solucionTemporal[f][c] = SOLUCION[f][c];
         }
     }
+    int intentosFallidosTemporal = intentosFallidos;
+    bool sodokuResueltoTemporal = SODOKU_RESUELTO;
+    bool esPartidaNuevaTemporal = esPartidaNueva;
 
     // 6) Bloque opcional: // ---- DATOS INTERNOS ----
-    if (std::getline(archivo, linea) && linea.rfind("// ---- DATOS INTERNOS", 0) == 0) {
+    bool tieneDatosInternos = std::getline(archivo, linea) && linea.rfind("// ---- DATOS INTERNOS", 0) == 0;
+    if (tieneDatosInternos) {
         // 6.a) SOLUCION (9 filas)
         fila = 0;
         while (fila < TAM && std::getline(archivo, linea)) {
@@ -312,26 +316,26 @@ void cargarPartidaDesdeArchivo() {
                 return;
             }
             for (int col = 0; col < TAM; ++col)
-                SOLUCION[fila][col] = filaValores[col];
+                solucionTemporal[fila][col] = filaValores[col];
             ++fila;
         }
 
         // 6.b) INTENTOS
         if (std::getline(archivo, linea) && linea.rfind("INTENTOS:", 0) == 0) {
             try {
-                intentosFallidos = std::stoi(linea.substr(9));
+                intentosFallidosTemporal = std::stoi(linea.substr(9));
             } catch (...) {
-                intentosFallidos = 0;
+                intentosFallidosTemporal = 0;
             }
         } else {
-            intentosFallidos = 0;
+            intentosFallidosTemporal = 0;
         }
 
         // 6.c) Autodeteccion: completa y coincide con SOLUCION
         bool sinCeros = true;
         for (int i = 0; i < TAM && sinCeros; ++i)
             for (int j = 0; j < TAM; ++j)
-                if (MATRIZ[i][j] == 0) {
+                if (matrizTemporal[i][j] == 0) {
                     sinCeros = false;
                     break;
                 }
@@ -339,41 +343,71 @@ void cargarPartidaDesdeArchivo() {
         bool coincideSol = true;
         for (int i = 0; i < TAM && coincideSol; ++i)
             for (int j = 0; j < TAM; ++j)
-                if (MATRIZ[i][j] != SOLUCION[i][j]) {
+                if (matrizTemporal[i][j] != solucionTemporal[i][j]) {
                     coincideSol = false;
                     break;
                 }
 
         if (sinCeros && coincideSol) {
-            partidaEnCurso = false;
-            colorTexto("verde");
-            std::cout << "🟢 Juego terminado (partida ya resuelta al cargar)." << std::endl;
-            resetColor();
-            MSGPAUSA();
-            return;
-        }
-
-        // 6.d) VICTORIA (opcional). Si no esta, NO consumimos la linea siguiente.
-        std::streampos posAntesVictoria = archivo.tellg();
-        if (std::getline(archivo, linea) && linea.rfind("VICTORIA:", 0) == 0) {
-            int v = 0;
-            try {
-                v = std::stoi(linea.substr(9));
-            } catch (...) {
-                v = 0;
-            }
-            SODOKU_RESUELTO = (v != 0);
+            partidaEnCursoTemporal = false;
         } else {
-            SODOKU_RESUELTO = false;
-            if (archivo.good()) {
-                archivo.clear();
-                archivo.seekg(posAntesVictoria);
+            // 6.d) VICTORIA (opcional). Si no esta, NO consumimos la linea siguiente.
+            std::streampos posAntesVictoria = archivo.tellg();
+            if (std::getline(archivo, linea) && linea.rfind("VICTORIA:", 0) == 0) {
+                int v = 0;
+                try {
+                    v = std::stoi(linea.substr(9));
+                } catch (...) {
+                    v = 0;
+                }
+                sodokuResueltoTemporal = (v != 0);
+            } else {
+                sodokuResueltoTemporal = false;
+                if (archivo.good()) {
+                    archivo.clear();
+                    archivo.seekg(posAntesVictoria);
+                }
             }
+
+            // ✅ reanudacion confirmada
+            esPartidaNuevaTemporal = false; // <-- NUEVO
         }
+    } else {
+        // Sin bloque interno: inicializar por defecto
+        for (int i = 0; i < TAM; ++i)
+            for (int j = 0; j < TAM; ++j)
+                solucionTemporal[i][j] = 0;
+        intentosFallidosTemporal = 0;
+        sodokuResueltoTemporal = false;
 
-        // ✅ reanudacion confirmada
-        esPartidaNueva = false; // <-- NUEVO
+        // ✅ reanudacion confirmada (sin datos internos)
+        esPartidaNuevaTemporal = false; // <-- NUEVO
+    }
 
+    // 7) Aplicar el estado aceptado
+    for (int f = 0; f < TAM; ++f) {
+        for (int c = 0; c < TAM; ++c) {
+            MATRIZ[f][c] = matrizTemporal[f][c];
+            CELDAFIJA[f][c] = fijaTemporal[f][c];
+            SOLUCION[f][c] = solucionTemporal[f][c];
+        }
+    }
+    partidaEnCurso = partidaEnCursoTemporal;
+    nivelCargado = nivelCargadoTemporal;
+    intentosFallidos = intentosFallidosTemporal;
+    SODOKU_RESUELTO = sodokuResueltoTemporal;
+    esPartidaNueva = esPartidaNuevaTemporal;
+
+    if (!partidaEnCurso) {
+        colorTexto("verde");
+        std::cout << "🟢 Juego terminado (partida ya resuelta al cargar)." << std::endl;
+        resetColor();
+        MSGPAUSA();
+        limpiarMascara(MASCARA);
+        return;
+    }
+
+    if (tieneDatosInternos) {
         // Banner de estado
         colorTexto("amarillo");
         std::cout << "📂 Partida reanudada en nivel "
@@ -383,17 +417,9 @@ void cargarPartidaDesdeArchivo() {
         std::cout << "✅ Estadisticas cargadas." << std::endl;
         resetColor();
         MSGPAUSA();
-    } else {
-        // Sin bloque interno: inicializar por defecto
-        for (int i = 0; i < TAM; ++i)
-            for (int j = 0; j < TAM; ++j)
-                SOLUCION[i][j] = 0;
-        intentosFallidos = 0;
-        SODOKU_RESUELTO = false;
-
-        // ✅ reanudacion confirmada (sin datos internos)
-        esPartidaNueva = false; // <-- NUEVO
     }
+
+    limpiarMascara(MASCARA);
 
     // La llamada a jugarPartida() se maneja en el menu principal
 }
