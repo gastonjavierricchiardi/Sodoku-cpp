@@ -19,3 +19,13 @@ desde el inicio de la partida con todo vacío, apretas guardar, y guarda, pero t
 hay que resolverlo.
 
 ---
+
+no me gusta la dinamica que se da despues de cargar una partida, como que falta que sea mas intuitivo despues de la carga
+
+---
+
+ver que hacer con el menu ppal de [8] resolver automáticamente, capaz que no tiene que estar
+
+---
+
+
