@@ -402,6 +402,7 @@ void cargarPartidaDesdeArchivo() {
         colorTexto("verde");
         std::cout << "🟢 Juego terminado (partida ya resuelta al cargar)." << std::endl;
         resetColor();
+        mostrarMatriz(MATRIZ, "PARTIDA RESUELTA");
         MSGPAUSA();
         limpiarMascara(MASCARA);
         return;
