@@ -28,4 +28,9 @@ ver que hacer con el menu ppal de [8] resolver automáticamente, capaz que no ti
 
 ---
 
+cuando en [2] juego e intento poner un nro y tengo la opción de 98 para entrar al backdoor desde el desarrollo del juego, no tengo la opción de regresar, por si me equivoqué
+
+NO TENGO 0 O ALGO PARA REGRESAR.
+
+---
 
