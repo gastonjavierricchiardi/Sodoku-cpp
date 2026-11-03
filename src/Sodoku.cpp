@@ -700,7 +700,6 @@ void menuPrincipal() {
             break;
         case 5: // "[ 5 ] Cargar partida desde archivo"
             cargarPartidaDesdeArchivo();
-            limpiarMascara(MASCARA); // Viene de "archivos.cpp" que daba error allá (se implementa aquí)
             break;
         case 6: // "[ 6 ] Guardar partida en archivo"
             guardarPartidaEnArchivo();
