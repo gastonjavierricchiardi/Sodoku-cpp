@@ -32,3 +32,6 @@ inventario_repo.sh
 
 # PRG de Zorin OS
 src/sodoku
+
+# Informe generado localmente
+/reporte_actual.txt
