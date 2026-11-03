@@ -20,7 +20,7 @@ Además de la prueba de modificación/borrado de celdas, conviene cubrir al meno
    * Debe limpiar el stream (`cin.clear()`, `cin.ignore()`), mostrar error, pausar, y re-preguntar fila.
 5. Ingresar código de cancelar (99).
 
-   * Debe devolver estatus `CANCELAR`, sumar 1 a `intentosFallidos`, limpiar máscara y volver al prompt de fila.
+   * Debe devolver estatus `CANCELAR`, no incrementar `intentosFallidos`, limpiar máscara y volver al prompt de fila.
 6. Ingresar código de backdoor (98).
 
    * Debe invocar `validarNivelDeAcceso()`, luego `subMenuBackDoor()`, limpiar máscara y re-preguntar fila.
