@@ -309,9 +309,15 @@ void cargarPartidaDesdeArchivo() {
             std::istringstream ss(linea);
             int valor;
             std::vector<int> filaValores;
-            while (ss >> valor)
+            while ((int)filaValores.size() < TAM && ss >> valor) {
+                if (valor < 0 || valor > TAM) {
+                    mostrarError("Valor fuera de rango en SOLUCION.");
+                    return;
+                }
                 filaValores.push_back(valor);
-            if ((int)filaValores.size() != TAM) {
+            }
+            ss >> std::ws;
+            if ((int)filaValores.size() != TAM || !ss.eof()) {
                 mostrarError("Formato incorrecto en fila de SOLUCION.");
                 return;
             }
@@ -319,16 +325,29 @@ void cargarPartidaDesdeArchivo() {
                 solucionTemporal[fila][col] = filaValores[col];
             ++fila;
         }
+        if (fila != TAM) {
+            mostrarError("Faltan filas para SOLUCION.");
+            return;
+        }
+        if (!sudokuValido(solucionTemporal)) {
+            mostrarError("Errores logicos en SOLUCION.");
+            return;
+        }
 
         // 6.b) INTENTOS
-        if (std::getline(archivo, linea) && linea.rfind("INTENTOS:", 0) == 0) {
-            try {
-                intentosFallidosTemporal = std::stoi(linea.substr(9));
-            } catch (...) {
-                intentosFallidosTemporal = 0;
-            }
-        } else {
-            intentosFallidosTemporal = 0;
+        if (!std::getline(archivo, linea) || linea.rfind("INTENTOS:", 0) != 0) {
+            mostrarError("Falta INTENTOS en los datos internos.");
+            return;
+        }
+        std::istringstream datosIntentos(linea.substr(9));
+        if (!(datosIntentos >> intentosFallidosTemporal) || intentosFallidosTemporal < 0) {
+            mostrarError("INTENTOS invalido.");
+            return;
+        }
+        datosIntentos >> std::ws;
+        if (!datosIntentos.eof()) {
+            mostrarError("Contenido sobrante en INTENTOS.");
+            return;
         }
 
         // 6.c) Autodeteccion: completa y coincide con SOLUCION
