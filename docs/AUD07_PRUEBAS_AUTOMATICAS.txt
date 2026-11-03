@@ -1,0 +1,190 @@
+SODOKU C++ v0.9.4 — AUD07_PRUEBAS_AUTOMATICAS.txt
+Fecha de la solicitud: 2026-11-03 — America/Buenos_Aires
+Repositorio: gastonjavierricchiardi/Sodoku-cpp
+Rama remota probada: fix/aud-07-validacion-datos-internos
+Commit probado: 0b63bf778267fd40abc634085357a2f12eb6331f
+El checkout local original permanece en 231d876; se probó una exportación exacta del commit esperado, sin cambiarlo.
+Entorno: Linux-6.18.57-x86_64-with-glibc2.41; Python 3.12.14; pexpect 4.9.0
+Compilador: g++ (Debian 14.2.0-19) 14.2.0
+Compilación: g++ -std=c++17 -Wall -Wextra -pthread -g -fno-pie -no-pie /tmp/sodoku-aud07-pruebas-va33elvk/snapshot/src/archivos.cpp /tmp/sodoku-aud07-pruebas-va33elvk/snapshot/src/pantalla.cpp /tmp/sodoku-aud07-pruebas-va33elvk/snapshot/src/varios.cpp /tmp/sodoku-aud07-pruebas-va33elvk/snapshot/src/Sodoku.cpp /tmp/sodoku-aud07-pruebas-va33elvk/snapshot/src/backdoor.cpp -o /tmp/sodoku-aud07-pruebas-va33elvk/sodoku
+Resultado de compilación: código 0; sin advertencias.
+Los flags -g -fno-pie -no-pie permiten ubicar los símbolos globales; no se modificó el código fuente.
+Entorno aislado y raíz de todas las rutas de entrada indicadas: /tmp/sodoku-aud07-pruebas-va33elvk
+Partida principal original: src/20261101-105312.txt; SHA-256 462d8d785b3c6ffbae2465d0619172337d373f53f945ff805a830a45f263a806
+Partida antigua original: src/20251101-105314.txt; SHA-256 c2bfbbaf53dc667940742c079b6a870c9069c6ec207758e96e6f2b52860e8755
+Los casos usan copias o variantes de esas partidas, dentro del entorno aislado. Se conservaron CRLF y espacios finales.
+
+MÉTODO Y CRITERIOS
+Programa completo compilado, ejecutado mediante PTY y entradas controladas. Máximo 8 s por espera y 35 s por caso.
+Cada caso inicia una instancia nueva y carga una semilla válida: matriz con un 6, solución permutada, intentos=7, nivel interno=2, partidaEnCurso=true, SODOKU_RESUELTO=true, esPartidaNueva=false y MASCARA de guiones.
+Se observan mensajes, retorno al menú y datos reales mediante guardarPartidaEnArchivo(). Los guardados anterior/posterior se conservan como estado_antes.txt y estado_despues.txt; solo existen en el entorno aislado.
+Se intenta leer directamente, sin escribir, la memoria del proceso hijo mediante /proc/PID/mem en los puntos de espera del menú. Direcciones y tamaños obtenidos con nm.
+Variables observadas: MATRIZ, SOLUCION, CELDAFIJA, MASCARA, intentosFallidos, partidaEnCurso, nivelCargado, SODOKU_RESUELTO y esPartidaNueva.
+En aceptación se contrastan los datos cargados con el archivo esperado. En rechazo se comparan los nueve valores anteriores y posteriores. Un código de salida 0 nunca es el único criterio de aprobación.
+
+RESULTADOS POR CASO
+T01 — SOLUCION válida con ceros
+  Archivo: cases/T01/work/20261101-105312.txt
+  Esperado: ACEPTADA
+  Observado: Estadisticas cargadas.; datos de la carga comprobados mediante guardado posterior.
+  Estado: APROBADA
+  Memoria/estado: CARGA OBSERVADA DIRECTAMENTE (9/9)
+  Errores: ninguno observado.
+T02 — SOLUCION completa válida
+  Archivo: cases/T02/work/20261101-105312.txt
+  Esperado: ACEPTADA
+  Observado: Estadisticas cargadas.; datos de la carga comprobados mediante guardado posterior.
+  Estado: APROBADA
+  Memoria/estado: CARGA OBSERVADA DIRECTAMENTE (9/9)
+  Errores: ninguno observado.
+T03 — INTENTOS: 0
+  Archivo: cases/T03/work/20261101-105312.txt
+  Esperado: ACEPTADA
+  Observado: Estadisticas cargadas.; datos de la carga comprobados mediante guardado posterior.
+  Estado: APROBADA
+  Memoria/estado: CARGA OBSERVADA DIRECTAMENTE (9/9)
+  Errores: ninguno observado.
+T04 — INTENTOS: 5
+  Archivo: cases/T04/work/20261101-105312.txt
+  Esperado: ACEPTADA
+  Observado: Estadisticas cargadas.; datos de la carga comprobados mediante guardado posterior.
+  Estado: APROBADA
+  Memoria/estado: CARGA OBSERVADA DIRECTAMENTE (9/9)
+  Errores: ninguno observado.
+T05 — INTENTOS: -1
+  Archivo: cases/T05/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: INTENTOS invalido.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T06 — INTENTOS vacío
+  Archivo: cases/T06/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: INTENTOS invalido.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T07 — INTENTOS ausente
+  Archivo: cases/T07/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Falta INTENTOS en los datos internos.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T08 — INTENTOS: abc
+  Archivo: cases/T08/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: INTENTOS invalido.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T09 — INTENTOS: 12abc
+  Archivo: cases/T09/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Contenido sobrante en INTENTOS.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T10 — INTENTOS desbordado (100 nueves)
+  Archivo: cases/T10/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: INTENTOS invalido.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T11 — SOLUCION con 8 filas y EOF
+  Archivo: cases/T11/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Faltan filas para SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T12 — SOLUCION con 8 valores en la última fila
+  Archivo: cases/T12/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Formato incorrecto en fila de SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T13 — SOLUCION con 10 valores en la última fila
+  Archivo: cases/T13/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Formato incorrecto en fila de SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T14 — SOLUCION con -1 en la última fila
+  Archivo: cases/T14/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Valor fuera de rango en SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T15 — SOLUCION con 10 en la última fila
+  Archivo: cases/T15/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Valor fuera de rango en SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T16 — SOLUCION con texto sobrante en la última fila
+  Archivo: cases/T16/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Formato incorrecto en fila de SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T17 — Duplicados solo en fila
+  Archivo: cases/T17/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Errores logicos en SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T18 — Duplicados solo en columna
+  Archivo: cases/T18/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Errores logicos en SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T19 — Duplicados solo en recuadro
+  Archivo: cases/T19/work/20261101-105312.txt
+  Esperado: RECHAZADA
+  Observado: Errores logicos en SOLUCION.; datos anteriores/posteriores iguales.
+  Estado: APROBADA
+  Memoria/estado: APROBADA: 9/9 VARIABLES SIN CAMBIOS
+  Errores: ninguno observado.
+T20 — Partida antigua sin bloque interno
+  Archivo: cases/T20/work/20251101-105314.txt
+  Esperado: ACEPTADA
+  Observado: Retorno al menú sin mensaje de confirmación (ruta antigua); datos de la carga comprobados mediante guardado posterior.
+  Estado: APROBADA
+  Memoria/estado: CARGA OBSERVADA DIRECTAMENTE (9/9)
+  Errores: ninguno observado.
+
+RESUMEN
+APROBADA: 20; FALLIDA: 0; NO VERIFICADA: 0
+Rechazos con conservación directa de las nueve variables: 15/15
+Aceptaciones con nueve variables directamente observadas: 5/5
+
+OBSERVACIONES Y LÍMITES
+T11 termina por EOF tras ocho filas: comprueba la cantidad total, no solo el fallo de interpretar INTENTOS como fila.
+T12-T16 alteran la última fila para comprobar también la conservación después de leer filas anteriores.
+T17, T18 y T19 aíslan respectivamente un duplicado en fila, columna y recuadro, usando ceros en las demás posiciones.
+La ruta antigua T20 no imprime confirmación de estadísticas. Su aceptación se comprueba por los datos observados, no por ausencia de error o por el código de salida.
+MASCARA fue observada directamente con guiones; no se cubrió una máscara no trivial. esPartidaNueva se observó inicialmente en false; otros estados iniciales requieren verificación adicional.
+No se evalúa apariencia de terminal, colores, emojis, experiencia interactiva ni compatibilidad específica del escritorio Zorin mediante esta automatización.
+
+VALIDACIÓN MANUAL RECOMENDADA EN ZORIN — PENDIENTE
+1. Repetir una aceptación, un rechazo y T20 con copias locales, verificando mensajes y pausas en la terminal de uso habitual.
+2. Cargar una partida cuyo tablero y solución coincidan y estén completos; comprobar la visualización PARTIDA RESUELTA.
+3. Verificar cancelación con 0/99 y estados iniciales distintos de MASCARA/esPartidaNueva, usando un depurador si fuera necesario.
+4. Confirmar que se mantienen intactos los archivos originales y que las pruebas se ejecutan en un directorio aislado.
+
+EVIDENCIAS
+Por caso: sesion.log, resultado.json, estado_antes.txt, estado_despues.txt y, si la lectura directa fue posible, memoria_antes.json/memoria_despues.json.
+Generales: ejecutar_pruebas.py, compilacion.log, manifest.json, simbolos.json y resultados.json, fuera del árbol versionado.
+Integridad del repositorio: VERIFICADA mediante SHA-256 de todos los archivos preexistentes del checkout; fuentes, headers, .gitignore, apuntes, partidas y scores originales sin cambios. Rama y HEAD locales conservados.
+No se crearon ramas, commits, PR ni publicaciones; no se ejecutó push ni merge.
