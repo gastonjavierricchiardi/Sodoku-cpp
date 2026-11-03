@@ -22,11 +22,13 @@ Thumbs.db
 *~
 
 # Notas / borradores locales (no publicar por ahora)
-*.txt
-*.TXT
+#*.txt
+#*.TXT
 _INVENTARIO_*.md
-temp.txt
 
 # herramientas locales
 inventario_repo.sh
 .vs/
+
+# PRG de Zorin OS
+src/sodoku
