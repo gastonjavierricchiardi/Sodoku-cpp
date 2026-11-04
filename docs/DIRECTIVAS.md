@@ -12,9 +12,10 @@ Además de la prueba de modificación/borrado de celdas, conviene cubrir al meno
 2. Ingresar un valor correcto (e.g. fila 3, col 5, valor 7).
 
    * Verificar que `MATRIZ[2][4] == 7` y que no se incremente `intentosFallidos`.
-3. Ingresar un valor fuera de rango (e.g. fila 0, col 10).
+3. Ingresar un valor fuera de rango (e.g. fila 10, col 10).
 
    * Debe mostrarse error, `MSGPAUSA()`, y volver al prompt de fila sin cambiar nada.
+   * En `jugarPartida`, ingresar `0` en fila o columna es un comando de salida al menú principal, no un error de rango.
 4. Ingresar un carácter no numérico (e.g. letra).
 
    * Debe limpiar el stream (`cin.clear()`, `cin.ignore()`), mostrar error, pausar, y re-preguntar fila.
