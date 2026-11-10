@@ -107,7 +107,7 @@ void limpiarPantalla() {
 void MSGPAUSA() {
     // Espera a que el usuario presione Enter
     std::cout << "Presione Enter para continuar..." << std::flush;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     std::cin.get(); // captura el Enter que el usuario presiona
 }
 ///////////////////////////////////////////////////////////////////////////////////////
