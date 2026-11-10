@@ -34,3 +34,9 @@ NO TENGO 0 O ALGO PARA REGRESAR.
 
 ---
 
+desde el menu backdoor, al momento de editar una matriz a mano, y al regresar, sale al menu ppal y no al backdoor
+
+otro tema de lo mismo:
+como ya fue resuelto, quedó alguna bandera levantada y no me deja jugar la ultima coordenada me dice que ya fue resuelto
+
+---
