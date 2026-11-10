@@ -23,11 +23,12 @@ i686-w64-mingw32-g++ -std=c++17 -Wall -Wextra \
 + Para ZorinOS:
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-cd "/home/gaston/Dropbox/vcs/Sodoku c++/"
+cd "/home/gaston/Dropbox/vcs/Sodoku c++/src"
 
-g++ archivos.cpp pantalla.cpp varios.cpp Sodoku.cpp backdoor.cpp -o sodoku -std=c++17
+#g++ archivos.cpp pantalla.cpp varios.cpp Sodoku.cpp backdoor.cpp -o sodoku -std=c++17
 
-NEW:
+# NEW:
+
 g++ -std=c++17 -Wall -Wextra archivos.cpp pantalla.cpp varios.cpp Sodoku.cpp backdoor.cpp -o sodoku
 
 
