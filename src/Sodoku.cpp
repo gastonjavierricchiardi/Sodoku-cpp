@@ -52,6 +52,8 @@ bool partidaEnCurso = false;         // Flag para saber si hay una partida suspe
 int nivelCargado = -1;               // Flag para saber si hay una partida suspendida
 bool SODOKU_RESUELTO = false;        // falso cerrado / verdadero abierto // Variable para saber si el Sudoku fue resuelto
 bool modoPruebasHabilitado = false;
+bool modoCompetitivo = false; // Contexto del tablero, independiente del menu activo.
+bool resolucionAutomaticaHabilitada = false; // Permiso de un intento de [8], concedido por [18].
 int intentosFallidos = 0;            // Contador de intentos fallidos que tambien se usa para grabar el Game Over
 // Del Juego
 bool esPartidaNueva = false; // Bandera para partida nueva o en curso
@@ -63,6 +65,7 @@ long duracionAcumulada = 0;
 //---------------------------------------------------------------------------------------
 // Que comience el juego
 void limpiarTablero() {
+    resolucionAutomaticaHabilitada = false;
     for (int i = 0; i < TAM; i++)
         for (int j = 0; j < TAM; j++)
             MATRIZ[i][j] = 0;
@@ -292,11 +295,14 @@ void iniciarJuego() {
 
     // Arranca la partida
     jugarPartida(nivelIndex);
+    resolucionAutomaticaHabilitada = false;
 }
 
 //---------------------------------------------------------------------------------------
 // Funcion principal del juego COMPETITIVO
 void jugarPartida(int nivel) {
+    modoCompetitivo = true;
+    resolucionAutomaticaHabilitada = false;
     limpiarPantalla();
 
     bool nuevaPartida = esPartidaNueva;
@@ -632,10 +638,13 @@ void menuPrincipal() {
 
         switch (opcion) {
         case CODIGO_SALIR_MENU:
+            resolucionAutomaticaHabilitada = false;
             salir = true;
             break;
         case 1: // "[ 1 ] Ingreso manual de datos"
+            resolucionAutomaticaHabilitada = false;
             modoIngresoManual();
+            resolucionAutomaticaHabilitada = false;
             break;
         case 2: { // "[ 2 ] Modo competitivo (con niveles)"
             limpiarPantalla();
@@ -676,6 +685,7 @@ void menuPrincipal() {
                 esPartidaNueva = false;
                 partidaEnCurso = true;
                 jugarPartida(nivelPruebas);
+                resolucionAutomaticaHabilitada = false;
                 break;
             }
             if (partidaEnCurso) {
@@ -688,6 +698,7 @@ void menuPrincipal() {
                     std::cin >> resp;
                     if (resp == 's' || resp == 'S') {
                         jugarPartida(nivelCargado);
+                        resolucionAutomaticaHabilitada = false;
                         break;
                     }
                 }
@@ -698,6 +709,7 @@ void menuPrincipal() {
             cout << "\n🎮 MODO COMPETITIVO – NUEVA PARTIDA\n\n";
             resetColor();
             modoPruebasHabilitado = false;
+            resolucionAutomaticaHabilitada = false;
             partidaEnCurso = false; // Reiniciar bandera de partida en curso
             nivelCargado = -1;      // Reiniciar nivel cargado
             iniciarJuego();         // aquí volverá a llamar a jugarPartida()
@@ -717,6 +729,7 @@ void menuPrincipal() {
                 }
             }
             limpiarTablero();
+            modoCompetitivo = false;
             limpiarMascara(MASCARA);
             for (int i = 0; i < TAM; i++)
                 for (int j = 0; j < TAM; j++)
@@ -751,6 +764,12 @@ void menuPrincipal() {
             MSGPAUSA();
             break;
         case 8: { // "[ 8 ] Resolver automáticamente"
+            if (modoCompetitivo && !resolucionAutomaticaHabilitada) {
+                mostrarError("Resolucion automatica bloqueada en modo competitivo. Requiere autorizacion de BackDoor [18].");
+                break;
+            }
+            // Consumir el permiso incluso si se cancela o falla este intento.
+            resolucionAutomaticaHabilitada = false;
             // 1) Confirmación
             cout << "\n⚡ Resolver automáticamente el Sudoku.\n";
             cout << "¿Deseas continuar? (S/N): " << flush;

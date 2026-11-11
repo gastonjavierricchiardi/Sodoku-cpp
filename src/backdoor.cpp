@@ -267,6 +267,7 @@ void subMenuBackDoor(int nivelAcceso) {
 
                 colorTexto("verde");
                 cout << "✅ Tablero de prueba cargado exitosamente.\n";
+                resolucionAutomaticaHabilitada = false;
                 resetColor();
             } else {
                 mostrarError("Nivel insuficiente para esta opción.");
@@ -540,6 +541,7 @@ void subMenuBackDoor(int nivelAcceso) {
 
                     colorTexto("verde");
                     cout << "\n✅ Reinicio total realizado exitosamente.\n";
+                    resolucionAutomaticaHabilitada = false;
                 } else {
                     colorTexto("amarillo");
                     cout << "\n🚫 Operación cancelada por el usuario.\n";
@@ -609,6 +611,8 @@ void subMenuBackDoor(int nivelAcceso) {
                 cout << "Se habilita Ingresar al [2] 'Modo competitivo' habiendo usado el [8] 'Resolver automáticamente'." << endl;
                 SODOKU_RESUELTO = false;
                 modoPruebasHabilitado = true;
+                resolucionAutomaticaHabilitada = true;
+                cout << "Se autoriza un intento de [8] Resolver automaticamente en el tablero actual.\n";
                 resetColor();
             } else {
                 mostrarError("Nivel insuficiente para esta opción.");
