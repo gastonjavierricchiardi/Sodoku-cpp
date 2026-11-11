@@ -608,6 +608,7 @@ void subMenuBackDoor(int nivelAcceso) {
             if (nivelAcceso >= 1) {
                 cout << "Se habilita Ingresar al [2] 'Modo competitivo' habiendo usado el [8] 'Resolver automáticamente'." << endl;
                 SODOKU_RESUELTO = false;
+                modoPruebasHabilitado = true;
                 resetColor();
             } else {
                 mostrarError("Nivel insuficiente para esta opción.");
