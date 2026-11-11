@@ -74,6 +74,10 @@ vector<string> listarArchivosGuardados() {
 
 // Guardar partida en archivo
 void guardarPartidaEnArchivo() {
+    if (modoCompetitivo && (nivelCargado < 0 || nivelCargado > 2)) {
+        mostrarError("No se puede guardar: el tablero competitivo no tiene un nivel valido.");
+        return;
+    }
     string nombreArchivo = generarNombreArchivo();
     ofstream archivo(nombreArchivo);
 
@@ -84,8 +88,8 @@ void guardarPartidaEnArchivo() {
 
     // 1) Guardar la dificultad para reanudar la partida
     // archivo << "Nivel:" << nivelCargado << '\n';
-    // Ahora guardamos 1=Fácil, 2=Medio, 3=Difícil
-    archivo << "Nivel:" << (nivelCargado + 1) << '\n';
+    // Guardar 0=libre, 1=facil, 2=medio, 3=dificil, sin cambiar el formato.
+    archivo << "Nivel:" << (modoCompetitivo ? nivelCargado + 1 : 0) << '\n';
 
     // 2) Guardar MATRIZ (sin encabezado)
     for (int i = 0; i < TAM; i++) {
@@ -417,6 +421,9 @@ void cargarPartidaDesdeArchivo() {
     SODOKU_RESUELTO = sodokuResueltoTemporal;
     esPartidaNueva = esPartidaNuevaTemporal;
     modoPruebasHabilitado = false;
+    // Usar la cabecera original: el indice normalizado confunde libre y facil.
+    modoCompetitivo = (nivelLeido > 0);
+    resolucionAutomaticaHabilitada = false;
 
     if (!partidaEnCurso) {
         colorTexto("verde");

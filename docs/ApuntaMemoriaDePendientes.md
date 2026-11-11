@@ -1,4 +1,4 @@
-ver que se hacer con el score.txt vacio al iniciar el juevo por primera vez y su encriptación.
+ver que se hacer con el score.txt vacío al iniciar el juego por primera vez y su encriptación.
 
 ---
 
@@ -10,17 +10,17 @@ pudo haber quedado desactualizado
 
 al salir en 100
 
-desde el backdor en windows PS, 11 queda todo en verde.
+desde el backdoor en windows PS, 11 queda todo en verde.
 habría que ver desde cmd... y resolver
 
 ---
 
-desde el inicio de la partida con todo vacío, apretas guardar, y guarda, pero teóricamente esta vacio...
+desde el inicio de la partida con todo vacío, apretas guardar, y guarda, pero teóricamente esta vacío...
 hay que resolverlo.
 
 ---
 
-no me gusta la dinamica que se da despues de cargar una partida, como que falta que sea mas intuitivo despues de la carga
+no me gusta la dinámica que se da después de cargar una partida, como que falta que sea mas intuitivo después de la carga
 
 ---
 
@@ -38,5 +38,9 @@ desde el menu backdoor, al momento de editar una matriz a mano, y al regresar, s
 
 otro tema de lo mismo:
 como ya fue resuelto, quedó alguna bandera levantada y no me deja jugar la ultima coordenada me dice que ya fue resuelto
+
+---
+
+En modo de prueba, hay que cambiar el menu de [8] y tiene que distinguirse entre resolver modo prueba o modo competitivo.
 
 ---
