@@ -51,6 +51,7 @@ int endGame = MAX_INTENTOS_FALLIDOS; // Número de intentos fallidos para termin
 bool partidaEnCurso = false;         // Flag para saber si hay una partida suspendida
 int nivelCargado = -1;               // Flag para saber si hay una partida suspendida
 bool SODOKU_RESUELTO = false;        // falso cerrado / verdadero abierto // Variable para saber si el Sudoku fue resuelto
+bool modoPruebasHabilitado = false;
 int intentosFallidos = 0;            // Contador de intentos fallidos que tambien se usa para grabar el Game Over
 // Del Juego
 bool esPartidaNueva = false; // Bandera para partida nueva o en curso
@@ -636,8 +637,47 @@ void menuPrincipal() {
         case 1: // "[ 1 ] Ingreso manual de datos"
             modoIngresoManual();
             break;
-        case 2: // "[ 2 ] Modo competitivo (con niveles)"
+        case 2: { // "[ 2 ] Modo competitivo (con niveles)"
             limpiarPantalla();
+            bool tableroResuelto = true;
+            for (int fila = 0; fila < TAM && tableroResuelto; ++fila) {
+                for (int columna = 0; columna < TAM; ++columna) {
+                    if (MATRIZ[fila][columna] == 0 || MATRIZ[fila][columna] != SOLUCION[fila][columna]) {
+                        tableroResuelto = false;
+                        break;
+                    }
+                }
+            }
+            if (tableroResuelto) {
+                if (!modoPruebasHabilitado) {
+                    mostrarError("El Sudoku ya fue resuelto. No se puede reanudar.");
+                    break;
+                }
+                cout << "El Sudoku ya está resuelto.\n";
+                cout << "¿Deseás continuar en modo de pruebas? (S/N): " << flush;
+                std::string respuesta;
+                if (!(std::cin >> respuesta)) {
+                    std::cin.clear();
+                    std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+                    break;
+                }
+                std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
+                if (respuesta != "S" && respuesta != "s")
+                    break;
+
+                int nivelPruebas = nivelCargado;
+                if (nivelPruebas < 0) {
+                    int opcionNivel = seleccionarDificultad();
+                    if (opcionNivel == CODIGO_SALIR_MENU)
+                        break;
+                    nivelPruebas = opcionNivel - 1;
+                }
+                nivelCargado = nivelPruebas;
+                esPartidaNueva = false;
+                partidaEnCurso = true;
+                jugarPartida(nivelPruebas);
+                break;
+            }
             if (partidaEnCurso) {
                 if (SODOKU_RESUELTO == true) {
                     mostrarError("El Sudoku ya fue resuelto. No se puede reanudar.");
@@ -657,10 +697,11 @@ void menuPrincipal() {
             colorTexto("verde");
             cout << "\n🎮 MODO COMPETITIVO – NUEVA PARTIDA\n\n";
             resetColor();
+            modoPruebasHabilitado = false;
             partidaEnCurso = false; // Reiniciar bandera de partida en curso
             nivelCargado = -1;      // Reiniciar nivel cargado
             iniciarJuego();         // aquí volverá a llamar a jugarPartida()
-            break;
+        } break;
 
         case 3: // "[ 3 ] Limpiar tablero completo"
             if (hayCeldasFijas()) {
@@ -682,6 +723,7 @@ void menuPrincipal() {
                     CELDAFIJA[i][j] = false;
             // Ver si hay que blanquear otras variables ademas de la limpieza del tablero.
             SODOKU_RESUELTO = false; // CIERRA EL SODOKU RESUELTO Y PERMITE VOLVER A ENTRAR al case 2
+            modoPruebasHabilitado = false;
             cout << "Tablero y celdas fijas limpiadas correctamente." << endl;
             cout << "Opción de: Resolver automáticamente liberada, se puede jugar nuevamente." << endl;
             MSGPAUSA();
@@ -777,6 +819,7 @@ void menuPrincipal() {
                 // 🔧 HOTFIX 1 – sincronizar solución
                 memcpy(SOLUCION, copia, sizeof(copia)); // sincroniza también la solución
                 SODOKU_RESUELTO = true;
+                modoPruebasHabilitado = false;
             }
             MSGPAUSA();
         } break;

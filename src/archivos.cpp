@@ -416,6 +416,7 @@ void cargarPartidaDesdeArchivo() {
     intentosFallidos = intentosFallidosTemporal;
     SODOKU_RESUELTO = sodokuResueltoTemporal;
     esPartidaNueva = esPartidaNuevaTemporal;
+    modoPruebasHabilitado = false;
 
     if (!partidaEnCurso) {
         colorTexto("verde");

@@ -22,6 +22,7 @@ extern bool CELDAFIJA[TAM][TAM]; // celdas fijas
 extern char CARACTERPAUSA;       // carácter de pausa visual
 extern int endGame;              // número de intentos fallidos para terminar el juego
 extern bool partidaEnCurso;      // Flag para saber si hay una partida suspendida
+extern bool modoPruebasHabilitado;
 extern int intentosFallidos;     // Contador de intentos fallidos que tambien se usa para grabar el Game Over
 extern int nivelCargado;         // Nivel de la partida cargada (0=Fácil,1=Medio,2=Difícil)
 // Códigos especiales de menú en constantes.h
