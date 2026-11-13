@@ -40,9 +40,10 @@ int CLAVE_NIVEL_2 = 1111;
 | -------------------------------------- | ------------ |
 | `'1'` a `'4'`                          | >= 0         |
 | `'5'` a `'9'`                          | >= 1         |
-| `'10'`, `'12'`, `'13'`, `'14'`, `'15'` | >= 2         |
+| `'10'`, `'12'`, `'13'`, `'14'`, `'15'`, `'20'` | >= 2         |
 | -------------------------------------- | ------------ |
 */
+// Consultar rankings: opcion [4] del menu principal, disponible desde nivel 0.
 
 void subMenuBackDoor(int nivelAcceso) {
     colorTexto("verde");
@@ -60,11 +61,11 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  1  ] Mostrar MATRIZ\n";
             cout << "[  2  ] Mostrar CELDAFIJA\n";
             cout << "[  3  ] Mostrar MASCARA\n";
-            cout << "[ 20  ] Fijar celdas actuales como fijas" << endl;
             cout << "\n✔️  DIAGNÓSTICO Y TESTEOS\n";
             cout << "[  4  ] Validar tablero actual (sudokuValido)\n";
             cout << "\n💾  ARCHIVOS Y GUARDADO\n";
             cout << "[ 16  ] Exportar datos a CSV\n";
+            cout << "Consulta de rankings: opcion [4] del menu principal (solo lectura).\n";
             cout << "\n[  0  ] Volver al menú principal\n";
             cout << "=============================================" << endl;
             break;
@@ -78,7 +79,6 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  1  ] Mostrar MATRIZ\n";
             cout << "[  2  ] Mostrar CELDAFIJA\n";
             cout << "[  3  ] Mostrar MASCARA\n";
-            cout << "[ 20  ] Fijar celdas actuales como fijas" << endl;
             cout << "\n✔️  DIAGNÓSTICO Y TESTEOS\n";
             cout << "[  4  ] Validar tablero actual (sudokuValido)\n";
             cout << "[  6  ] Inyectar error lógico (repetidos)\n";
@@ -87,8 +87,8 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  7  ] Borrado de tablero (no borra CELDAFIJA)\n";
             cout << "[  8  ] Fijar celda por coordenada\n";
             cout << "[  9  ] Forzar guardado rápido\n";
-            cout << "[ 15  ] Mostrar y resetear estadísticas\n";
             cout << "[ 16  ] Exportar datos a CSV\n";
+            cout << "Consulta de rankings: opcion [4] del menu principal (solo lectura).\n";
             cout << "\n[  0  ] Volver\n";
             cout << "=============================================" << endl;
             break;
@@ -116,7 +116,8 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  5  ] Cargar tablero de prueba predefinido\n";
             cout << "[  9  ] Forzar guardado rápido\n";
             cout << "[ 16  ] Exportar datos a CSV\n";
-            cout << "[ 15  ] Mostrar y resetear estadísticas\n";
+            cout << "[ 15  ] Borrar rankings\n";
+            cout << "Consulta de rankings: opcion [4] del menu principal (solo lectura).\n";
             cout << "\n🛠️  FUNCIONES AVANZADAS\n";
             cout << "[  7  ] Borrado de tablero (no borra CELDAFIJA)\n";
             cout << "[ 13  ] Borrar tablero completo (hard reset)\n";
@@ -555,16 +556,10 @@ void subMenuBackDoor(int nivelAcceso) {
             break;
         case 14: // [ 14  ] Asignar puntaje manual                         [EN DESARROLLO]
             break;
-        case 15: // [ 15  ] Mostrar y resetear estadísticas
-            // limpiarPantalla();
-            // autor();
-            // Desplegar top 5 para cada nivel
-            mostrarScores(0); // +++ FACIL +++
-            mostrarScores(1); // +++ MEDIO +++
-            mostrarScores(2); // +++ DIFICIL +++
-            // MSGPAUSA();
-            if (nivelAcceso >= 1) {
-                // Dentro de subMenuBackDoor(), en el switch(opcion):
+        case 15: // [ 15  ] Borrar rankings; la consulta se realiza en el menu principal [4].
+            if (nivelAcceso >= 2)
+            {
+                // Confirmar el borrado solo despues de validar el permiso.
                 {
                     // desde aquí: confirmar y resetear mejores tiempos
                     char opcion;
@@ -587,10 +582,12 @@ void subMenuBackDoor(int nivelAcceso) {
                 }
                 resetColor();
                 return;
-            } else {
-                mostrarError("Nivel insuficiente para esta opción.");
             }
-            MSGPAUSA();
+            else
+            {
+                mostrarError("Nivel insuficiente para esta opción.");
+                MSGPAUSA();
+            }
             break;
         case 16: // [ 16  ] Exportar datos a CSV
             exportarMatrizACSV();
@@ -622,7 +619,15 @@ void subMenuBackDoor(int nivelAcceso) {
         case 19: // borrar scores.
             break;
         case 20: // [ 20  ] Fijar celdas actuales como fijas
-            fijarCeldasActuales();
+            if (nivelAcceso >= 2)
+            {
+                fijarCeldasActuales();
+            }
+            else
+            {
+                mostrarError("Nivel insuficiente para esta opción.");
+                MSGPAUSA();
+            }
             break;
         default:
             mostrarError("Función aún en desarrollo o no implementada.");
