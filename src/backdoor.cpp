@@ -578,7 +578,6 @@ void subMenuBackDoor(int nivelAcceso) {
                     } else {
                         mostrarError("Acción de borrado cancelada.");
                     }
-                    MSGPAUSA();
                 }
                 resetColor();
                 return;
@@ -586,7 +585,6 @@ void subMenuBackDoor(int nivelAcceso) {
             else
             {
                 mostrarError("Nivel insuficiente para esta opción.");
-                MSGPAUSA();
             }
             break;
         case 16: // [ 16  ] Exportar datos a CSV
@@ -626,7 +624,6 @@ void subMenuBackDoor(int nivelAcceso) {
             else
             {
                 mostrarError("Nivel insuficiente para esta opción.");
-                MSGPAUSA();
             }
             break;
         default:
