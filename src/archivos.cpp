@@ -538,12 +538,6 @@ void exportarMatrizACSV() {
 // Carga los scores desde ARCHIVO_SCORES y los ordena en 'scores'
 // ----------------------------------------------------------------
 void cargarScores() {
-    // 0) Asegurar existencia del archivo
-    if (!std::filesystem::exists(ARCHIVO_SCORES)) {
-        std::ofstream f(ARCHIVO_SCORES);
-        f.close();
-    }
-
     // 1) Inicializar con entradas “vacías” (errores y tiempos muy altos)
     for (int lvl = 0; lvl < 3; ++lvl) {
         for (int i = 0; i < 5; ++i) {
