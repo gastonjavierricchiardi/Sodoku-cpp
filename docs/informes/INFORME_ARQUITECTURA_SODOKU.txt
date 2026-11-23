@@ -1,0 +1,1688 @@
+INFORME DE ARQUITECTURA — SODOKU C++
+Archivo: INFORME_ARQUITECTURA_SODOKU.txt
+Fecha: 19/11/2026 — America/Buenos_Aires
+Versión declarada del programa: 0.9.4
+Repositorio: gastonjavierricchiardi/Sodoku-cpp
+Referencia solicitada: main
+Commit analizado, inmutable: d9cc5c6904db2f79930b9d5757a04766cd67502d
+Estado: ANÁLISIS ESTÁTICO; pendiente de revisión del usuario.
+No se generaron archivos Mermaid.
+================================================================================================
+0. ALCANCE, MÉTODO, CONFIDENCIALIDAD Y TRAZABILIDAD
+================================================================================================
+El informe se genera por autorización expresa del usuario para leer los .cpp y .h
+del commit solicitado. Se inspeccionan cinco unidades .cpp y seis cabeceras .h,
+junto con las directivas y documentos vigentes incluidos en el mismo commit.
+
+Se obtuvo el archivo Git por HTTPS en memoria, sin extraerlo al disco. Su cabecera
+PAX identifica exactamente d9cc5c6904db2f79930b9d5757a04766cd67502d. Se comprobaron los SHA-256 de
+cada .cpp/.h y su igualdad byte a byte con los archivos locales. Esa igualdad
+permite citar líneas locales como líneas del commit fijado, sin cambiar de rama
+ni actualizar el checkout. La revisión local conservada es 6cc9136969a1bc3f98cc46c5e608f9aae880a4f4,
+en fix/aud-11-permisos-backdoor; no se confunde con la revisión remota analizada.
+
+La lectura y el tratamiento de texto son estáticos. No se ejecutaron el juego,
+binarios del proyecto o de prueba, compiladores, pruebas funcionales ni scripts del repositorio.
+No se hicieron checkout, fetch, commits, push, merge o cambios de configuración.
+El único archivo nuevo generado por esta tarea es este TXT, fuera del repositorio.
+No se modificaron fuentes, cabeceras, directivas, informes existentes ni datos.
+
+No se incluyen valores, credenciales o material de autenticación de BackDoor.
+Las ubicaciones de tres variables de autenticación se agrupan con contenido
+omitido. No se transcriben sus inicializadores ni la pantalla que los expone.
+
+Fuentes primarias: los once archivos C++ y, del mismo commit, DIRECTIVAS.md,
+CONVENCIONES.md, UX.md, README.md y PLAN_DIAGRAMAS_SODOKU.md.
+El nombre docs/PLAN_DIAGRAMAS.md es una ruta sugerida por el plan, no un archivo
+presente en este commit. No se crea, renombra ni corrige ese documento.
+
+COMPROBADO ESTÁTICAMENTE: definición, firma, llamada, lectura o asignación visible.
+RIESGO / PENDIENTE DE VERIFICACIÓN: impacto que exige una secuencia concreta o
+validación de ejecución; no se declara reproducido por la mera lectura.
+PENDIENTE DE DECISIÓN: política o ampliación de alcance que no corresponde inventar.
+Implementada significa que existe un cuerpo, no que haya superado una prueba.
+
+El inventario de llamadas considera funciones propias por su nombre, excluye
+comentarios y literales, y registra sitios directos dentro de los cuerpos.
+No cuenta constructores, miembros STL, macros, llamadas de bibliotecas, símbolos
+de Windows o inicialización global como funciones propias. No es un análisis
+de ejecución, cobertura o alcance dinámico de cada rama.
+
+Las inclusiones #include y las llamadas se documentan por separado. Las referencias
+a estado compartido son directas y no sustituyen un análisis completo de alias:
+por ejemplo, resolverSudoku modifica el arreglo recibido, que puede ser SOLUCION
+o una copia local según el llamador. Se distinguen esos contextos en los flujos.
+
+Todas las referencias RUTA:Lx-Ly son de base 1 en el commit fijado. Los nombres
+formales no forman parte de la identidad de una firma C++. Se normalizan espacios
+en las firmas largas, manteniendo retorno, tipos, const, referencias y dimensiones.
+================================================================================================
+1. VERSIÓN, ALCANCE REAL Y RESUMEN DE ARQUITECTURA
+================================================================================================
+Versión actual DECLARADA en el código: 0.9.4.
+- src/Sodoku.h:13 y src/constantes.h:7 definen la misma macro VERSION.
+- src/varios.cpp:65 muestra VERSION en autor().
+- FECHA_VERSION/HORA_VERSION son literales de versión en src/Sodoku.h:11-12 y
+  src/constantes.h:5-6; se usan en src/varios.cpp:35-76. No son la fecha del análisis,
+  la fecha del commit ni una compilación realizada en esta tarea.
+- README.md:32-36 enumera las cinco unidades de compilación. El encabezado del
+  changelog sigue mencionando v0.8.1 como estable (docs/CHANGELOG_Sodoku_C++.md:5).
+  No se usa ese encabezado histórico para reemplazar VERSION ni certificar estabilidad.
+
+Es una aplicación de consola, organizada principalmente mediante funciones libres,
+dos tipos propios de datos y estado global compartido. El punto de entrada es main()
+en src/Sodoku.cpp:1077-1083, que inicializa la consola y máscara y llama al menú.
+No se observa una clase de dominio que encapsule la partida, ni una única máquina
+de estados declarada. Los estados se infieren de condiciones y asignaciones.
+
+Responsabilidades verificadas:
+- src/Sodoku.cpp: entrada, menú, jugabilidad, parte de la presentación y validaciones.
+- src/pantalla.cpp: operaciones de máscara y presentación de rankings.
+- src/archivos.cpp: persistencia, validación de matrices, ranking, exportación y mensajes.
+- src/varios.cpp: generación/resolución, aleatoriedad, consola, colores y pausa.
+- src/backdoor.cpp: autenticación, menús administrativos y herramientas de inspección/edición.
+
+Estas responsabilidades se cruzan: mostrarError() vive en archivos.cpp y pausa
+mediante varios.cpp; mostrarScores() vive en pantalla.cpp y recarga desde archivos.cpp;
+la carga de una partida terminada invoca mostrarMatriz() de Sodoku.cpp.
+No deben dibujarse capas independientes a partir únicamente del nombre de archivo.
+
+No se observan hilos de aplicación creados explícitamente en los cuerpos examinados;
+sleep_for/Sleep son esperas para animación (src/Sodoku.cpp:816-820), no creación de un
+worker. No se infiere concurrencia por el flag de compilación usado históricamente.
+================================================================================================
+2. ÁRBOL COMPLETO DE ARCHIVOS VERSIONADOS DEL COMMIT
+================================================================================================
+Sodoku-cpp/
+    .clang-format
+    .gitignore
+    LICENSE
+    README.md
+    docs/
+        AUD07_PRUEBAS_AUTOMATICAS.txt
+        ApuntaMemoriaDePendientes.md
+        CHANGELOG_Sodoku_C++.md
+        CHANGELOG_Sodoku_C++Historico.md
+        CONVENCIONES.md
+        Compilar y errores.txt
+        DIRECTIVAS.md
+        PLAN_DIAGRAMAS_SODOKU.md
+        UX.md
+    scripts/
+        build_linux.sh
+        build_windows.sh
+        crear_sfv.sh
+        verificar_sfv.sh
+    src/
+        20251101-105314.txt
+        20261029-155930.txt
+        20261101-105312.txt
+        20261101-105313.txt
+        20261101-120831.txt
+        20261104-204458.txt
+        Sodoku.cpp
+        Sodoku.h
+        archivos.cpp
+        archivos.h
+        backdoor.cpp
+        backdoor.h
+        constantes.h
+        pantalla.cpp
+        pantalla.h
+        scores.txt
+        varios.cpp
+        varios.h
+El árbol corresponde al commit Git: no agrega include/ o build/ por aparecer
+en textos históricos, ni enumera salidas locales, .git, caches o archivos ignorados.
+Los seis TXT con nombre de fecha y scores.txt son datos existentes: no se ejecutan
+ni se usan sus resultados como prueba de esta arquitectura. Los informes locales
+no versionados y este entregable externo no forman parte del árbol del commit.
+================================================================================================
+3. FUNCIONES IMPLEMENTADAS — INVENTARIO COMPLETO
+================================================================================================
+Fichas F01..F50. Cada una identifica firma, cuerpo completo, prototipos y llamadas
+directas a funciones propias con todas las líneas detectadas en el cuerpo.
+Las llamadas aparecen aunque dependan de una condición; su presencia no certifica
+que esa rama se ejecute en una partida concreta. La recursión se marca expresamente.
+Funciones de presentación, STL y sistema pueden tener efectos aunque no llamen a
+otra función propia. Véase la sección de dependencias externas.
+F01. void limpiarTablero()
+    Implementación: src/Sodoku.cpp:67-72.
+    Responsabilidad: Pone MATRIZ en cero y revoca el permiso de resolución automática; conserva el resto del estado.
+    Declaraciones compatibles: src/Sodoku.h:40.
+    Llamadas propias: ninguna directa.
+F02. void generarMascara(int fila, int columna, char mascara[TAM][TAM])
+    Implementación: src/Sodoku.cpp:74-81.
+    Responsabilidad: Limpia la máscara recibida y marca fila, columna e intersección de coordenadas de base 1.
+    Declaraciones compatibles: src/Sodoku.h:41.
+    Llamadas propias verificadas:
+        limpiarMascara() — sitios src/Sodoku.cpp:75; definición src/pantalla.cpp:24.
+F03. void mostrarMatriz(int matriz[TAM][TAM], std::string titulo)
+    Implementación: src/Sodoku.cpp:83-106.
+    Responsabilidad: Presenta una matriz numérica recibida, con título y colores; no modifica sus celdas.
+    Declaraciones compatibles: src/Sodoku.h:60.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/Sodoku.cpp:84; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:105; definición src/varios.cpp:134.
+F04. void generarMascaraCompletaPausa(char CARACTERPAUSA)
+    Implementación: src/Sodoku.cpp:108-112.
+    Responsabilidad: Rellena MASCARA con el carácter recibido; el parámetro oculta el global homónimo.
+    Declaraciones compatibles: src/Sodoku.h:42.
+    Llamadas propias: ninguna directa.
+F05. void DibujarPantalla()
+    Implementación: src/Sodoku.cpp:114-145.
+    Responsabilidad: Dibuja MATRIZ, celdas fijas, máscara y números agotados; la visualización del tablero reside aquí.
+    Declaraciones compatibles: src/Sodoku.h:44.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/Sodoku.cpp:122,124,139; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:126,141; definición src/varios.cpp:134.
+        numeroAgotadoGlobal() — sitios src/Sodoku.cpp:138; definición src/Sodoku.cpp:560.
+F06. void modoIngresoManual()
+    Implementación: src/Sodoku.cpp:149-190.
+    Responsabilidad: Bucle de ingreso y edición, comandos y acceso administrativo; escribe un valor cuando el ingreso retorna OK.
+    Declaraciones compatibles: src/Sodoku.h:45.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/Sodoku.cpp:153; definición src/varios.cpp:87.
+        autor() — sitios src/Sodoku.cpp:154; definición src/varios.cpp:35.
+        DibujarPantalla() — sitios src/Sodoku.cpp:155; definición src/Sodoku.cpp:114.
+        procesarIngresoUsuario() — sitios src/Sodoku.cpp:160; definición src/Sodoku.cpp:879.
+        cantidadRestante() — sitios src/Sodoku.cpp:165; definición src/Sodoku.cpp:588.
+        colorTexto() — sitios src/Sodoku.cpp:166; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:168; definición src/varios.cpp:134.
+        MSGPAUSA() — sitios src/Sodoku.cpp:169; definición src/varios.cpp:107.
+        limpiarMascara() — sitios src/Sodoku.cpp:171,177,181,184,188; definición src/pantalla.cpp:24.
+        validarNivelDeAcceso() — sitios src/Sodoku.cpp:174; definición src/backdoor.cpp:636.
+        subMenuBackDoor() — sitios src/Sodoku.cpp:176; definición src/backdoor.cpp:48.
+F07. int seleccionarDificultad()
+    Implementación: src/Sodoku.cpp:192-232.
+    Responsabilidad: Solicita opción 1..3, valida entrada y retorna 0 para cancelar.
+    Declaraciones compatibles: src/Sodoku.h:46.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/Sodoku.cpp:196,200; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:198,205; definición src/varios.cpp:134.
+        mostrarError() — sitios src/Sodoku.cpp:213,224; definición src/archivos.cpp:30.
+F08. void iniciarJuego()
+    Implementación: src/Sodoku.cpp:235-299.
+    Responsabilidad: Resuelve la dificultad cargada o solicita otra, marca partida nueva cuando corresponde y llama jugarPartida.
+    Declaraciones compatibles: src/Sodoku.h:47.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/Sodoku.cpp:236; definición src/varios.cpp:87.
+        colorTexto() — sitios src/Sodoku.cpp:237,254; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:239,256; definición src/varios.cpp:134.
+        seleccionarDificultad() — sitios src/Sodoku.cpp:250; definición src/Sodoku.cpp:192.
+        MSGPAUSA() — sitios src/Sodoku.cpp:257; definición src/varios.cpp:107.
+        mostrarError() — sitios src/Sodoku.cpp:270; definición src/archivos.cpp:30.
+        jugarPartida() — sitios src/Sodoku.cpp:297; definición src/Sodoku.cpp:303.
+F09. void jugarPartida(int nivel)
+    Implementación: src/Sodoku.cpp:303-503.
+    Responsabilidad: Genera o reutiliza tablero, procesa jugadas, controla intentos y victoria, y registra el ranking.
+    Declaraciones compatibles: src/Sodoku.h:48.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/Sodoku.cpp:306,353; definición src/varios.cpp:87.
+        colorTexto() — sitios src/Sodoku.cpp:330,364,377,412,446,458; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:332,366,383,414,448,464; definición src/varios.cpp:134.
+        generarSodokuResuelto() — sitios src/Sodoku.cpp:339; definición src/varios.cpp:183.
+        generarTableroAleatorio() — sitios src/Sodoku.cpp:340; definición src/varios.cpp:139.
+        fijarCeldasActuales() — sitios src/Sodoku.cpp:341; definición src/Sodoku.cpp:543.
+        autor() — sitios src/Sodoku.cpp:354; definición src/varios.cpp:35.
+        DibujarPantalla() — sitios src/Sodoku.cpp:355; definición src/Sodoku.cpp:114.
+        MSGPAUSA() — sitios src/Sodoku.cpp:387,415,499; definición src/varios.cpp:107.
+        procesarIngresoUsuario() — sitios src/Sodoku.cpp:397; definición src/Sodoku.cpp:879.
+        mostrarError() — sitios src/Sodoku.cpp:402; definición src/archivos.cpp:30.
+        limpiarMascara() — sitios src/Sodoku.cpp:403,417,424,428; definición src/pantalla.cpp:24.
+        cantidadRestante() — sitios src/Sodoku.cpp:410; definición src/Sodoku.cpp:588.
+        validarNivelDeAcceso() — sitios src/Sodoku.cpp:421; definición src/backdoor.cpp:636.
+        subMenuBackDoor() — sitios src/Sodoku.cpp:423; definición src/backdoor.cpp:48.
+        cargarScores() — sitios src/Sodoku.cpp:494; definición src/archivos.cpp:540.
+        actualizarScores() — sitios src/Sodoku.cpp:495; definición src/archivos.cpp:601.
+        guardarScores() — sitios src/Sodoku.cpp:496; definición src/archivos.cpp:624.
+        mostrarScores() — sitios src/Sodoku.cpp:497; definición src/pantalla.cpp:49.
+F10. bool validaHorizontal(int matriz[TAM][TAM], int fila, int valor)
+    Implementación: src/Sodoku.cpp:515-521.
+    Responsabilidad: Comprueba ausencia del valor en la fila recibida.
+    Declaraciones compatibles: src/Sodoku.h:49.
+    Llamadas propias: ninguna directa.
+F11. bool validaVertical(int matriz[TAM][TAM], int columna, int valor)
+    Implementación: src/Sodoku.cpp:523-529.
+    Responsabilidad: Comprueba ausencia del valor en la columna recibida.
+    Declaraciones compatibles: src/Sodoku.h:50.
+    Llamadas propias: ninguna directa.
+F12. bool validaRecuadro(int matriz[TAM][TAM], int fila, int columna, int valor)
+    Implementación: src/Sodoku.cpp:531-541.
+    Responsabilidad: Comprueba ausencia del valor en el subcuadro de la coordenada recibida.
+    Declaraciones compatibles: src/Sodoku.h:51.
+    Llamadas propias: ninguna directa.
+F13. void fijarCeldasActuales()
+    Implementación: src/Sodoku.cpp:543-550.
+    Responsabilidad: Marca como fijas las posiciones de MATRIZ no vacías; conserva las marcas previas sobre ceros.
+    Declaraciones compatibles: src/Sodoku.h:52.
+    Llamadas propias verificadas:
+        mostrarError() — sitios src/Sodoku.cpp:549; definición src/archivos.cpp:30.
+F14. bool hayCeldasFijas()
+    Implementación: src/Sodoku.cpp:552-558.
+    Responsabilidad: Indica si existe al menos una marca de CELDAFIJA.
+    Declaraciones compatibles: src/Sodoku.h:53.
+    Llamadas propias: ninguna directa.
+F15. bool numeroAgotadoGlobal(int numero)
+    Implementación: src/Sodoku.cpp:560-572.
+    Responsabilidad: Indica si un número aparece al menos TAM veces en MATRIZ.
+    Declaraciones compatibles: src/Sodoku.h:54.
+    Llamadas propias: ninguna directa.
+F16. bool numeroPresenteEnCuadro(int fila, int columna, int numero)
+    Implementación: src/Sodoku.cpp:574-586.
+    Responsabilidad: Busca un número en el subcuadro correspondiente de MATRIZ.
+    Declaraciones compatibles: src/Sodoku.h:55.
+    Llamadas propias: ninguna directa.
+F17. int cantidadRestante(int numero)
+    Implementación: src/Sodoku.cpp:588-599.
+    Responsabilidad: Calcula TAM menos el número de apariciones del valor en MATRIZ.
+    Declaraciones compatibles: src/Sodoku.h:56.
+    Llamadas propias: ninguna directa.
+F18. void menuPrincipal()
+    Implementación: src/Sodoku.cpp:602-877.
+    Responsabilidad: Coordina los modos, persistencia, ranking, resolución, limpieza, configuración y administración.
+    Declaraciones compatibles: src/Sodoku.h:57.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/Sodoku.cpp:607,650,748; definición src/varios.cpp:87.
+        autor() — sitios src/Sodoku.cpp:608,749; definición src/varios.cpp:35.
+        mostrarError() — sitios src/Sodoku.cpp:635,662,693,727,768,791,866,874; definición src/archivos.cpp:30.
+        modoIngresoManual() — sitios src/Sodoku.cpp:646; definición src/Sodoku.cpp:149.
+        seleccionarDificultad() — sitios src/Sodoku.cpp:679; definición src/Sodoku.cpp:192.
+        jugarPartida() — sitios src/Sodoku.cpp:687,700; definición src/Sodoku.cpp:303.
+        colorTexto() — sitios src/Sodoku.cpp:708,720,850; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:710,723,855,869; definición src/varios.cpp:134.
+        iniciarJuego() — sitios src/Sodoku.cpp:715; definición src/Sodoku.cpp:235.
+        hayCeldasFijas() — sitios src/Sodoku.cpp:719; definición src/Sodoku.cpp:552.
+        limpiarTablero() — sitios src/Sodoku.cpp:731; definición src/Sodoku.cpp:67.
+        limpiarMascara() — sitios src/Sodoku.cpp:733; definición src/pantalla.cpp:24.
+        MSGPAUSA() — sitios src/Sodoku.cpp:742,754,764,843,847; definición src/varios.cpp:107.
+        mostrarScores() — sitios src/Sodoku.cpp:751,752,753; definición src/pantalla.cpp:49.
+        cargarPartidaDesdeArchivo() — sitios src/Sodoku.cpp:757; definición src/archivos.cpp:184.
+        guardarPartidaEnArchivo() — sitios src/Sodoku.cpp:760; definición src/archivos.cpp:76.
+        resolverSudoku() — sitios src/Sodoku.cpp:790; definición src/varios.cpp:257.
+        mostrarMatriz() — sitios src/Sodoku.cpp:828; definición src/Sodoku.cpp:83.
+        fijarCeldasActuales() — sitios src/Sodoku.cpp:853; definición src/Sodoku.cpp:543.
+        configurarGameOver() — sitios src/Sodoku.cpp:858; definición src/Sodoku.cpp:1027.
+        validarNivelDeAcceso() — sitios src/Sodoku.cpp:862; definición src/backdoor.cpp:636.
+        subMenuBackDoor() — sitios src/Sodoku.cpp:864; definición src/backdoor.cpp:48.
+F19. IngresoStatus procesarIngresoUsuario(int& fila, int& columna, int& valor)
+    Implementación: src/Sodoku.cpp:879-1023.
+    Responsabilidad: Lee coordenadas/valor por referencia, permite edición y borrado, valida y retorna IngresoStatus; puede mutar tablero/contador.
+    Declaraciones compatibles: src/Sodoku.h:62.
+    Llamadas propias verificadas:
+        mostrarError() — sitios src/Sodoku.cpp:886,904,919,936,960,973,982,991,997,1005,1009,1013; definición src/archivos.cpp:30.
+        limpiarMascara() — sitios src/Sodoku.cpp:887,905,920,937,941,946,961,974,984,993,999,1018; definición src/pantalla.cpp:24.
+        marcarFila() — sitios src/Sodoku.cpp:893; definición src/pantalla.cpp:30.
+        limpiarPantalla() — sitios src/Sodoku.cpp:894,913; definición src/varios.cpp:87.
+        autor() — sitios src/Sodoku.cpp:895,914; definición src/varios.cpp:35.
+        DibujarPantalla() — sitios src/Sodoku.cpp:896,915; definición src/Sodoku.cpp:114.
+        marcarColumna() — sitios src/Sodoku.cpp:911; definición src/pantalla.cpp:36.
+        marcarInterseccion() — sitios src/Sodoku.cpp:912; definición src/pantalla.cpp:42.
+        colorTexto() — sitios src/Sodoku.cpp:926; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:929; definición src/varios.cpp:134.
+        numeroAgotadoGlobal() — sitios src/Sodoku.cpp:990; definición src/Sodoku.cpp:560.
+        numeroPresenteEnCuadro() — sitios src/Sodoku.cpp:996; definición src/Sodoku.cpp:574.
+        validaHorizontal() — sitios src/Sodoku.cpp:1004; definición src/Sodoku.cpp:515.
+        validaVertical() — sitios src/Sodoku.cpp:1008; definición src/Sodoku.cpp:523.
+        validaRecuadro() — sitios src/Sodoku.cpp:1012; definición src/Sodoku.cpp:531.
+F20. void configurarGameOver()
+    Implementación: src/Sodoku.cpp:1027-1072.
+    Responsabilidad: Actualiza endGame con un entero positivo; permite cancelar con cero.
+    Declaraciones compatibles: src/Sodoku.h:68.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/Sodoku.cpp:1032,1055,1071; definición src/varios.cpp:87.
+        autor() — sitios src/Sodoku.cpp:1033; definición src/varios.cpp:35.
+        mostrarError() — sitios src/Sodoku.cpp:1043,1062; definición src/archivos.cpp:30.
+        colorTexto() — sitios src/Sodoku.cpp:1051,1067; definición src/varios.cpp:114.
+        resetColor() — sitios src/Sodoku.cpp:1053,1069; definición src/varios.cpp:134.
+        MSGPAUSA() — sitios src/Sodoku.cpp:1054,1070; definición src/varios.cpp:107.
+F21. int main()
+    Implementación: src/Sodoku.cpp:1077-1083.
+    Responsabilidad: Inicializa consola y máscara y entrega el control al menú principal.
+    Declaraciones compatibles: src/Sodoku.h:59.
+    Llamadas propias verificadas:
+        configurarConsola() — sitios src/Sodoku.cpp:1078; definición src/varios.cpp:280.
+        resetColor() — sitios src/Sodoku.cpp:1079; definición src/varios.cpp:134.
+        limpiarMascara() — sitios src/Sodoku.cpp:1080; definición src/pantalla.cpp:24.
+        menuPrincipal() — sitios src/Sodoku.cpp:1081; definición src/Sodoku.cpp:602.
+F22. void mostrarError(string mensaje)
+    Implementación: src/archivos.cpp:30-35.
+    Responsabilidad: Muestra un mensaje en rojo, restaura color y ejecuta una pausa; se usa también para resultados exitosos.
+    Declaraciones compatibles: src/archivos.h:12.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/archivos.cpp:31; definición src/varios.cpp:114.
+        resetColor() — sitios src/archivos.cpp:33; definición src/varios.cpp:134.
+        MSGPAUSA() — sitios src/archivos.cpp:34; definición src/varios.cpp:107.
+F23. string generarNombreArchivo()
+    Implementación: src/archivos.cpp:37-52.
+    Responsabilidad: Construye un nombre de partida con fecha y hora locales y extensión .txt.
+    Declaraciones compatibles: src/archivos.h:10.
+    Llamadas propias: ninguna directa.
+F24. vector<string> listarArchivosGuardados()
+    Implementación: src/archivos.cpp:55-73.
+    Responsabilidad: Enumera el directorio actual, filtra el patrón de nombre y ordena alfabéticamente.
+    Declaraciones compatibles: src/archivos.h:11.
+    Llamadas propias: ninguna directa.
+F25. void guardarPartidaEnArchivo()
+    Implementación: src/archivos.cpp:76-181.
+    Responsabilidad: Valida dificultad competitiva y escribe cabecera, matrices y bloque de datos internos.
+    Declaraciones compatibles: src/archivos.h:13.
+    Llamadas propias verificadas:
+        mostrarError() — sitios src/archivos.cpp:78,85,116; definición src/archivos.cpp:30.
+        generarNombreArchivo() — sitios src/archivos.cpp:81; definición src/archivos.cpp:37.
+        colorTexto() — sitios src/archivos.cpp:177; definición src/varios.cpp:114.
+        resetColor() — sitios src/archivos.cpp:179; definición src/varios.cpp:134.
+        MSGPAUSA() — sitios src/archivos.cpp:180; definición src/varios.cpp:107.
+F26. void cargarPartidaDesdeArchivo()
+    Implementación: src/archivos.cpp:184-453.
+    Responsabilidad: Selecciona y valida un archivo usando estado temporal; aplica los datos aceptados al estado global.
+    Declaraciones compatibles: src/archivos.h:14.
+    Llamadas propias verificadas:
+        listarArchivosGuardados() — sitios src/archivos.cpp:186; definición src/archivos.cpp:55.
+        mostrarError() — sitios src/archivos.cpp:189,205,211,217,225,229,245,251,259,272,278,286,292,318,325,333,337,343,348,353; definición src/archivos.cpp:30.
+        sudokuValido() — sitios src/archivos.cpp:291,336; definición src/archivos.cpp:456.
+        colorTexto() — sitios src/archivos.cpp:429,440; definición src/varios.cpp:114.
+        resetColor() — sitios src/archivos.cpp:431,446; definición src/varios.cpp:134.
+        mostrarMatriz() — sitios src/archivos.cpp:432; definición src/Sodoku.cpp:83.
+        MSGPAUSA() — sitios src/archivos.cpp:433,447; definición src/varios.cpp:107.
+        limpiarMascara() — sitios src/archivos.cpp:434,450; definición src/pantalla.cpp:24.
+F27. bool sudokuValido(int matriz[TAM][TAM])
+    Implementación: src/archivos.cpp:456-502.
+    Responsabilidad: Comprueba duplicados en filas, columnas y subcuadros, ignorando ceros; presupone valores en rango.
+    Declaraciones compatibles: src/archivos.h:15.
+    Llamadas propias: ninguna directa.
+F28. void exportarMatrizACSV()
+    Implementación: src/archivos.cpp:504-535.
+    Responsabilidad: Escribe MATRIZ en un CSV con nombre temporal en el directorio de trabajo.
+    Declaraciones compatibles: src/archivos.h:16.
+    Llamadas propias verificadas:
+        mostrarError() — sitios src/archivos.cpp:514; definición src/archivos.cpp:30.
+        colorTexto() — sitios src/archivos.cpp:531; definición src/varios.cpp:114.
+        resetColor() — sitios src/archivos.cpp:533; definición src/varios.cpp:134.
+        MSGPAUSA() — sitios src/archivos.cpp:534; definición src/varios.cpp:107.
+F29. void cargarScores()
+    Implementación: src/archivos.cpp:540-596.
+    Responsabilidad: Inicializa el ranking y lee el archivo si abre; no crea el archivo ausente.
+    Declaraciones compatibles: src/archivos.h:31.
+    Llamadas propias verificadas:
+        actualizarScores() — sitios src/archivos.cpp:594; definición src/archivos.cpp:601.
+F30. void actualizarScores(const ScoreEntry& entrada)
+    Implementación: src/archivos.cpp:601-619.
+    Responsabilidad: Inserta una entrada en el top 5 de su nivel por errores y duración; rechaza índices inválidos.
+    Declaraciones compatibles: src/archivos.h:32.
+    Llamadas propias: ninguna directa.
+F31. void guardarScores()
+    Implementación: src/archivos.cpp:624-653.
+    Responsabilidad: Escribe las quince entradas del ranking; informa fallo de apertura y retorna void.
+    Declaraciones compatibles: src/archivos.h:33.
+    Llamadas propias verificadas:
+        mostrarError() — sitios src/archivos.cpp:627; definición src/archivos.cpp:30.
+F32. void resetScores()
+    Implementación: src/archivos.cpp:658-673.
+    Responsabilidad: Reinicializa las quince entradas y delega la persistencia en guardarScores.
+    Declaraciones compatibles: src/archivos.h:34.
+    Llamadas propias verificadas:
+        guardarScores() — sitios src/archivos.cpp:672; definición src/archivos.cpp:624.
+F33. void subMenuBackDoor(int nivelAcceso)
+    Implementación: src/backdoor.cpp:48-634.
+    Responsabilidad: Presenta herramientas por nivel y despacha opciones con guardias locales; concede excepciones administrativas y permite inspección/edición.
+    Declaraciones compatibles: src/Sodoku.h:58; src/backdoor.h:7.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/backdoor.cpp:49,53,168,190,220,224,227,269,284,305,339,343,352,361,384,407,422,451,454,469,502,505,524,543,547; definición src/varios.cpp:114.
+        limpiarPantalla() — sitios src/backdoor.cpp:52,304,383,421,468,523; definición src/varios.cpp:87.
+        mostrarError() — sitios src/backdoor.cpp:131,141,156,274,288,296,334,368,375,401,414,446,461,508,517,554,571,577,579,587,600,613,626,630; definición src/archivos.cpp:30.
+        resetColor() — sitios src/backdoor.cpp:147,186,214,230,272,286,308,354,364,387,409,425,457,472,512,526,551,582,611; definición src/varios.cpp:134.
+        mostrarMatriz() — sitios src/backdoor.cpp:164,310,388,426,474,528,597; definición src/Sodoku.cpp:83.
+        MSGPAUSA() — sitios src/backdoor.cpp:165,187,215,231,276,290,298,355,365,410,458,513,552,598,615; definición src/varios.cpp:107.
+        sudokuValido() — sitios src/backdoor.cpp:223; definición src/archivos.cpp:456.
+        limpiarTablero() — sitios src/backdoor.cpp:294; definición src/Sodoku.cpp:67.
+        guardarPartidaEnArchivo() — sitios src/backdoor.cpp:373; definición src/archivos.cpp:76.
+        resetScores() — sitios src/backdoor.cpp:576; definición src/archivos.cpp:658.
+        exportarMatrizACSV() — sitios src/backdoor.cpp:591; definición src/archivos.cpp:504.
+        fijarCeldasActuales() — sitios src/backdoor.cpp:622; definición src/Sodoku.cpp:543.
+F34. int validarNivelDeAcceso()
+    Implementación: src/backdoor.cpp:636-671.
+    Responsabilidad: Solicita autenticación y retorna nivel 0/1/2 o -1. Se omiten del informe todos los valores de autenticación.
+    Declaraciones compatibles: src/backdoor.h:8.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/backdoor.cpp:637; definición src/varios.cpp:87.
+        colorTexto() — sitios src/backdoor.cpp:638,644,648,666; definición src/varios.cpp:114.
+        MSGPAUSA() — sitios src/backdoor.cpp:652,657,662,669; definición src/varios.cpp:107.
+        resetColor() — sitios src/backdoor.cpp:668; definición src/varios.cpp:134.
+F35. void limpiarMascara(char mascara[TAM][TAM])
+    Implementación: src/pantalla.cpp:24-28.
+    Responsabilidad: Rellena la máscara recibida con guiones.
+    Declaraciones compatibles: src/pantalla.h:7.
+    Llamadas propias: ninguna directa.
+F36. void marcarFila(int fila)
+    Implementación: src/pantalla.cpp:30-34.
+    Responsabilidad: Limpia MASCARA y marca la fila recibida, de base cero.
+    Declaraciones compatibles: src/pantalla.h:8.
+    Llamadas propias verificadas:
+        limpiarMascara() — sitios src/pantalla.cpp:31; definición src/pantalla.cpp:24.
+F37. void marcarColumna(int columna)
+    Implementación: src/pantalla.cpp:36-40.
+    Responsabilidad: Marca una columna de MASCARA sin borrar las marcas de fila.
+    Declaraciones compatibles: src/pantalla.h:9.
+    Llamadas propias: ninguna directa.
+F38. void marcarInterseccion(int fila, int columna)
+    Implementación: src/pantalla.cpp:42-44.
+    Responsabilidad: Marca la intersección de MASCARA con signo de interrogación.
+    Declaraciones compatibles: src/pantalla.h:10.
+    Llamadas propias: ninguna directa.
+F39. void mostrarScores(int nivel)
+    Implementación: src/pantalla.cpp:49-85.
+    Responsabilidad: Recarga los scores desde persistencia y presenta el top 5 del nivel recibido.
+    Declaraciones compatibles: src/pantalla.h:11.
+    Llamadas propias verificadas:
+        cargarScores() — sitios src/pantalla.cpp:53; definición src/archivos.cpp:540.
+F40. void autor()
+    Implementación: src/varios.cpp:35-79.
+    Responsabilidad: Presenta versión, información del proyecto y tiempo calculado desde una fecha de versión fija.
+    Declaraciones compatibles: src/varios.h:26.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/varios.cpp:64; definición src/varios.cpp:114.
+        resetColor() — sitios src/varios.cpp:78; definición src/varios.cpp:134.
+F41. void limpiarPantalla()
+    Implementación: src/varios.cpp:87-103.
+    Responsabilidad: Limpia la consola mediante API Windows o secuencias ANSI.
+    Declaraciones compatibles: src/varios.h:28.
+    Llamadas propias: ninguna directa.
+F42. void MSGPAUSA()
+    Implementación: src/varios.cpp:107-112.
+    Responsabilidad: Imprime el aviso de pausa y consume entrada mediante ignore hasta nueva línea y get de un carácter.
+    Declaraciones compatibles: src/varios.h:27.
+    Llamadas propias: ninguna directa.
+F43. void colorTexto(const std::string& color)
+    Implementación: src/varios.cpp:114-131.
+    Responsabilidad: Selecciona una secuencia ANSI según el nombre de color recibido por referencia constante.
+    Declaraciones compatibles: src/varios.h:29.
+    Llamadas propias: ninguna directa.
+F44. void resetColor()
+    Implementación: src/varios.cpp:134-136.
+    Responsabilidad: Emite la secuencia ANSI de restauración de color.
+    Declaraciones compatibles: src/varios.h:30.
+    Llamadas propias: ninguna directa.
+F45. void generarTableroAleatorio(int nivel)
+    Implementación: src/varios.cpp:139-180.
+    Responsabilidad: Genera SOLUCION, la copia a MATRIZ y vacía posiciones según dificultad.
+    Declaraciones compatibles: src/Sodoku.h:43; src/varios.h:33.
+    Llamadas propias verificadas:
+        limpiarPantalla() — sitios src/varios.cpp:140; definición src/varios.cpp:87.
+        generarSodokuResuelto() — sitios src/varios.cpp:143; definición src/varios.cpp:183.
+        mostrarError() — sitios src/varios.cpp:145; definición src/archivos.cpp:30.
+        vaciarCeldas() — sitios src/varios.cpp:155; definición src/varios.cpp:195.
+        colorTexto() — sitios src/varios.cpp:177; definición src/varios.cpp:114.
+        resetColor() — sitios src/varios.cpp:179; definición src/varios.cpp:134.
+F46. bool generarSodokuResuelto()
+    Implementación: src/varios.cpp:183-191.
+    Responsabilidad: Inicializa SOLUCION en cero y la completa con el resolvedor.
+    Declaraciones compatibles: src/varios.h:34.
+    Llamadas propias verificadas:
+        resolverSudoku() — sitios src/varios.cpp:190; definición src/varios.cpp:257.
+F47. void vaciarCeldas(int nivel)
+    Implementación: src/varios.cpp:195-233.
+    Responsabilidad: Mezcla posiciones con rng y borra 40/50/60 posiciones de MATRIZ según dificultad.
+    Declaraciones compatibles: src/varios.h:37.
+    Llamadas propias verificadas:
+        colorTexto() — sitios src/varios.cpp:229; definición src/varios.cpp:114.
+        resetColor() — sitios src/varios.cpp:232; definición src/varios.cpp:134.
+F48. bool esSeguro(int matriz[TAM][TAM], int fila, int columna, int numero)
+    Implementación: src/varios.cpp:235-255.
+    Responsabilidad: Comprueba que un candidato no aparezca en fila, columna o subcuadro de la matriz recibida.
+    Declaraciones compatibles: src/varios.h:36.
+    Llamadas propias: ninguna directa.
+F49. bool resolverSudoku(int matriz[TAM][TAM])
+    Implementación: src/varios.cpp:257-277.
+    Responsabilidad: Backtracking recursivo que prueba números en celdas vacías y muta la matriz recibida.
+    Declaraciones compatibles: src/varios.h:35.
+    Llamadas propias verificadas:
+        esSeguro() — sitios src/varios.cpp:265; definición src/varios.cpp:235.
+        resolverSudoku() — sitios src/varios.cpp:267; definición src/varios.cpp:257 [RECURSIVA].
+F50. void configurarConsola()
+    Implementación: src/varios.cpp:280-293.
+    Responsabilidad: Configura salida UTF-8/ANSI en Windows y restaura el color; en otras plataformas conserva la restauración.
+    Declaraciones compatibles: src/varios.h:40.
+    Llamadas propias verificadas:
+        resetColor() — sitios src/varios.cpp:292; definición src/varios.cpp:134.
+================================================================================================
+4. FUNCIONES DECLARADAS — FIRMAS Y CORRESPONDENCIA
+================================================================================================
+52 ocurrencias de prototipos propios / 50 funciones distintas. Los dos duplicados
+compatibles son subMenuBackDoor(int) y generarTableroAleatorio(int).
+No se consideran prototipos activos los ejemplos comentados, como pruebaRandom().
+No se cuentan en esta métrica las dos declaraciones de API Windows
+extern "C" de src/Sodoku.cpp:34-35 ni macros de plataforma.
+
+El ajuste C++ de parámetros por arreglo conserva la equivalencia de las firmas
+aquí declaradas/definidas. El alias string y std::string representa el mismo tipo
+en el contexto actual. Diferencias de nombre formal nivel/nivelAcceso no son
+diferencias de tipo ni sobrecarga. No se atribuye a esto un error de enlace.
+D01. void limpiarTablero();
+    Declaración: src/Sodoku.h:40.
+    Definición: void limpiarTablero() — src/Sodoku.cpp:67.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D02. void generarMascara(int fila, int columna, char mascara[TAM][TAM]);
+    Declaración: src/Sodoku.h:41.
+    Definición: void generarMascara(int fila, int columna, char mascara[TAM][TAM]) — src/Sodoku.cpp:74.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D03. void generarMascaraCompletaPausa(char CARACTERPAUSA);
+    Declaración: src/Sodoku.h:42.
+    Definición: void generarMascaraCompletaPausa(char CARACTERPAUSA) — src/Sodoku.cpp:108.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D04. void generarTableroAleatorio(int nivel);
+    Declaración: src/Sodoku.h:43.
+    Definición: void generarTableroAleatorio(int nivel) — src/varios.cpp:139.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D05. void DibujarPantalla();
+    Declaración: src/Sodoku.h:44.
+    Definición: void DibujarPantalla() — src/Sodoku.cpp:114.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D06. void modoIngresoManual();
+    Declaración: src/Sodoku.h:45.
+    Definición: void modoIngresoManual() — src/Sodoku.cpp:149.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D07. int seleccionarDificultad();
+    Declaración: src/Sodoku.h:46.
+    Definición: int seleccionarDificultad() — src/Sodoku.cpp:192.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D08. void iniciarJuego();
+    Declaración: src/Sodoku.h:47.
+    Definición: void iniciarJuego() — src/Sodoku.cpp:235.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D09. void jugarPartida(int nivel);
+    Declaración: src/Sodoku.h:48.
+    Definición: void jugarPartida(int nivel) — src/Sodoku.cpp:303.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D10. bool validaHorizontal(int matriz[TAM][TAM], int fila, int valor);
+    Declaración: src/Sodoku.h:49.
+    Definición: bool validaHorizontal(int matriz[TAM][TAM], int fila, int valor) — src/Sodoku.cpp:515.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D11. bool validaVertical(int matriz[TAM][TAM], int columna, int valor);
+    Declaración: src/Sodoku.h:50.
+    Definición: bool validaVertical(int matriz[TAM][TAM], int columna, int valor) — src/Sodoku.cpp:523.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D12. bool validaRecuadro(int matriz[TAM][TAM], int fila, int columna, int valor);
+    Declaración: src/Sodoku.h:51.
+    Definición: bool validaRecuadro(int matriz[TAM][TAM], int fila, int columna, int valor) — src/Sodoku.cpp:531.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D13. void fijarCeldasActuales();
+    Declaración: src/Sodoku.h:52.
+    Definición: void fijarCeldasActuales() — src/Sodoku.cpp:543.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D14. bool hayCeldasFijas();
+    Declaración: src/Sodoku.h:53.
+    Definición: bool hayCeldasFijas() — src/Sodoku.cpp:552.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D15. bool numeroAgotadoGlobal(int numero);
+    Declaración: src/Sodoku.h:54.
+    Definición: bool numeroAgotadoGlobal(int numero) — src/Sodoku.cpp:560.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D16. bool numeroPresenteEnCuadro(int fila, int columna, int numero);
+    Declaración: src/Sodoku.h:55.
+    Definición: bool numeroPresenteEnCuadro(int fila, int columna, int numero) — src/Sodoku.cpp:574.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D17. int cantidadRestante(int numero);
+    Declaración: src/Sodoku.h:56.
+    Definición: int cantidadRestante(int numero) — src/Sodoku.cpp:588.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D18. void menuPrincipal();
+    Declaración: src/Sodoku.h:57.
+    Definición: void menuPrincipal() — src/Sodoku.cpp:602.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D19. void subMenuBackDoor(int nivel);
+    Declaración: src/Sodoku.h:58.
+    Definición: void subMenuBackDoor(int nivelAcceso) — src/backdoor.cpp:48.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D20. int main();
+    Declaración: src/Sodoku.h:59.
+    Definición: int main() — src/Sodoku.cpp:1077.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D21. void mostrarMatriz(int matriz[TAM][TAM], std::string titulo);
+    Declaración: src/Sodoku.h:60.
+    Definición: void mostrarMatriz(int matriz[TAM][TAM], std::string titulo) — src/Sodoku.cpp:83.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D22. IngresoStatus procesarIngresoUsuario(int& fila, int& columna, int& valor);
+    Declaración: src/Sodoku.h:62.
+    Definición: IngresoStatus procesarIngresoUsuario(int& fila, int& columna, int& valor) — src/Sodoku.cpp:879.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D23. void configurarGameOver();
+    Declaración: src/Sodoku.h:68.
+    Definición: void configurarGameOver() — src/Sodoku.cpp:1027.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D24. string generarNombreArchivo();
+    Declaración: src/archivos.h:10.
+    Definición: string generarNombreArchivo() — src/archivos.cpp:37.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D25. vector<string> listarArchivosGuardados();
+    Declaración: src/archivos.h:11.
+    Definición: vector<string> listarArchivosGuardados() — src/archivos.cpp:55.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D26. void mostrarError(string mensaje);
+    Declaración: src/archivos.h:12.
+    Definición: void mostrarError(string mensaje) — src/archivos.cpp:30.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D27. void guardarPartidaEnArchivo();
+    Declaración: src/archivos.h:13.
+    Definición: void guardarPartidaEnArchivo() — src/archivos.cpp:76.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D28. void cargarPartidaDesdeArchivo();
+    Declaración: src/archivos.h:14.
+    Definición: void cargarPartidaDesdeArchivo() — src/archivos.cpp:184.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D29. bool sudokuValido(int matriz[TAM][TAM]);
+    Declaración: src/archivos.h:15.
+    Definición: bool sudokuValido(int matriz[TAM][TAM]) — src/archivos.cpp:456.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D30. void exportarMatrizACSV();
+    Declaración: src/archivos.h:16.
+    Definición: void exportarMatrizACSV() — src/archivos.cpp:504.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D31. void cargarScores();
+    Declaración: src/archivos.h:31.
+    Definición: void cargarScores() — src/archivos.cpp:540.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D32. void actualizarScores(const ScoreEntry& entrada);
+    Declaración: src/archivos.h:32.
+    Definición: void actualizarScores(const ScoreEntry& entrada) — src/archivos.cpp:601.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D33. void guardarScores();
+    Declaración: src/archivos.h:33.
+    Definición: void guardarScores() — src/archivos.cpp:624.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D34. void resetScores();
+    Declaración: src/archivos.h:34.
+    Definición: void resetScores() — src/archivos.cpp:658.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D35. void subMenuBackDoor(int nivel);
+    Declaración: src/backdoor.h:7.
+    Definición: void subMenuBackDoor(int nivelAcceso) — src/backdoor.cpp:48.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D36. int validarNivelDeAcceso();
+    Declaración: src/backdoor.h:8.
+    Definición: int validarNivelDeAcceso() — src/backdoor.cpp:636.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D37. void limpiarMascara(char mascara[TAM][TAM]);
+    Declaración: src/pantalla.h:7.
+    Definición: void limpiarMascara(char mascara[TAM][TAM]) — src/pantalla.cpp:24.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D38. void marcarFila(int fila);
+    Declaración: src/pantalla.h:8.
+    Definición: void marcarFila(int fila) — src/pantalla.cpp:30.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D39. void marcarColumna(int columna);
+    Declaración: src/pantalla.h:9.
+    Definición: void marcarColumna(int columna) — src/pantalla.cpp:36.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D40. void marcarInterseccion(int fila, int columna);
+    Declaración: src/pantalla.h:10.
+    Definición: void marcarInterseccion(int fila, int columna) — src/pantalla.cpp:42.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D41. void mostrarScores(int nivel);
+    Declaración: src/pantalla.h:11.
+    Definición: void mostrarScores(int nivel) — src/pantalla.cpp:49.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D42. void autor();
+    Declaración: src/varios.h:26.
+    Definición: void autor() — src/varios.cpp:35.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D43. void MSGPAUSA();
+    Declaración: src/varios.h:27.
+    Definición: void MSGPAUSA() — src/varios.cpp:107.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D44. void limpiarPantalla();
+    Declaración: src/varios.h:28.
+    Definición: void limpiarPantalla() — src/varios.cpp:87.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D45. void colorTexto(const std::string& color);
+    Declaración: src/varios.h:29.
+    Definición: void colorTexto(const std::string& color) — src/varios.cpp:114.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D46. void resetColor();
+    Declaración: src/varios.h:30.
+    Definición: void resetColor() — src/varios.cpp:134.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D47. void generarTableroAleatorio(int nivel);
+    Declaración: src/varios.h:33.
+    Definición: void generarTableroAleatorio(int nivel) — src/varios.cpp:139.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D48. bool generarSodokuResuelto();
+    Declaración: src/varios.h:34.
+    Definición: bool generarSodokuResuelto() — src/varios.cpp:183.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D49. bool resolverSudoku(int matriz[TAM][TAM]);
+    Declaración: src/varios.h:35.
+    Definición: bool resolverSudoku(int matriz[TAM][TAM]) — src/varios.cpp:257.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D50. bool esSeguro(int matriz[TAM][TAM], int fila, int columna, int numero);
+    Declaración: src/varios.h:36.
+    Definición: bool esSeguro(int matriz[TAM][TAM], int fila, int columna, int numero) — src/varios.cpp:235.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D51. void vaciarCeldas(int nivel);
+    Declaración: src/varios.h:37.
+    Definición: void vaciarCeldas(int nivel) — src/varios.cpp:195.
+    Retorno, tipos, const y referencias: COINCIDEN.
+D52. void configurarConsola();
+    Declaración: src/varios.h:40.
+    Definición: void configurarConsola() — src/varios.cpp:280.
+    Retorno, tipos, const y referencias: COINCIDEN.
+================================================================================================
+5. DEPENDENCIAS DE MÓDULOS Y GRAFO TEXTUAL DE LLAMADAS
+================================================================================================
+5.1. Inclusiones locales directas activas.
+Una cabecera incluida no demuestra que exista una llamada al módulo asociado.
+Las cabeceras varias.h/pantalla.h/constantes.h tienen requisitos de tipos visibles
+que también se detallan en las observaciones.
+src/Sodoku.cpp
+    -> src/Sodoku.h — src/Sodoku.cpp:24.
+    -> src/archivos.h — src/Sodoku.cpp:25.
+    -> src/backdoor.h — src/Sodoku.cpp:26.
+    -> src/constantes.h — src/Sodoku.cpp:27.
+    -> src/pantalla.h — src/Sodoku.cpp:28.
+    -> src/varios.h — src/Sodoku.cpp:29.
+src/Sodoku.h
+    -> src/constantes.h — src/Sodoku.h:5.
+src/archivos.cpp
+    -> src/Sodoku.h — src/archivos.cpp:15.
+    -> src/archivos.h — src/archivos.cpp:16.
+    -> src/backdoor.h — src/archivos.cpp:17.
+    -> src/constantes.h — src/archivos.cpp:18.
+    -> src/pantalla.h — src/archivos.cpp:19.
+    -> src/varios.h — src/archivos.cpp:20.
+src/archivos.h
+    -> src/constantes.h — src/archivos.h:4.
+src/backdoor.cpp
+    -> src/Sodoku.h — src/backdoor.cpp:19.
+    -> src/archivos.h — src/backdoor.cpp:20.
+    -> src/constantes.h — src/backdoor.cpp:21.
+    -> src/pantalla.h — src/backdoor.cpp:22.
+    -> src/varios.h — src/backdoor.cpp:23.
+src/backdoor.h
+    Sin #include local directo.
+src/constantes.h
+    Sin #include local directo.
+src/pantalla.cpp
+    -> src/Sodoku.h — src/pantalla.cpp:14.
+    -> src/archivos.h — src/pantalla.cpp:15.
+    -> src/constantes.h — src/pantalla.cpp:16.
+    -> src/pantalla.h — src/pantalla.cpp:17.
+    -> src/varios.h — src/pantalla.cpp:18.
+src/pantalla.h
+    Sin #include local directo.
+src/varios.cpp
+    -> src/Sodoku.h — src/varios.cpp:19.
+    -> src/archivos.h — src/varios.cpp:20.
+    -> src/constantes.h — src/varios.cpp:21.
+    -> src/varios.h — src/varios.cpp:22.
+src/varios.h
+    Sin #include local directo.
+5.2. Llamadas directas entre módulos: 12 pares ordenados verificados.
+M01. src/Sodoku.cpp -> src/archivos.cpp
+    seleccionarDificultad -> mostrarError — src/Sodoku.cpp:213,224.
+    iniciarJuego -> mostrarError — src/Sodoku.cpp:270.
+    jugarPartida -> mostrarError — src/Sodoku.cpp:402.
+    jugarPartida -> cargarScores — src/Sodoku.cpp:494.
+    jugarPartida -> actualizarScores — src/Sodoku.cpp:495.
+    jugarPartida -> guardarScores — src/Sodoku.cpp:496.
+    fijarCeldasActuales -> mostrarError — src/Sodoku.cpp:549.
+    menuPrincipal -> mostrarError — src/Sodoku.cpp:635,662,693,727,768,791,866,874.
+    menuPrincipal -> cargarPartidaDesdeArchivo — src/Sodoku.cpp:757.
+    menuPrincipal -> guardarPartidaEnArchivo — src/Sodoku.cpp:760.
+    procesarIngresoUsuario -> mostrarError — src/Sodoku.cpp:886,904,919,936,960,973,982,991,997,1005,1009,1013.
+    configurarGameOver -> mostrarError — src/Sodoku.cpp:1043,1062.
+M02. src/Sodoku.cpp -> src/backdoor.cpp
+    modoIngresoManual -> validarNivelDeAcceso — src/Sodoku.cpp:174.
+    modoIngresoManual -> subMenuBackDoor — src/Sodoku.cpp:176.
+    jugarPartida -> validarNivelDeAcceso — src/Sodoku.cpp:421.
+    jugarPartida -> subMenuBackDoor — src/Sodoku.cpp:423.
+    menuPrincipal -> validarNivelDeAcceso — src/Sodoku.cpp:862.
+    menuPrincipal -> subMenuBackDoor — src/Sodoku.cpp:864.
+M03. src/Sodoku.cpp -> src/pantalla.cpp
+    generarMascara -> limpiarMascara — src/Sodoku.cpp:75.
+    modoIngresoManual -> limpiarMascara — src/Sodoku.cpp:171,177,181,184,188.
+    jugarPartida -> limpiarMascara — src/Sodoku.cpp:403,417,424,428.
+    jugarPartida -> mostrarScores — src/Sodoku.cpp:497.
+    menuPrincipal -> limpiarMascara — src/Sodoku.cpp:733.
+    menuPrincipal -> mostrarScores — src/Sodoku.cpp:751,752,753.
+    procesarIngresoUsuario -> limpiarMascara — src/Sodoku.cpp:887,905,920,937,941,946,961,974,984,993,999,1018.
+    procesarIngresoUsuario -> marcarFila — src/Sodoku.cpp:893.
+    procesarIngresoUsuario -> marcarColumna — src/Sodoku.cpp:911.
+    procesarIngresoUsuario -> marcarInterseccion — src/Sodoku.cpp:912.
+    main -> limpiarMascara — src/Sodoku.cpp:1080.
+M04. src/Sodoku.cpp -> src/varios.cpp
+    mostrarMatriz -> colorTexto — src/Sodoku.cpp:84.
+    mostrarMatriz -> resetColor — src/Sodoku.cpp:105.
+    DibujarPantalla -> colorTexto — src/Sodoku.cpp:122,124,139.
+    DibujarPantalla -> resetColor — src/Sodoku.cpp:126,141.
+    modoIngresoManual -> limpiarPantalla — src/Sodoku.cpp:153.
+    modoIngresoManual -> autor — src/Sodoku.cpp:154.
+    modoIngresoManual -> colorTexto — src/Sodoku.cpp:166.
+    modoIngresoManual -> resetColor — src/Sodoku.cpp:168.
+    modoIngresoManual -> MSGPAUSA — src/Sodoku.cpp:169.
+    seleccionarDificultad -> colorTexto — src/Sodoku.cpp:196,200.
+    seleccionarDificultad -> resetColor — src/Sodoku.cpp:198,205.
+    iniciarJuego -> limpiarPantalla — src/Sodoku.cpp:236.
+    iniciarJuego -> colorTexto — src/Sodoku.cpp:237,254.
+    iniciarJuego -> resetColor — src/Sodoku.cpp:239,256.
+    iniciarJuego -> MSGPAUSA — src/Sodoku.cpp:257.
+    jugarPartida -> limpiarPantalla — src/Sodoku.cpp:306,353.
+    jugarPartida -> colorTexto — src/Sodoku.cpp:330,364,377,412,446,458.
+    jugarPartida -> resetColor — src/Sodoku.cpp:332,366,383,414,448,464.
+    jugarPartida -> generarSodokuResuelto — src/Sodoku.cpp:339.
+    jugarPartida -> generarTableroAleatorio — src/Sodoku.cpp:340.
+    jugarPartida -> autor — src/Sodoku.cpp:354.
+    jugarPartida -> MSGPAUSA — src/Sodoku.cpp:387,415,499.
+    menuPrincipal -> limpiarPantalla — src/Sodoku.cpp:607,650,748.
+    menuPrincipal -> autor — src/Sodoku.cpp:608,749.
+    menuPrincipal -> colorTexto — src/Sodoku.cpp:708,720,850.
+    menuPrincipal -> resetColor — src/Sodoku.cpp:710,723,855,869.
+    menuPrincipal -> MSGPAUSA — src/Sodoku.cpp:742,754,764,843,847.
+    menuPrincipal -> resolverSudoku — src/Sodoku.cpp:790.
+    procesarIngresoUsuario -> limpiarPantalla — src/Sodoku.cpp:894,913.
+    procesarIngresoUsuario -> autor — src/Sodoku.cpp:895,914.
+    procesarIngresoUsuario -> colorTexto — src/Sodoku.cpp:926.
+    procesarIngresoUsuario -> resetColor — src/Sodoku.cpp:929.
+    configurarGameOver -> limpiarPantalla — src/Sodoku.cpp:1032,1055,1071.
+    configurarGameOver -> autor — src/Sodoku.cpp:1033.
+    configurarGameOver -> colorTexto — src/Sodoku.cpp:1051,1067.
+    configurarGameOver -> resetColor — src/Sodoku.cpp:1053,1069.
+    configurarGameOver -> MSGPAUSA — src/Sodoku.cpp:1054,1070.
+    main -> configurarConsola — src/Sodoku.cpp:1078.
+    main -> resetColor — src/Sodoku.cpp:1079.
+M05. src/archivos.cpp -> src/Sodoku.cpp
+    cargarPartidaDesdeArchivo -> mostrarMatriz — src/archivos.cpp:432.
+M06. src/archivos.cpp -> src/pantalla.cpp
+    cargarPartidaDesdeArchivo -> limpiarMascara — src/archivos.cpp:434,450.
+M07. src/archivos.cpp -> src/varios.cpp
+    mostrarError -> colorTexto — src/archivos.cpp:31.
+    mostrarError -> resetColor — src/archivos.cpp:33.
+    mostrarError -> MSGPAUSA — src/archivos.cpp:34.
+    guardarPartidaEnArchivo -> colorTexto — src/archivos.cpp:177.
+    guardarPartidaEnArchivo -> resetColor — src/archivos.cpp:179.
+    guardarPartidaEnArchivo -> MSGPAUSA — src/archivos.cpp:180.
+    cargarPartidaDesdeArchivo -> colorTexto — src/archivos.cpp:429,440.
+    cargarPartidaDesdeArchivo -> resetColor — src/archivos.cpp:431,446.
+    cargarPartidaDesdeArchivo -> MSGPAUSA — src/archivos.cpp:433,447.
+    exportarMatrizACSV -> colorTexto — src/archivos.cpp:531.
+    exportarMatrizACSV -> resetColor — src/archivos.cpp:533.
+    exportarMatrizACSV -> MSGPAUSA — src/archivos.cpp:534.
+M08. src/backdoor.cpp -> src/Sodoku.cpp
+    subMenuBackDoor -> mostrarMatriz — src/backdoor.cpp:164,310,388,426,474,528,597.
+    subMenuBackDoor -> limpiarTablero — src/backdoor.cpp:294.
+    subMenuBackDoor -> fijarCeldasActuales — src/backdoor.cpp:622.
+M09. src/backdoor.cpp -> src/archivos.cpp
+    subMenuBackDoor -> mostrarError — src/backdoor.cpp:131,141,156,274,288,296,334,368,375,401,414,446,461,508,517,554,571,577,579,587,600,613,626,630.
+    subMenuBackDoor -> sudokuValido — src/backdoor.cpp:223.
+    subMenuBackDoor -> guardarPartidaEnArchivo — src/backdoor.cpp:373.
+    subMenuBackDoor -> resetScores — src/backdoor.cpp:576.
+    subMenuBackDoor -> exportarMatrizACSV — src/backdoor.cpp:591.
+M10. src/backdoor.cpp -> src/varios.cpp
+    subMenuBackDoor -> colorTexto — src/backdoor.cpp:49,53,168,190,220,224,227,269,284,305,339,343,352,361,384,407,422,451,454,469,502,505,524,543,547.
+    subMenuBackDoor -> limpiarPantalla — src/backdoor.cpp:52,304,383,421,468,523.
+    subMenuBackDoor -> resetColor — src/backdoor.cpp:147,186,214,230,272,286,308,354,364,387,409,425,457,472,512,526,551,582,611.
+    subMenuBackDoor -> MSGPAUSA — src/backdoor.cpp:165,187,215,231,276,290,298,355,365,410,458,513,552,598,615.
+    validarNivelDeAcceso -> limpiarPantalla — src/backdoor.cpp:637.
+    validarNivelDeAcceso -> colorTexto — src/backdoor.cpp:638,644,648,666.
+    validarNivelDeAcceso -> MSGPAUSA — src/backdoor.cpp:652,657,662,669.
+    validarNivelDeAcceso -> resetColor — src/backdoor.cpp:668.
+M11. src/pantalla.cpp -> src/archivos.cpp
+    mostrarScores -> cargarScores — src/pantalla.cpp:53.
+M12. src/varios.cpp -> src/archivos.cpp
+    generarTableroAleatorio -> mostrarError — src/varios.cpp:145.
+5.3. Conteo del grafo de funciones.
+    Nodos implementados: 50.
+    Pares llamadora->llamada propios distintos, incluidos los internos: 149.
+    Sitios de llamada propios detectados: 352.
+    El inventario de sección 3 contiene todas estas aristas y sus ubicaciones.
+    La recursión propia detectada es resolverSudoku -> resolverSudoku
+    (src/varios.cpp:267). Estos valores son estáticos, no cobertura de ejecución.
+
+
+Funciones sin llamada entrante propia detectada: generarMascara (src/Sodoku.cpp:74); generarMascaraCompletaPausa (src/Sodoku.cpp:108).
+Esto describe el grafo propio inspeccionado; no declara por sí solo que una API
+externa o una prueba ajena al alcance nunca pudiera invocarlas.
+
+5.4. Acoplamientos y ciclos de módulos.
+    Sodoku <-> backdoor: acceso administrativo y herramientas que retornan a
+    operaciones de tablero; Sodoku <-> archivos: persistencia/mensajes y la
+    visualización de una carga ya terminada.
+    archivos <-> pantalla: carga limpia máscara y mostrarScores recarga el ranking.
+    archivos <-> varios: mensajes/pausas y generación que informa errores.
+    No se observa actualmente una llamada directa backdoor.cpp -> pantalla.cpp,
+    aunque sí se incluye pantalla.h en src/backdoor.cpp:22. No reutilizar la antigua
+    llamada de BackDoor a mostrarScores como si siguiera activa.
+    Los ciclos son dependencias funcionales, no una prueba de recursión infinita.
+
+5.5. Dependencias estándar/plataforma relevantes, fuera del grafo propio.
+    Streams de consola y archivos; std::filesystem para listar el directorio actual;
+    algoritmos de orden/mezcla; vector/pair; time/localtime/strftime/difftime;
+    std::random_device y std::mt19937; límites de enteros; memcpy/strncpy.
+    La inicialización global de rng en src/varios.cpp:17 ocurre antes de main.
+    Consola Windows: src/Sodoku.cpp:31-42 y src/varios.cpp:87-103,280-293.
+    Consola Linux/Unix: salida ANSI en src/varios.cpp:99-102.
+    Las dos ramas de preprocesamiento se leen como posibilidades; no se validó
+    compilación, disponibilidad de APIs ni comportamiento de un terminal real.
+================================================================================================
+6. VARIABLES GLOBALES, CONSTANTES Y ESTADO COMPARTIDO
+================================================================================================
+Se identifican 21 variables globales mutables definidas: 16 en Sodoku.cpp,
+scores en archivos.cpp, rng en varios.cpp y tres de autenticación en backdoor.cpp.
+Tienen declaraciones extern correspondientes. Los valores de autenticación se omiten.
+No se cuentan variables locales/static locales, macros ni constantes constexpr
+como globales mutables. No existe un objeto Partida que agrupe este estado.
+MASCARA — char[TAM][TAM]; definición src/Sodoku.cpp:45; extern src/Sodoku.h:20.
+    Uso: Resaltado visual, limpieza y presentación.
+    Funciones con referencia nominal directa: generarMascaraCompletaPausa() [src/Sodoku.cpp:108]; DibujarPantalla() [src/Sodoku.cpp:114]; modoIngresoManual() [src/Sodoku.cpp:149]; jugarPartida() [src/Sodoku.cpp:303]; menuPrincipal() [src/Sodoku.cpp:602]; procesarIngresoUsuario() [src/Sodoku.cpp:879]; main() [src/Sodoku.cpp:1077]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; subMenuBackDoor() [src/backdoor.cpp:48]; marcarFila() [src/pantalla.cpp:30]; marcarColumna() [src/pantalla.cpp:36]; marcarInterseccion() [src/pantalla.cpp:42].
+MATRIZ — int[TAM][TAM]; definición src/Sodoku.cpp:46; extern src/Sodoku.h:18.
+    Uso: Tablero actual, edición, generación, guardado/carga y resolución.
+    Funciones con referencia nominal directa: limpiarTablero() [src/Sodoku.cpp:67]; DibujarPantalla() [src/Sodoku.cpp:114]; modoIngresoManual() [src/Sodoku.cpp:149]; jugarPartida() [src/Sodoku.cpp:303]; fijarCeldasActuales() [src/Sodoku.cpp:543]; numeroAgotadoGlobal() [src/Sodoku.cpp:560]; numeroPresenteEnCuadro() [src/Sodoku.cpp:574]; cantidadRestante() [src/Sodoku.cpp:588]; menuPrincipal() [src/Sodoku.cpp:602]; procesarIngresoUsuario() [src/Sodoku.cpp:879]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; exportarMatrizACSV() [src/archivos.cpp:504]; subMenuBackDoor() [src/backdoor.cpp:48]; generarTableroAleatorio() [src/varios.cpp:139]; vaciarCeldas() [src/varios.cpp:195].
+CELDAFIJA — bool[TAM][TAM]; definición src/Sodoku.cpp:47; extern src/Sodoku.h:21.
+    Uso: Protección de celdas, generación, carga y herramientas administrativas.
+    Funciones con referencia nominal directa: DibujarPantalla() [src/Sodoku.cpp:114]; jugarPartida() [src/Sodoku.cpp:303]; fijarCeldasActuales() [src/Sodoku.cpp:543]; hayCeldasFijas() [src/Sodoku.cpp:552]; menuPrincipal() [src/Sodoku.cpp:602]; procesarIngresoUsuario() [src/Sodoku.cpp:879]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; subMenuBackDoor() [src/backdoor.cpp:48].
+SOLUCION — int[TAM][TAM]; definición src/Sodoku.cpp:48; extern src/Sodoku.h:19.
+    Uso: Solución objetivo, validación del ingreso y comparación de victoria.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303]; menuPrincipal() [src/Sodoku.cpp:602]; procesarIngresoUsuario() [src/Sodoku.cpp:879]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; subMenuBackDoor() [src/backdoor.cpp:48]; generarTableroAleatorio() [src/varios.cpp:139]; generarSodokuResuelto() [src/varios.cpp:183].
+CARACTERPAUSA — char; definición src/Sodoku.cpp:49; extern src/Sodoku.h:22.
+    Uso: Carácter global; el parámetro homónimo de generarMascaraCompletaPausa lo oculta.
+    Funciones con referencia nominal directa: ninguna en los cuerpos examinados.
+endGame — int; definición src/Sodoku.cpp:50; extern src/Sodoku.h:23.
+    Uso: Límite de fallos y dato de entradas de ranking.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303]; configurarGameOver() [src/Sodoku.cpp:1027]; cargarScores() [src/archivos.cpp:540]; resetScores() [src/archivos.cpp:658].
+partidaEnCurso — bool; definición src/Sodoku.cpp:51; extern src/Sodoku.h:24.
+    Uso: Bandera de reanudación usada por menú, juego y carga; tiene transiciones no uniformes.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303]; menuPrincipal() [src/Sodoku.cpp:602]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184].
+nivelCargado — int; definición src/Sodoku.cpp:52; extern src/Sodoku.h:29.
+    Uso: Índice interno 0..2; -1 indica ausencia de dificultad asignada en varios caminos.
+    Funciones con referencia nominal directa: iniciarJuego() [src/Sodoku.cpp:235]; menuPrincipal() [src/Sodoku.cpp:602]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184].
+SODOKU_RESUELTO — bool; definición src/Sodoku.cpp:53; extern src/constantes.h:22.
+    Uso: Bloqueo/resultado de resolución automática y carga; no equivale por sí sola a victoria.
+    Funciones con referencia nominal directa: menuPrincipal() [src/Sodoku.cpp:602]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; subMenuBackDoor() [src/backdoor.cpp:48].
+modoPruebasHabilitado — bool; definición src/Sodoku.cpp:54; extern src/Sodoku.h:25.
+    Uso: Permiso de AUD-10 para ingresar a [2] con tablero completo tras confirmación.
+    Funciones con referencia nominal directa: menuPrincipal() [src/Sodoku.cpp:602]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; subMenuBackDoor() [src/backdoor.cpp:48].
+modoCompetitivo — bool; definición src/Sodoku.cpp:55; extern src/Sodoku.h:26.
+    Uso: Contexto del tablero conservado al entrar a [1]; determina protección de [8] y cabecera de guardado.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303]; menuPrincipal() [src/Sodoku.cpp:602]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184].
+resolucionAutomaticaHabilitada — bool; definición src/Sodoku.cpp:56; extern src/Sodoku.h:27.
+    Uso: Excepción de un intento para [8], independiente del permiso de AUD-10.
+    Funciones con referencia nominal directa: limpiarTablero() [src/Sodoku.cpp:67]; iniciarJuego() [src/Sodoku.cpp:235]; jugarPartida() [src/Sodoku.cpp:303]; menuPrincipal() [src/Sodoku.cpp:602]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184]; subMenuBackDoor() [src/backdoor.cpp:48].
+intentosFallidos — int; definición src/Sodoku.cpp:57; extern src/Sodoku.h:28.
+    Uso: Fallos lógicos, límite de juego, persistencia y ranking.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303]; procesarIngresoUsuario() [src/Sodoku.cpp:879]; guardarPartidaEnArchivo() [src/archivos.cpp:76]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184].
+esPartidaNueva — bool; definición src/Sodoku.cpp:59; extern src/constantes.h:32.
+    Uso: Indicador consumido por jugarPartida para decidir si reinicia fallos.
+    Funciones con referencia nominal directa: iniciarJuego() [src/Sodoku.cpp:235]; jugarPartida() [src/Sodoku.cpp:303]; menuPrincipal() [src/Sodoku.cpp:602]; cargarPartidaDesdeArchivo() [src/archivos.cpp:184].
+tsSesionInicio — time_t; definición src/Sodoku.cpp:61; extern src/constantes.h:33.
+    Uso: Marca de inicio de sesión actual; usada para acumular duración al salir.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303].
+duracionAcumulada — long; definición src/Sodoku.cpp:62; extern src/constantes.h:34.
+    Uso: Acumulador en memoria de sesiones; no alimenta actualmente DURACION_S guardado.
+    Funciones con referencia nominal directa: jugarPartida() [src/Sodoku.cpp:303].
+scores — ScoreEntry[3][5]; definición src/archivos.cpp:23; extern src/archivos.h:28.
+    Uso: Top 5 por tres dificultades; se recarga, inserta, muestra, reinicia y guarda.
+    Funciones con referencia nominal directa: cargarScores() [src/archivos.cpp:540]; actualizarScores() [src/archivos.cpp:601]; guardarScores() [src/archivos.cpp:624]; resetScores() [src/archivos.cpp:658]; mostrarScores() [src/pantalla.cpp:49].
+rng — std::mt19937; definición src/varios.cpp:17; extern src/varios.h:8.
+    Uso: Generador compartido por mezcla de números del resolvedor y posiciones a vaciar.
+    Funciones con referencia nominal directa: vaciarCeldas() [src/varios.cpp:195]; resolverSudoku() [src/varios.cpp:257].
+Autenticación administrativa: tres variables int en src/backdoor.cpp:26-28,
+con extern en src/backdoor.h:11-13. Sus nombres operativos, inicializadores y
+contenido se omiten de este informe. Se usan en validarNivelDeAcceso(), cuyo
+contrato público es nivel 0/1/2 o -1; no se publican valores de acceso.
+
+Las referencias nominales no son una clasificación exhaustiva de lectura/escritura.
+Hay mutaciones transitivas por parámetros de arreglo (limpiarMascara, resolverSudoku)
+y por funciones de persistencia. El parámetro CARACTERPAUSA es local al helper y
+no demuestra lectura del global homónimo.
+
+Tipos propios:
+- IngresoStatus, enum class en src/Sodoku.h:32-37: OK, CANCELAR, BACKDOOR,
+  ERROR_SALIR. Expresa resultados del ingreso, no todos los estados de la partida.
+- ScoreEntry, struct en src/archivos.h:19-26: char iniciales[4], int nivel,
+  int erroresFallidos, int duracionSegundos, int erroresPermitidos, char timestamp[16].
+
+Constantes globales constexpr: 11, todas en src/constantes.h:10-29:
+TAM; VACIOS_FACIL/MEDIA/DIFICIL; CODIGO_BACKDOOR, CODIGO_SALIR,
+CODIGO_SALIR_MENU, CODIGO_SALIDA_TOTAL; MAX_INTENTOS_FALLIDOS;
+EXTENSION_PARTIDA y ARCHIVO_SCORES.
+TAM=9, dificultades vacían 40/50/60 celdas. Los códigos de navegación son
+los ya públicos del menú; no son valores de autenticación.
+EXTENSION_PARTIDA declara .sodoku (:28), pero generarNombreArchivo usa .txt
+(src/archivos.cpp:49). ARCHIVO_SCORES es una ruta relativa, scores.txt (:29).
+
+VERSION/FECHA_VERSION/HORA_VERSION se repiten en src/Sodoku.h:11-13 y src/constantes.h:5-7.
+Los símbolos de plataforma y macros de Windows no se cuentan como variables de juego.
+================================================================================================
+7. FLUJOS PRINCIPALES — CONDICIONES Y EFECTOS REALES
+================================================================================================
+7.1. Inicio y menú.
+main (src/Sodoku.cpp:1077-1083) -> configurarConsola -> resetColor ->
+limpiarMascara(MASCARA) -> menuPrincipal. El menú se repite hasta que salir sea true
+(src/Sodoku.cpp:602-643). La opción de salida revoca resolucionAutomaticaHabilitada (src/Sodoku.cpp:641).
+No hay carga automática de una partida al iniciar.
+
+7.2. Ingreso/edición [1].
+El menú revoca el permiso de resolución antes y después del bucle (src/Sodoku.cpp:644-648),
+pero NO transforma un tablero competitivo en libre. modoIngresoManual (src/Sodoku.cpp:149-190)
+llama procesarIngresoUsuario y, con OK, escribe MATRIZ. BACKDOOR autentica,
+CANCELAR limpia máscara y repite, ERROR_SALIR retorna. No comprueba victoria
+ni registra ranking en ese bucle. Las validaciones también consultan SOLUCION si
+esa celda de la solución no es cero; el contexto de datos heredado importa.
+
+7.3. Ingreso competitivo [2] y AUD-10.
+src/Sodoku.cpp:649-716:
+a) Compara todas las celdas, exige no ceros y coincidencia MATRIZ/SOLUCION (src/Sodoku.cpp:651-659).
+b) Si ya está completo, exige modoPruebasHabilitado (src/Sodoku.cpp:661-664); solicita S/N
+   (src/Sodoku.cpp:665-675). N u otra respuesta distinta de S/s no cambia el estado de partida
+   en esta rama. La recuperación de cin sí puede cambiar el stream.
+c) S conserva nivelCargado o pide dificultad si es negativo (src/Sodoku.cpp:677-683),
+   marca esPartidaNueva=false y partidaEnCurso=true y llama jugarPartida (src/Sodoku.cpp:684-688).
+d) Si no está completo y partidaEnCurso es true, bloquea SODOKU_RESUELTO=true
+   o permite reanudar tras S (src/Sodoku.cpp:691-704).
+e) Si no reanuda, revoca ambos permisos, pone partidaEnCurso=false y
+   nivelCargado=-1 y llama iniciarJuego (src/Sodoku.cpp:707-715).
+No se añade aquí un chequeo inicial de victoria ni una nueva función de pruebas.
+
+7.4. Nueva partida y generación.
+iniciarJuego (src/Sodoku.cpp:235-299) selecciona dificultad o conserva la cargada, valida 0..2,
+establece esPartidaNueva para una selección nueva y llama jugarPartida.
+jugarPartida (src/Sodoku.cpp:303-343) activa modoCompetitivo, revoca permiso de resolución,
+consume esPartidaNueva y copia partidaEnCurso a esReanudar antes de ponerla false.
+Solo si !esReanudar, genera solución/tablero, fija pistas y vuelve a poner
+partidaEnCurso=true (src/Sodoku.cpp:338-342). Hay una generación de SOLUCION en src/Sodoku.cpp:339 y otra
+dentro de generarTableroAleatorio (src/varios.cpp:143): no dibujar una única llamada
+si se está documentando el grafo real.
+La solución se genera por backtracking; vaciarCeldas mezcla las posiciones y borra
+40/50/60 según nivel (src/varios.cpp:195-233). No cuenta soluciones alternativas.
+
+7.5. Procesamiento de una jugada.
+procesarIngresoUsuario (src/Sodoku.cpp:879-1023):
+- Fila/columna 0 retorna ERROR_SALIR; errores de extracción/rango retornan CANCELAR.
+- Marca máscara y protege CELDAFIJA (src/Sodoku.cpp:917-922).
+- Si la celda está ocupada, permite cancelar o borrarla (src/Sodoku.cpp:924-947). Borrar ya
+  modifica MATRIZ y retorna CANCELAR, que no implica siempre ausencia de mutación.
+- En el prompt de valor reconoce 98/99/0 mediante constantes (src/Sodoku.cpp:965-970).
+  No se reconocen esos códigos en cualquier campo: fila/columna tienen otra validación.
+- Si hay valor objetivo en SOLUCION, exige coincidencia (src/Sodoku.cpp:978-986).
+- Controla agotamiento y subcuadro; después fila/columna/recuadro.
+  Errores lógicos incrementan intentosFallidos; errores de formato, cancelación
+  y comando de salida no lo incrementan. El orden de retornos evita contar dos
+  veces la misma rama lógica.
+- OK retorna coordenadas y valor por referencia; el llamador realiza la escritura.
+
+7.6. Game Over y victoria.
+El bucle competitivo comprueba endGame>0 && intentosFallidos>=endGame antes de
+solicitar otra jugada (src/Sodoku.cpp:359-388): acumula duración, marca partidaEnCurso=false,
+pausa y sale. No borra el tablero ni reinicia el contador.
+Tras una jugada OK, compara MATRIZ con SOLUCION (src/Sodoku.cpp:436-445). Las ramas CANCELAR,
+BACKDOOR y ERROR_SALIR evitan llegar a ese chequeo por continue/return.
+Con victoria muestra estadísticas, acumula duración y marca partidaEnCurso=false,
+pero no asigna SODOKU_RESUELTO=true en ese bloque (src/Sodoku.cpp:445-500).
+Pide exactamente tres caracteres, los convierte a mayúsculas, forma ScoreEntry y
+cargarScores -> actualizarScores -> guardarScores -> mostrarScores.
+El llamador revoca el permiso de resolución al volver del juego (src/Sodoku.cpp:298,688,701).
+
+7.7. Guardar [6].
+src/archivos.cpp:76-181:
+- Si el tablero es competitivo y nivelCargado no está en 0..2, rechaza antes de
+  crear archivo (src/archivos.cpp:77-80); no lo guarda como libre por ausencia de nivel.
+- Genera nombre, abre salida y escribe Nivel:0 si libre, o nivel+1 si competitivo.
+- Escribe matrices y vuelve a abrir en append para datos internos.
+- Termina con mensaje y pausa; no recibe ni retorna un objeto Partida.
+El guardado no serializa los dos permisos administrativos.
+
+7.8. Cargar [5] — candidato antes del estado aceptado.
+src/archivos.cpp:184-453:
+- Lista, permite cancelar y abre el archivo seleccionado (src/archivos.cpp:186-213).
+- Exige cabecera Nivel y rango 0..3 (src/archivos.cpp:215-234).
+- Usa matrices temporales; valida tamaños, rangos y lógica de MATRIZ (src/archivos.cpp:236-294).
+- Con bloque interno, SOLUCION exige nueve filas de nueve enteros en 0..9,
+  sin contenido sobrante y sin duplicados; acepta ceros (src/archivos.cpp:308-339).
+- INTENTOS es obligatorio si hay bloque: entero no negativo, sin texto sobrante
+  (src/archivos.cpp:341-355). Sin bloque, SOLUCION se pone en cero y fallos a cero (src/archivos.cpp:398-407).
+- Solo aplica las globales al aceptar (src/archivos.cpp:410-426). Las rutas previas de rechazo
+  no escriben esas globales de partida. El stream y los mensajes sí cambian.
+- Obtiene modoCompetitivo de nivelLeido ORIGINAL (src/archivos.cpp:425), no del índice normalizado
+  que iguala libre y fácil a 0. Revoca ambos permisos administrativos (src/archivos.cpp:423,426).
+- Si está completa y coincide con SOLUCION, marca el candidato de curso false,
+  muestra el tablero terminado y retorna (src/archivos.cpp:374-375,428-435).
+- No inicia jugarPartida: el menú decide después cómo ingresar.
+La carga de formato antiguo solo está soportada aquí si tiene cabecera Nivel
+y las matrices requeridas; no equivale a admitir cualquier archivo histórico de 18 líneas.
+
+7.9. Resolver automáticamente [8] — issue #19.
+src/Sodoku.cpp:766-844:
+- Si modoCompetitivo && !resolucionAutomaticaHabilitada, deniega antes de copiar
+  o resolver (src/Sodoku.cpp:767-770).
+- En los caminos permitidos consume el permiso antes de preguntar (src/Sodoku.cpp:772).
+  Cancelar también consume ese intento, pero no modifica el tablero.
+- Resuelve una copia (src/Sodoku.cpp:783-793), anima llenando ceros en MATRIZ (src/Sodoku.cpp:795-824)
+  y solicita aceptar la sobreescritura.
+- N restaura MATRIZ del original; S sincroniza SOLUCION, asigna
+  SODOKU_RESUELTO=true y revoca modoPruebasHabilitado (src/Sodoku.cpp:832-841).
+No cambia modoCompetitivo ni recalcula el nivel por resolver. No registra un score.
+El resolvedor no realiza por sí mismo una validación completa de datos preexistentes;
+esa precondición se detalla en observaciones.
+
+7.10. Consulta y persistencia de ranking.
+Menú principal [4] (src/Sodoku.cpp:744-755) muestra tres niveles y pausa una vez.
+mostrarScores (src/pantalla.cpp:49-85) recarga desde archivos antes de presentar.
+cargarScores (src/archivos.cpp:540-596) inicializa entradas vacías y usa ifstream:
+si falta/no abre el archivo, retorna sin crearlo. La carga de rankings puede
+mutar scores en memoria; la consulta no escribe el archivo.
+actualizarScores (src/archivos.cpp:601-619) rechaza nivel inválido antes de indexar y conserva
+top 5 por menos errores y luego menos duración.
+guardarScores (src/archivos.cpp:624-653) sí abre salida y puede crear/sobrescribir el archivo.
+resetScores (src/archivos.cpp:658-673) reinicializa todas las entradas y lo guarda.
+mostrarScores usa scores[nivel] directamente; sus sitios normales examinados
+pasan 0/1/2, pero su API no contiene una guardia propia de rango.
+
+7.11. Administración y retorno.
+El ingreso se autentica en menú, modo manual y competitivo
+(src/Sodoku.cpp:862-867,174-178,421-425). El submenú recibe el nivel como parámetro;
+no hay un rol global de sesión reutilizado automáticamente.
+Ocultar una opción no evita su case: el switch de nivel (src/backdoor.cpp:54) imprime
+y el switch de opción (src/backdoor.cpp:162) ejecuta. Las guardias reales se indican debajo.
+Una salida normal de una herramienta por break redibuja BackDoor; return sale de
+la función. [15] autorizado retorna al llamador (src/backdoor.cpp:583), [20] usa break (src/backdoor.cpp:628).
+[100] nivel 2 ejecuta exit(0) (src/backdoor.cpp:152-154); no hay retorno al menú.
+
+7.12. Pausas, máscara y presentación.
+mostrarError (src/archivos.cpp:30-35) incluye MSGPAUSA. El texto de función no implica
+que solo se use para errores: también aparece en confirmaciones de éxito.
+MSGPAUSA (src/varios.cpp:107-112) imprime, hace ignore hasta nueva línea y luego get.
+El número de Enter depende de la entrada pendiente; no se certifica UX en terminal.
+En el commit actual [15] y [20] ya no añaden las tres pausas redundantes retiradas
+por la alternativa A autorizada: denegaciones en src/backdoor.cpp:587 y src/backdoor.cpp:626,
+éxito/cancelación en src/backdoor.cpp:577,579. Se mantiene la pausa interna del helper.
+Otros cases aún combinan ambos mecanismos; no se asume uniformidad global.
+================================================================================================
+8. CONTRATOS DE PERSISTENCIA Y RECURSOS EXTERNOS
+================================================================================================
+8.1. Directorio y nombres.
+La búsqueda usa directory_iterator(".") (src/archivos.cpp:60). Generar/guardar partidas,
+ranking y CSV usan rutas relativas al directorio de trabajo, no una carpeta src/
+impuesta por el programa. Un ejecutable iniciado desde otra carpeta verá otros datos.
+No se comprueba is_regular_file() en el filtro de nombres (src/archivos.cpp:60-67).
+
+El patrón de listado es YYYYMMDD-HHMMSS.txt, 19 caracteres, dígitos, guion y extensión
+(src/archivos.cpp:62-64), sin restricción de año actual o 2025. No valida si la fecha es real.
+Se ordena alfabéticamente (src/archivos.cpp:70). El generador usa tiempo local (src/archivos.cpp:37-52).
+No hay prevención explícita de colisión si se guarda más de una vez en un segundo.
+
+8.2. Formato producido por guardarPartidaEnArchivo.
+1) Nivel:X, X=0 libre; 1/2/3 fácil/medio/difícil (src/archivos.cpp:92).
+2) Nueve filas de MATRIZ (src/archivos.cpp:95-100).
+3) Nueve filas de CELDAFIJA como 0/1 (src/archivos.cpp:103-108).
+4) Marcador // ---- DATOS INTERNOS ---- (src/archivos.cpp:120).
+5) Nueve filas de SOLUCION (src/archivos.cpp:123-127).
+6) INTENTOS: entero (src/archivos.cpp:130).
+7) VICTORIA: 0/1 a partir de SODOKU_RESUELTO (src/archivos.cpp:133).
+8) INICIO: marca tomada AL GUARDAR (src/archivos.cpp:136-140).
+9) DURACION_S: 0 literal (src/archivos.cpp:141).
+El esquema producido tiene 33 líneas con estos bloques, no solo las 18 matrices.
+El bloque de guardado antiguo comentado (src/archivos.cpp:146-176) no es código activo ni un
+segundo formato ejecutado. No se cuenta como llamadas actuales.
+
+El cargador trata VICTORIA como opcional solo en la rama no completa (src/archivos.cpp:374-397).
+No restaura INICIO ni DURACION_S en el código examinado (src/archivos.cpp:184-453).
+El archivo no representa de forma completa los permisos ni toda la sesión en memoria.
+
+8.3. Ranking.
+ARCHIVO_SCORES en src/constantes.h:29 identifica el archivo relativo.
+guardarScores escribe tres encabezados y cinco registros por nivel (src/archivos.cpp:632-648).
+Cada registro contiene iniciales, nivel, erroresFallidos, duracionSegundos,
+erroresPermitidos y timestamp. cargarScores ignora encabezados/filas no parseables
+y recorta las iniciales; no debe confundirse con el archivo de partida.
+El cero y las entradas vacías son convenciones internas; mostrarScores corta al
+encontrar erroresFallidos==INT_MAX (src/pantalla.cpp:69-70).
+
+8.4. CSV y efectos de error.
+exportarMatrizACSV escribe matriz_YYYYMMDD-HHMMSS.csv (src/archivos.cpp:504-535).
+No modifica las celdas del tablero. El mensaje de error/éxito puede pausar.
+Los helpers de guardado retornan void, no una transacción o estado detallado.
+No se garantiza atomicidad ante fallo de disco por el solo hecho de tener
+un mensaje de éxito. Se requiere prueba futura aislada, no ejecutada aquí.
+================================================================================================
+9. ESTADOS DE PARTIDA — MODELO DERIVADO DEL CÓDIGO
+================================================================================================
+Este modelo es DESCRIPTIVO. E00..E10 son etiquetas del informe, no enum, tipos
+ni constantes existentes o agregados al programa. Hay ejes separados:
+(A) pantalla/contexto de interacción, (B) datos del tablero, (C) modo protegido,
+(D) reanudación, (E) resolución y permisos administrativos, (F) intentos/tiempo.
+No se puede reducir todo a partidaEnCurso o SODOKU_RESUELTO.
+
+E00. Inicializado / menú.
+    Matrices globales con inicialización estática, máscara limpiada por main;
+    nivelCargado=-1, banderas inicialmente false, fallos cero.
+    Evidencia: src/Sodoku.cpp:45-62,1077-1083.
+E01. Interacción manual [1].
+    Es un contexto de entrada. Puede operar sobre tablero libre o sobre uno
+    competitivo sin eliminar ese contexto; revoca permiso de resolución al
+    entrar/salir. No necesariamente equivale a modoCompetitivo=false.
+    Evidencia: src/Sodoku.cpp:149-190,644-648.
+E02. Nueva partida competitiva activa.
+    modoCompetitivo=true, dificultad asignada 0..2; esPartidaNueva se consume.
+    Al generar nuevo tablero se marca partidaEnCurso=true.
+    Evidencia: src/Sodoku.cpp:235-299,303-343.
+E03. Partida ingresada por reanudación.
+    esReanudar copia true y partidaEnCurso se pone false. Se reutilizan datos
+    y no se vuelve a asignar true dentro de ese camino de generación omitido.
+    Evidencia: src/Sodoku.cpp:311-342. Es una diferencia real frente a E02, no un sinónimo
+    fiable de una bandera uniforme de ejecución. Ver observación ARQ-01.
+E04. Carga aceptada incompleta, esperando ingreso.
+    Normalmente candidato partidaEnCurso=true, esPartidaNueva=false; modo se
+    deriva de Nivel original. Fallos y solución dependen del bloque opcional.
+    Evidencia: src/archivos.cpp:232-234,303-426.
+E05. Tablero completo por comparación / carga terminada.
+    Ausencia de ceros y coincidencia MATRIZ/SOLUCION. Al cargar se marca
+    partidaEnCurso=false y se muestra el tablero; no se fuerza siempre a true
+    SODOKU_RESUELTO o a false esPartidaNueva en esa rama completa.
+    Evidencia: src/archivos.cpp:303-305,357-397,418-435.
+E06. Resuelto automáticamente y aceptado.
+    MATRIZ contiene la solución y SOLUCION se sincroniza; SODOKU_RESUELTO=true;
+    modoPruebasHabilitado=false. El permiso de [8] ya se consumió.
+    modoCompetitivo conserva el contexto anterior.
+    Evidencia: src/Sodoku.cpp:767-772,783-843.
+E07. Victoria por una jugada.
+    La comparación posterior a OK da completa, se registra score y
+    partidaEnCurso=false. No se asigna SODOKU_RESUELTO=true en ese bloque.
+    Evidencia: src/Sodoku.cpp:436-500. E07 no debe representarse como la misma combinación
+    de banderas que E06, aunque ambos tengan un tablero completo.
+E08. Game Over.
+    endGame>0 y fallos>=endGame; partidaEnCurso=false; tablero, modo y fallos
+    se conservan en memoria. Hay resumen, acumulación temporal y salida del bucle.
+    Evidencia: src/Sodoku.cpp:359-388.
+E09. Excepción administrativa concedida.
+    BackDoor [18] con nivel permitido asigna SODOKU_RESUELTO=false,
+    modoPruebasHabilitado=true y resolucionAutomaticaHabilitada=true.
+    Son dos permisos con propósitos distintos, no una variable de modo única.
+    Evidencia: src/backdoor.cpp:603-616.
+E10. Limpieza explícita de menú / tablero vacío.
+    Menú [3] limpia tablero/máscara/celdas fijas, modoCompetitivo=false,
+    SODOKU_RESUELTO=false y modoPruebasHabilitado=false. El helper limpia también
+    el permiso de [8]. No reinicia todas las demás globales.
+    Evidencia: src/Sodoku.cpp:67-72,718-743.
+    BackDoor [7] llama solo al helper; el hard reset [13] tiene otro conjunto
+    de asignaciones. No fusionar esos tres tipos de limpieza en una transición.
+
+TRANSICIONES PRINCIPALES
+- E00/E01 -> E02: elegir nueva partida, aceptar dificultad y generar.
+- E02 -> menú al ingresar 0: sale conservando los datos y acumula tiempo;
+  partidaEnCurso conserva lo que había en ese camino (src/Sodoku.cpp:430-433).
+- E04 -> E03: elegir reanudar; al volver se puede perder el indicador de
+  reanudación por las asignaciones descritas en E03.
+- Cualquier estado previo -> E04/E05: carga aceptada; carga rechazada/cancelada
+  mantiene las globales anteriores, además de mensajes/efectos sobre cin.
+- Tablero permitido -> E06: [8] confirmado, resolver copia y aceptar sobrescritura.
+  N inicial conserva tablero; N final restaura original; el permiso ya se consumió.
+- E02/E03 -> E07: jugada OK deja coincidencia completa; no hay victoria inmediata
+  solo por entrar a un tablero completo.
+- E02/E03 -> E08: umbral de fallos en la próxima evaluación del bucle.
+- Tablero completo + E09 -> ingreso de pruebas por [2] si se acepta S.
+  N mantiene el estado de partida; S conserva el tablero y reutiliza jugarPartida.
+- Limpieza aceptada en menú -> E10; limpieza cancelada no entra en ese camino.
+
+REVOCACIONES DE PERMISOS VERIFICADAS
+- Cargar aceptado: ambos permisos false (src/archivos.cpp:423,426).
+- Nueva partida por menú: ambos false (src/Sodoku.cpp:711-712).
+- Limpiar menú: helper revoca resolución (src/Sodoku.cpp:68) y menú revoca pruebas (src/Sodoku.cpp:739).
+- Jugar: resolución false al entrar (src/Sodoku.cpp:305) y en los sitios de retorno del
+  llamador (src/Sodoku.cpp:298,688,701).
+- Entrada/salida de manual: resolución false (src/Sodoku.cpp:645,647).
+- Intentar [8] permitido: resolución false antes de la confirmación (src/Sodoku.cpp:772).
+- Aceptar solución automática: pruebas false (src/Sodoku.cpp:841).
+- Tablero de prueba/hard reset: resolución false (src/backdoor.cpp:271,545).
+No se asume una revocación adicional que el código no realice. No se serializan
+estos permisos en los archivos de partida.
+================================================================================================
+10. PERMISOS ADMINISTRATIVOS Y CONTROL DE ACCESO ACTUAL
+================================================================================================
+Los siguientes son permisos EFECTIVOS de los cases, no valores de autenticación:
+- 1/2/3/4: consulta/diagnóstico sin guardia adicional al rol válido.
+- 5/6/7/8/9: nivel>=1 (src/backdoor.cpp:250,280,293,301,372).
+- 10/11/12/13: nivel>=2 (:380,418,465,521).
+- 14: sin implementación (:557-558).
+- 15, borrado: nivel>=2 (:559-588); confirma S/N y llama resetScores solo en S.
+- 16, exportar: sin guardia local (:590-592).
+- 17, mostrar solución: nivel>=1 (:594), aunque solo se anuncia en menú nivel 2.
+- 18, excepción de pruebas/resolución: nivel>=1 (:605).
+- 19: sin implementación (:617-618).
+- 20, fijación masiva: nivel>=2 (:619-628).
+- 100, salida total: nivel>=2 (:151-159).
+Niveles ajenos a 0/1/2 son rechazados por el switch de presentación (:130-132).
+Las opciones ocultas 15/20 siguen llegando a sus cases al escribir el número;
+su denegación se hace localmente antes de la operación. El texto de rechazo es
+reutilizado, no una prueba de que exista un filtro central por menú.
+
+La consulta pública del ranking está en menú principal [4] (src/Sodoku.cpp:744-755).
+La fijación de menú principal [10] es pública y llama el mismo helper (src/Sodoku.cpp:849-856).
+La fijación interna de pistas competitivas también usa ese helper (src/Sodoku.cpp:341).
+La política de BackDoor no debe dibujarse como una restricción global aplicada
+a todos los usos del helper. Cambiar ese alcance requiere una decisión distinta.
+
+Las guardias de 15/20 y la excepción de pausas de alternativa A están integradas
+en el código del commit. El patrón textual en docs/CONVENCIONES.md:165-173 conserva
+MSGPAUSA explícita tras mostrarError, pero la excepción puntual fue autorizada
+por el usuario en esta conversación para esos cases y registrada en issue #22.
+Se informa esa excepción; no se modifica ni se presenta como actualización ya
+realizada del documento de directivas. Los otros permisos no se reinterpretan.
+================================================================================================
+11. INCONSISTENCIAS Y OBSERVACIONES ARQUITECTÓNICAS
+================================================================================================
+ARQ-01 [P2] [COMPROBADO ESTÁTICAMENTE] Reanudación con bandera no uniforme.
+    src/Sodoku.cpp:311-342 pone partidaEnCurso=false y solo la restablece si
+    !esReanudar. El retorno por src/Sodoku.cpp:430-433 no vuelve a true. Tras una sesión
+    reanudada, el menú puede no ofrecer la reanudación esperada.
+    Impacto concreto sobre una secuencia manual: PENDIENTE DE VERIFICACIÓN.
+ARQ-02 [P2] [COMPROBADO ESTÁTICAMENTE] Cancelar dificultad no conserva todos los flags.
+    Menú src/Sodoku.cpp:711-715 revoca permisos, baja curso y pone nivel=-1 antes de entrar
+    al selector; iniciarJuego retorna al cancelar (src/Sodoku.cpp:253-258) sin restaurarlos.
+    El tablero anterior queda. El guardado competitivo rechaza el nivel
+    inválido (src/archivos.cpp:77-80); no normalizar este camino como cancelación
+    transaccional del estado en futuros diagramas.
+ARQ-03 [P2] [COMPROBADO ESTÁTICAMENTE] "Resuelto" no tiene un indicador único.
+    Victoria natural (src/Sodoku.cpp:445-500), aceptación automática (src/Sodoku.cpp:839-841) y carga
+    completa (src/archivos.cpp:303-305,374-397) no asignan iguales banderas.
+    SODOKU_RESUELTO no puede ser sinónimo universal de tablero completo.
+ARQ-04 [P2] [COMPROBADO ESTÁTICAMENTE] Variantes de limpieza conservan datos distintos.
+    Helper src/Sodoku.cpp:67-72; menú src/Sodoku.cpp:718-743; src/backdoor.cpp:292-299,520-556.
+    SOLUCION, fallos, nivel y otras banderas pueden seguir perteneciendo al
+    tablero anterior. El estado compartido exige registrar cada conjunto
+    de asignaciones y no representar "limpiar" como reset completo universal.
+ARQ-05 [P2] [COMPROBADO ESTÁTICAMENTE] Persistencia parcial del tiempo y estadísticas.
+    duracionAcumulada se actualiza (src/Sodoku.cpp:385,431,466), pero el guardado
+    escribe DURACION_S:0 y toma INICIO al guardar (src/archivos.cpp:136-141).
+    La carga no restaura esos campos. El score utiliza duración de sesión
+    local (src/Sodoku.cpp:487), no el acumulador. La continuidad temporal requiere decisión/prueba.
+ARQ-06 [P2] [RIESGO; PENDIENTE DE VERIFICACIÓN] Punteros de localtime.
+    jugarPartida conserva un tm* inicio (src/Sodoku.cpp:347) y luego obtiene tm* fin
+    (src/Sodoku.cpp:370,451) antes de formatear ambos (src/Sodoku.cpp:374-375,454-455).
+    localtime puede reutilizar almacenamiento estático. La hora de inicio
+    mostrada puede quedar sustituida por otra llamada. No se reprodujo por SO.
+ARQ-07 [P2] [COMPROBADO / LÍMITE DE VALIDACIÓN] Formato y coherencia no uniformes.
+    SOLUCION/INTENTOS tienen control de contenido sobrante
+    (src/archivos.cpp:323-325,351-354); MATRIZ/CELDAFIJA (src/archivos.cpp:243-253,270-280)
+    no aplican el mismo control tras obtener nueve enteros.
+    stoi de Nivel (src/archivos.cpp:223) no comprueba consumo total de la cadena.
+    Se valida cada matriz por separado; no se observa verificación general
+    de correspondencia MATRIZ/SOLUCION en todas las celdas parciales, ni de
+    una marca CELDAFIJA situada sobre cero. No confundir estructura válida
+    con todos los invariantes de una partida. No se corrige aquí.
+ARQ-08 [P2] [PRECONDICIONES / RIESGO] Validadores y resolvedor no son sanitizadores.
+    sudokuValido indexa vistos[val] (src/archivos.cpp:459-466) y presupone rango;
+    el cargador lo garantiza antes, pero otros llamadores deben respetarlo.
+    resolverSudoku retorna true cuando no encuentra ceros (src/varios.cpp:257-276),
+    sin revalidar el tablero completo. Menú [8] no llama sudokuValido antes
+    de resolver la copia (src/Sodoku.cpp:783-793). Un tablero alterado por un
+    administrador puede violar esa precondición. Reproducción: PENDIENTE.
+ARQ-09 [P2] [RIESGO; PENDIENTE DE VERIFICACIÓN] Unicidad no garantizada.
+    Vaciar posiciones (src/varios.cpp:195-233) no cuenta soluciones alternativas.
+    El ingreso compara con una SOLUCION específica y puede rechazar otro
+    completado válido si existiera. No se demuestra aquí que una partida
+    concreta generada tenga varias soluciones.
+ARQ-10 [P2] [COMPROBADO ESTÁTICAMENTE] Discrepancia de permiso de exportación.
+    docs/CONVENCIONES.md:193 asigna CSV a nivel 2; BackDoor src/backdoor.cpp:590-592 no tiene guardia
+    y lo anuncia a los tres roles. No se extiende unilateralmente AUD-11.
+ARQ-11 [P2] [COMPROBADO ESTÁTICAMENTE] Segundo factor anunciado sin verificación adicional.
+    BackDoor src/backdoor.cpp:593-601 muestra un texto y la solución sin leer ni comprobar
+    otro factor. La guardia efectiva es >=1. No se publica material de acceso.
+ARQ-12 [P2] [PENDIENTE DE DECISIÓN] Fijación pública y administrativa.
+    Menú principal [10] (src/Sodoku.cpp:849-856) y generación (src/Sodoku.cpp:341) llaman el mismo helper
+    que BackDoor [20]. Su existencia es comprobada; que la ruta pública
+    constituya incumplimiento depende de la política que se quiera aplicar.
+    No modificar el helper global por inferencia de la política de BackDoor.
+ARQ-13 [P3] [COMPROBADO ESTÁTICAMENTE] Opciones parciales y etiquetas.
+    Menú [7]/[9] solo muestra desarrollo (src/Sodoku.cpp:762-765,845-848).
+    BackDoor [14]/[19] son ramas vacías (src/backdoor.cpp:557-558,617-618).
+    Una opción anunciada/comentada no demuestra funcionalidad implementada.
+    [11] se anuncia como edición de CELDAFIJA pero su cuerpo src/backdoor.cpp:449-455
+    desmarca celdas previamente fijas, sin fijar las que ya estaban libres.
+ARQ-14 [P3] [COMPROBADO ESTÁTICAMENTE] Contratos de pausas aún mixtos.
+    mostrarError pausa (src/archivos.cpp:34). Los cases 15/20 ya aplican la
+    excepción autorizada de retirar las pausas duplicadas (src/backdoor.cpp:577-587,626).
+    Otras denegaciones siguen sumando pausa explícita, p.ej. src/backdoor.cpp:274/276 y
+    src/backdoor.cpp:613/615 de BackDoor. ignore()+get() (src/varios.cpp:110-111) puede consumir
+    entrada o esperar más de una línea según el contexto. No declarar una
+    UX uniforme ni reproducida por esta inspección.
+ARQ-15 [P3] [COMPROBADO / RIESGO] Entrada y formato de iniciales.
+    jugarPartida exige exactamente tres caracteres y termina el buffer
+    correctamente (src/Sodoku.cpp:470-481), pero no filtra explícitamente A-Z/0-9
+    pese al texto del prompt. Los caminos con cin en menús/confirmaciones no
+    usan todos el mismo contrato de recuperación; por ejemplo BackDoor src/backdoor.cpp:565-573
+    no comprueba el resultado de extracción de la confirmación. EOF y terminal
+    deben verificarse manualmente; no se añade una función de entrada.
+ARQ-16 [P2] [RIESGO; PENDIENTE DE VERIFICACIÓN] Errores de persistencia.
+    Guardado en dos aperturas (src/archivos.cpp:82,114), ranking void (src/archivos.cpp:624-653)
+    y mensaje de éxito después de reset (src/backdoor.cpp:576-577) no garantizan
+    atomicidad ni propagación de fallo. Nombres por segundo pueden coincidir;
+    directory_iterator sin tratamiento local de excepciones presupone acceso.
+    No se ejecutaron fallos simulados de disco ni se alteraron datos reales.
+ARQ-17 [P3] [COMPROBADO ESTÁTICAMENTE] Cabeceras y convenciones.
+    using namespace std en los seis headers; varios.h/pantalla.h usan TAM
+    sin incluir por sí mismos constantes.h; constantes.h usa time_t sin
+    incluir ctime. Hay dependencia del orden de inclusión. No se compilaron
+    cabeceras aisladas ni se afirma un fallo de enlace reproducido.
+    Hay excepciones a camelCase: MSGPAUSA, DibujarPantalla y globales en mayúsculas.
+ARQ-18 [P3] [COMPROBADO ESTÁTICAMENTE] Documentación y metadatos desactualizados.
+    VERSION/fecha/hora duplicadas en dos headers; EXTENSION_PARTIDA declara
+    .sodoku pero se usa .txt. docs/CONVENCIONES.md:13 dice cuatro .cpp y README:32-36
+    enumera cinco; la sección de ranking de docs/CONVENCIONES.md:252-256 atribuye
+    mostrarScores a archivos.cpp y lo describe static, frente a su implementación
+    en pantalla.cpp y el extern de scores.
+    docs/UX.md:41 incrementa fallos al cancelar, docs/DIRECTIVAS.md:24 exige no incrementarlos
+    y procesarIngresoUsuario cumple esa última regla en el comando 99.
+    docs/DIRECTIVAS.md:87 describe victoria inmediata al entrar a tablero resuelto,
+    mientras el flujo actual de AUD-10 exige confirmación y una jugada.
+    El plan está en PLAN_DIAGRAMAS_SODOKU.md y conserva la ruta sugerida distinta.
+    No se corrigen estas divergencias ni se inventa que todos los textos estén vigentes.
+
+Los identificadores ARQ-01..18 son observaciones de este informe, no issues nuevos
+creados en GitHub. Todas quedan abiertas para revisión; sus prioridades son una
+propuesta diagnóstica. No equivalen a una autorización para ampliar correcciones.
+================================================================================================
+12. ESTATUS DE CUMPLIMIENTO DE LAS DIRECTIVAS
+================================================================================================
+Se evalúan los documentos del commit solicitado, las reglas expresas del usuario
+y la excepción puntual de AUD-11 ya autorizada. Los estados de esta sección son
+de lectura estática. No se usan como sustituto de una prueba de ejecución.
+
+12.1. Declaraciones e implementaciones.
+CUMPLE EN INVENTARIO PROPIO: 50 firmas únicas implementadas, 50 firmas declaradas
+únicas y 52 ocurrencias de declaración compatibles. Retorno, tipos, referencias
+y const coinciden tras normalizar los alias/string y los nombres de parámetros.
+No hay una declaración activa subMenuBackdoor con la capitalización antigua.
+Duplicados compatibles: subMenuBackDoor (src/Sodoku.h:58, src/backdoor.h:7) y
+generarTableroAleatorio (src/Sodoku.h:43, src/varios.h:33).
+No se certificó compilación/enlace ni se compararon todas las API de sistema.
+
+Declaraciones de plataforma presentes, excluidas de las 52 propias:
+- extern "C" __declspec(dllimport) int __stdcall SetConsoleOutputCP(unsigned int);
+  src/Sodoku.cpp:34.
+- extern "C" __declspec(dllimport) int __stdcall SetConsoleCP(unsigned int);
+  src/Sodoku.cpp:35.
+Solo describen símbolos importados bajo _WIN32, no implementaciones del proyecto.
+
+12.2. Guardas y dependencias de cabeceras.
+CUMPLE protección básica:
+- src/Sodoku.h:2-3,8,71; src/archivos.h:2-3,36; src/backdoor.h:2-3,6,15;
+- src/pantalla.h:2-3,5,13; src/varios.h:2-3,6,42;
+- src/constantes.h:2 usa #pragma once.
+PARCIAL autosuficiencia: TAM/time_t y using namespace pueden depender de lo que
+el consumidor incluyó antes. Las guardas no solucionan ese requisito de tipos.
+Prueba de headers aislados: NO EJECUTADA.
+
+12.3. Estilo.
+Indentación: bloques predominantes de 4 espacios; no se encontraron tabs de
+indentación en los once archivos inspeccionados. Existen alineaciones de
+continuación (src/pantalla.cpp:57-59,76-81; src/Sodoku.cpp:361-362,812-815); no se confunden
+automáticamente con defectos de indentación de bloque.
+camelCase: PARCIAL por MSGPAUSA, DibujarPantalla, globales/macro en mayúsculas;
+no se renombra ningún símbolo.
+Headers sin using namespace std: NO CUMPLE en src/Sodoku.h:7, src/archivos.h:7,
+src/backdoor.h:5, src/pantalla.h:4, src/varios.h:5 y src/constantes.h:3
+(frente a docs/CONVENCIONES.md:26).
+Comentarios españoles: PARCIAL; predominan pero hay Flag, GAME OVER y hard reset,
+entre otros (src/Sodoku.cpp:51-52,358; src/backdoor.cpp:520).
+Identificadores propios inventariados: sin tildes. Los acentos en comentarios
+y mensajes no son identificadores ni defectos por sí mismos.
+No se ejecutó un formateador ni un linter.
+
+12.4. Permisos, guardias y pausas.
+Guardias >=2 de BackDoor [15]/[20]/[100]: COMPROBADAS antes de la operación.
+Consulta pública de ranking y lectura sin creación de archivo: COMPROBADAS.
+Correspondencia integral menú/rol/convención: PARCIAL, por [16], visibilidad de
+[17]/[18], textos históricos y rutas públicas con política propia.
+La forma sin pausa explícita de [15]/[20] se declara como EXCEPCIÓN AUTORIZADA,
+no como una modificación silenciosa de la directiva literal.
+Niveles 0/1 denegados no ejecutan reset o fijación masiva en esos cases.
+No se publica ni se prueba material de autenticación.
+
+12.5. Grupos funcionales de DIRECTIVAS.md.
+- Ingreso simple (docs/DIRECTIVAS.md:9-27): validación y comandos implementados; 99 no incrementa
+  fallos por sí mismo. El retorno CANCELAR también cubre borrado/modificaciones
+  de máscara y errores lógicos previos que sí incrementaron fallos. PARCIAL
+  documentación/contrato; comportamiento de terminal PENDIENTE.
+- Nueva partida/Game Over (docs/DIRECTIVAS.md:31-41): caminos presentes. Las banderas de reanudación
+  y cancelación no son uniformes (ARQ-01/02). Victoria exige jugada OK y
+  comparación; registro de ranking presente. PRUEBAS NO EJECUTADAS.
+- Guardar/cargar (docs/DIRECTIVAS.md:45-55): buffers de estado temporal y aplicación al aceptar
+  presentes; formatos y validaciones descritos en 7/8. La preservación de globales
+  ante rechazo está comprobada por sus asignaciones; disco/terminal PENDIENTES.
+- BackDoor (docs/DIRECTIVAS.md:59-69): autenticación y rechazo de salida a nivel insuficiente
+  presentes; no implica que todas las opciones concuerden con la tabla histórica.
+- Resolver (docs/DIRECTIVAS.md:73-87): confirmar, copiar, resolver, rechazar/restaurar y sincronizar
+  están presentes; restricción por modo y excepción administrativa están integradas.
+  El texto de victoria inmediata de docs/DIRECTIVAS.md:87 no representa el actual flujo de AUD-10.
+- Carga de estadísticas (docs/DIRECTIVAS.md:91-115): SOLUCION e INTENTOS se validan y cargan. El banner
+  de estadísticas en src/archivos.cpp:438-447 depende de tener bloque, no de que los
+  fallos sean >0 o el flag de resolución sea true. Por ello los mensajes esperados
+  por docs/DIRECTIVAS.md:108-109 no se corresponden exactamente con ese cuerpo. Datos sin bloque
+  se inicializan como se describe; compatibilidad exige cabecera Nivel.
+
+12.6. Reglas de documentación gráfica.
+Plan aplicable: docs/PLAN_DIAGRAMAS_SODOKU.md, versión del plan 1.0 propuesta,
+docs/PLAN_DIAGRAMAS_SODOKU.md:3-7. Fase A e informe actualizado autorizado por el usuario. Se entregan
+funciones, llamadas, dependencias y estado como datos para revisión; no se generan
+ARQUITECTURA.md, FUNCIONES.md, FLUJOS.md, ESTADOS.md, INTERFAZ.md, índice o Mermaid.
+Se mantiene trazabilidad exacta y se distingue lo pendiente, según docs/PLAN_DIAGRAMAS_SODOKU.md:134-168.
+No se implementan AGENTS.md, plantillas PR, CI o automatizaciones de fases posteriores.
+================================================================================================
+13. MÉTRICAS Y COBERTURA DEL INFORME
+================================================================================================
+Revisión: d9cc5c6904db2f79930b9d5757a04766cd67502d.
+Unidades C++ inspeccionadas: 5 .cpp y 6 .h.
+Funciones implementadas propias: 50, incluidos main y recursión.
+Nombres/firmas únicos declarados: 50.
+Ocurrencias de prototipos propios: 52.
+Correspondencia por firma única: 50/50 = 100 %.
+Correspondencia por ocurrencia de prototipo: 52/52 = 100 %.
+Implementaciones con declaración propia compatible: 50/50 = 100 %.
+Diferencias detectadas de retorno/tipos/const/referencias en esos pares: 0.
+El porcentaje no mide cobertura funcional, seguridad o calidad de los flujos.
+
+Definiciones por archivo:
+    src/Sodoku.cpp: 21 definiciones, 0 declaraciones propias.
+    src/Sodoku.h: 0 definiciones, 23 declaraciones propias.
+    src/archivos.cpp: 11 definiciones, 0 declaraciones propias.
+    src/archivos.h: 0 definiciones, 11 declaraciones propias.
+    src/backdoor.cpp: 2 definiciones, 0 declaraciones propias.
+    src/backdoor.h: 0 definiciones, 2 declaraciones propias.
+    src/constantes.h: 0 definiciones, 0 declaraciones propias.
+    src/pantalla.cpp: 5 definiciones, 0 declaraciones propias.
+    src/pantalla.h: 0 definiciones, 5 declaraciones propias.
+    src/varios.cpp: 11 definiciones, 0 declaraciones propias.
+    src/varios.h: 0 definiciones, 11 declaraciones propias.
+Globales mutables definidas: 21; tipos propios de dominio: 2; constexpr globales: 11.
+Aristas propias por pares de funciones: 149; sitios directos: 352.
+Pares ordenados de módulos con llamadas directas: 12.
+Las dependencias de E/S y estado global se describen aparte del conteo de llamadas.
+
+Observaciones ARQ-01..18: 18 abiertas para revisión, 13 P2 y 5 P3.
+Correcciones realizadas por esta tarea: 0. Issues cerrados por esta tarea: 0.
+Observaciones que requieren ejecución o decisión no se dan por resueltas al leerlas.
+Compilaciones y pruebas de aplicación ejecutadas: 0. Binarios del proyecto/pruebas ejecutados: 0.
+Los controles sobre formato del informe y hashes no son pruebas funcionales del juego.
+
+Cobertura estática entregada:
+- Inventario completo de definiciones y prototipos propios de los once archivos.
+- Todas las llamadas directas detectadas entre esas funciones, con sus líneas.
+- Inclusiones propias directas, estado compartido, recursos y flujos principales.
+- Estados derivados y condiciones reales, incluidos caminos que conservan
+  combinaciones de banderas no uniformes.
+- Observaciones técnicas y contraste con las directivas del mismo commit.
+
+Fuera de certificación:
+- Comportamiento de runtime Windows/Zorin, disponibilidad de APIs y consola.
+- Integridad del disco ante fallos, excepciones, EOF y temporizaciones.
+- Exhaustividad de todas las combinaciones de menú/estado y unicidad de partidas.
+- Renderizado de futuros diagramas o interpretación de datos de partidas originales.
+No se simulan resultados ni se declara que el código compiló en esta tarea.
+================================================================================================
+14. VERIFICACIONES MÍNIMAS FUTURAS PROPUESTAS — NO EJECUTADAS
+================================================================================================
+Esta lista no autoriza ejecución en esta tarea. Si el usuario solicita pruebas,
+usar copias y archivos ficticios en un directorio aislado, nunca rankings/partidas
+originales, y distinguir observación directa de memoria de inferencia por mensajes.
+
+V01. Compilar, enlazar y probar headers aislados en Linux y Windows.
+V02. Nueva partida -> salida -> reanudar -> salida -> reanudar nuevamente;
+     observar partidaEnCurso y comparar tablero/nivel/fallos en cada paso.
+V03. Cancelar una nueva dificultad sobre tablero existente y verificar qué flags
+     se conservan, qué presenta el menú y cómo responde guardar.
+V04. Cargar partida parcial, completa y sin bloque, con Nivel:0/1/2/3; observar
+     todos los flags, SOLUCION, máscara y permisos antes/después.
+V05. Rechazar truncados, fuera de rango, duplicados e INTENTOS malformados;
+     observar directamente las globales para certificar preservación.
+V06. Resolver [8] en libre/competitivo, con/sin permiso; cancelar inicial y final,
+     comprobar restauración del tablero y consumo del permiso.
+V07. AUD-10: tablero completo con permiso, N/S y entrada de una jugada válida;
+     no aceptar victoria/puntuación solamente por el texto de ingreso.
+V08. Victoria natural frente a automática/carga completa y su guardado posterior:
+     comparar SODOKU_RESUELTO/VICTORIA con el estado real del tablero.
+V09. Limpieza de menú, helper BackDoor y hard reset, observando qué datos persisten.
+V10. Ranking ausente/existente, consulta sin creación, persistencia autorizada y
+     fallos de apertura/escritura aislados.
+V11. Matriz de roles 0/1/2, opciones ocultas, [15]/[20]/[100], exportación y
+     la política que se acuerde para fijación pública.
+V12. Pausas y cin con entrada limpia, cancelación, texto y EOF; separar mensajes,
+     lecturas y Enter. Verificar la excepción de [15]/[20] sin cambiar otros flujos.
+V13. Formato/fechas y varias sesiones, horas mostradas, acumulador y archivo guardado.
+V14. Validación de matriz completa/incorrecta, rangos y precondiciones del resolvedor.
+V15. Investigar unicidad de partidas generadas si se requiere como regla de juego.
+Todas: PENDIENTE DE VERIFICACIÓN MANUAL O AUTOMATIZACIÓN AUTORIZADA.
+================================================================================================
+15. FUENTES EXACTAS Y CONDICIONES PARA USAR ESTE TXT
+================================================================================================
+Este informe se limita al commit d9cc5c6904db2f79930b9d5757a04766cd67502d. Una corrección posterior
+puede desplazar líneas o invalidar aristas/estados; no se actualizan fechas o
+revisiones aparentando verificación que no ocurrió.
+Para futuras propuestas Mermaid usar los IDs de funciones, pares M y referencias
+de código de este TXT; distinguir relaciones verificadas de hipótesis o decisiones.
+El usuario debe revisar este informe antes de generar aquellos archivos.
+
+Prefijo inmutable para enlaces de fuente:
+https://github.com/gastonjavierricchiardi/Sodoku-cpp/blob/d9cc5c6904db2f79930b9d5757a04766cd67502d
+Agregar /RUTA#Lnumero; las referencias locales del informe son de esa misma revisión.
+
+SHA-256 de las fuentes examinadas, bytes originales:
+7605cddab6eda452ddeae2a64525082f275c44e3da3782ce2f2f1cbfa316c94b  src/Sodoku.cpp
+5b47bdce25a097c257aefb2096187f9d9de1201edcb8355577634c74c20347bf  src/Sodoku.h
+b69683839d197c4641de427b37c7d572a8b5b271a42239e65f1deb35016706e5  src/archivos.cpp
+a7953351ffdb3a8545f035a9ab7e9892915eb7db93ed6cb269d89e8bad48ce3f  src/archivos.h
+1f95210084cfeaa645f939e28ee249d2265df7805425058e3b94234a657ad769  src/backdoor.cpp
+de2b87eec71b134f5516d0b95fb2672e884476a496b6b0420dca9d5301225625  src/backdoor.h
+4d834a9417f89a02117f16f69ad50dc05802a03cebe22cb34577068a2093bf0f  src/constantes.h
+a21465f0321c79802c24aeda1dc0d1b8b388ae67f235207ffd9aacf3b3713e49  src/pantalla.cpp
+c3b1cc0756695bb6beaa97b8abf56dca1f6aa281a8fdd2893b1bdf20e02d03b4  src/pantalla.h
+b8a6d7bae3367f518f39823969a99d833bec7a7a86f740f51a3d82df52e2c58b  src/varios.cpp
+5943a1f272331fec0ab2ebc92362c55f9ddab83b6a3c9228becb4ad3384e7458  src/varios.h
+SHA-256 de documentos vigentes leídos, bytes UTF-8 del commit:
+48699e1f7a08ec6b7e58e50fd6a7bfaec295a46aa47141eb44cf850d9378ae59  docs/DIRECTIVAS.md
+a470c8470b0da45d1a354b2e0dea8633a475704f620a201784d6a69085d30143  docs/CONVENCIONES.md
+3a2a54ebfccb6295be4127de145c6aff7af95d714b9213c3d6f2092ea35218ac  docs/UX.md
+d64803d77ba6f5e56c7a540388043411d0ace2482d491daf3022d7587255934d  docs/PLAN_DIAGRAMAS_SODOKU.md
+2b6bcf9d9563617a4b9ee51b2d7e8014cf02e93e8652168f13adee02a5980fdb  README.md
+No se transcriben valores de autenticación ni se adjuntan dumps del código.
+No se escriben copias de fuentes o metadatos de análisis en el workspace.
+El único entregable nuevo es INFORME_ARQUITECTURA_SODOKU.txt.
+Se conserva la rama y todo archivo preexistente. Esperar la revisión del usuario.
