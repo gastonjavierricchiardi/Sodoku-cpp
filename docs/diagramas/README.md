@@ -1,6 +1,6 @@
 # Documentación gráfica de Sodoku C++
 
-Estado: estructura inicial, pendiente de revisión. Todavía no se han generado diagramas Mermaid.
+Estado: Fase A aprobada; primer documento Mermaid incorporado.
 
 ## Fuente de arquitectura
 
@@ -13,9 +13,11 @@ El informe se incorpora íntegramente, conservando su contenido y el contexto or
 
 ## Estado de los diagramas
 
-Este directorio alojará la documentación gráfica que se apruebe en las siguientes etapas del plan. La generación de diagramas queda pendiente de revisión y autorización; este README es únicamente el índice inicial.
+- [Arquitectura de Sodoku C++](ARQUITECTURA.md): primer documento Mermaid, aprobado para la Fase A. Representa los cinco módulos C++, sus dependencias y llamadas, la persistencia y el estado global compartido, con referencias al informe y pendientes de verificación.
 
-La trazabilidad de cada futuro diagrama deberá indicar el informe y la revisión de código utilizados. Un cambio posterior del código no actualiza automáticamente la vigencia de la evidencia.
+Las siguientes etapas y documentos requieren autorización previa.
+
+La trazabilidad de cada diagrama deberá indicar el informe y la revisión de código utilizados. Un cambio posterior del código no actualiza automáticamente la vigencia de la evidencia.
 
 ## Documentos de referencia
 
