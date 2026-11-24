@@ -1,6 +1,6 @@
 # Documentación gráfica de Sodoku C++
 
-Estado: Fase A aprobada; primer documento Mermaid incorporado.
+Estado: Fases A y B aprobadas; documentos de arquitectura y funciones incorporados.
 
 ## Fuente de arquitectura
 
@@ -14,6 +14,7 @@ El informe se incorpora íntegramente, conservando su contenido y el contexto or
 ## Estado de los diagramas
 
 - [Arquitectura de Sodoku C++](ARQUITECTURA.md): primer documento Mermaid, aprobado para la Fase A. Representa los cinco módulos C++, sus dependencias y llamadas, la persistencia y el estado global compartido, con referencias al informe y pendientes de verificación.
+- [Funciones y llamadas de Sodoku C++](FUNCIONES.md): documento aprobado para la Fase B. Incluye las 50 funciones implementadas, sus firmas y 14 diagramas Mermaid de llamadas, con referencias al informe TXT.
 
 Las siguientes etapas y documentos requieren autorización previa.
 
