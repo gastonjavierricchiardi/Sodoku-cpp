@@ -44,3 +44,7 @@ como ya fue resuelto, quedó alguna bandera levantada y no me deja jugar la ulti
 En modo de prueba, hay que cambiar el menu de [8] y tiene que distinguirse entre resolver modo prueba o modo competitivo.
 
 ---
+
+cuando entramos desde libre al menu backdoor, y ponemos en el nivel 1 una opción que no esta en vista, hace 2 veces la salida.
+
+---

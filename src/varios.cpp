@@ -66,9 +66,8 @@ void autor() {
     cout << "Desarrollado por: Gaston Ricchiardi" << endl;
     cout << "Colaboración: Desirée Benitez" << endl;
     cout << "Testeo:" << endl;
-    cout << "+ Francisco" << endl;
-    cout << "+ Tiago" << endl;
-    cout << "+ Valeria" << endl;
+    cout << "buscamos testers: gastonj@hotmail.com" << endl;
+//    cout << "+ Tiago" << endl;
     cout << "\U0001F4E6 Build: " << FECHA_VERSION << " - " << HORA_VERSION << endl;
     cout << "⏱️ Tiempo desde versión: "; // Movi un espacio a la izq porque estaba raro
     if (horas > 0)
@@ -110,6 +109,7 @@ void MSGPAUSA() {
     std::cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
     std::cin.get(); // captura el Enter que el usuario presiona
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////
 void colorTexto(const std::string& color) {
     if (color == "rojo")
@@ -134,6 +134,7 @@ void colorTexto(const std::string& color) {
 void resetColor() {
     std::cout << "\033[0m";
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // Jugabilidad:
 void generarTableroAleatorio(int nivel) {
@@ -180,6 +181,7 @@ void generarTableroAleatorio(int nivel) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// Sodoku Resuelto
 bool generarSodokuResuelto() {
     // Inicializamos con ceros
     for (int fila = 0; fila < TAM; fila++) {
