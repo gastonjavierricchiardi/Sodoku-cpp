@@ -1,0 +1,339 @@
+INFORME INCREMENTAL DE ARQUITECTURA — SODOKU C++ v0.9.4
+Archivo: INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt
+Fecha: 24/11/2026 — America/Buenos_Aires
+Estado: ACTUALIZACION ESTATICA APROBADA; PUBLICACION AUTORIZADA EN docs/diagramas-sodoku.
+Fases A y B previamente aprobadas; Fase C sin iniciar.
+
+========================================================================================
+0. ALCANCE, REVISIONES Y EVIDENCIA HISTORICA
+========================================================================================
+Informe base: docs/informes/INFORME_ARQUITECTURA_SODOKU.txt
+Codigo del informe base: d9cc5c6904db2f79930b9d5757a04766cd67502d
+Codigo actualizado contrastado: 5c48cd4889ee3c94813ffea99269ae95ff6b80ee
+Rama de trabajo: docs/diagramas-sodoku
+HEAD documental previo: 20a8e252eacd4ac72e3870c504f88d2a58c085ef
+Unico commit local de integracion: a364d8c83ea806e2f0d77b73447f8c44b63b5a76
+Padres del merge, en orden: 20a8e252eacd4ac72e3870c504f88d2a58c085ef / 5c48cd4889ee3c94813ffea99269ae95ff6b80ee
+El merge normal integra origin/main en la rama documental y conserva ambos historiales.
+Este informe y la actualizacion documental se aprueban para commit y publicacion en docs/diagramas-sodoku.
+
+El TXT base conserva 1688 lineas y todos sus bytes originales.
+SHA-256 del TXT base: d005a31d681e366c3cca19372d25ff7d9d8b9322cff9dea3de8651ca1d392365
+La fecha 19/11/2026, el commit d9cc5c6, las referencias y hashes del TXT base son historicos.
+No se reescriben como si ese analisis hubiera sido realizado sobre 5c48cd4.
+Esta evidencia incremental se lee junto con el informe base; no lo sustituye.
+Las etiquetas Lnnn de los 16 diagramas continuan indicando lineas del TXT base.
+Los numeros de codigo de este informe se refieren al commit 5c48cd4, salvo columna Base.
+No se reproducen credenciales, valores ni contenido sensible de autenticacion BackDoor.
+
+========================================================================================
+1. DIFERENCIAS INCORPORADAS DESDE MAIN
+========================================================================================
+Ancestro comun: d9cc5c6. Main incorpora un commit; la rama documental conserva sus
+tres commits previos. La integracion se realizo sin conflictos y sin edicion manual de codigo.
+
+Archivos cambiados por main desde el ancestro:
+- src/varios.cpp: actualizacion de creditos en autor(), comentario y lineas en blanco.
+  Base: 293 lineas. Actual: 295 lineas; el ultimo cierre no tiene salto de linea final.
+  Se modifica salida de presentacion, no firmas, permisos ni llamadas a funciones propias.
+- docs/Compilar y errores.txt:15: el nombre de salida documentado pasa a sodoku.exe.
+  Esto no acredita compilacion ni cambia por si mismo la version declarada del programa.
+- docs/ApuntaMemoriaDePendientes.md:48: se agrega una incidencia de BackDoor.
+  Su registro independiente se detalla en la seccion 8; no se declara reproducida.
+
+Version declarada conservada: 0.9.4. No cambian los otros cuatro .cpp ni las seis .h.
+El contenido del codigo importado coincide byte a byte con 5c48cd4.
+No se modifican manualmente .cpp, .h, scores.txt ni partidas guardadas.
+
+========================================================================================
+2. HASHES SHA-256 Y CONTINUIDAD DE FUENTES
+========================================================================================
+Se compararon bytes Git de d9cc5c6 con bytes Git de 5c48cd4.
+Las diez unidades fuente no listadas como modificadas conservan el hash del TXT base.
+
+src/Sodoku.cpp
+    Base:   7605cddab6eda452ddeae2a64525082f275c44e3da3782ce2f2f1cbfa316c94b
+    Actual: 7605cddab6eda452ddeae2a64525082f275c44e3da3782ce2f2f1cbfa316c94b
+    Estado: SIN CAMBIO
+src/Sodoku.h
+    Base:   5b47bdce25a097c257aefb2096187f9d9de1201edcb8355577634c74c20347bf
+    Actual: 5b47bdce25a097c257aefb2096187f9d9de1201edcb8355577634c74c20347bf
+    Estado: SIN CAMBIO
+src/archivos.cpp
+    Base:   b69683839d197c4641de427b37c7d572a8b5b271a42239e65f1deb35016706e5
+    Actual: b69683839d197c4641de427b37c7d572a8b5b271a42239e65f1deb35016706e5
+    Estado: SIN CAMBIO
+src/archivos.h
+    Base:   a7953351ffdb3a8545f035a9ab7e9892915eb7db93ed6cb269d89e8bad48ce3f
+    Actual: a7953351ffdb3a8545f035a9ab7e9892915eb7db93ed6cb269d89e8bad48ce3f
+    Estado: SIN CAMBIO
+src/backdoor.cpp
+    Base:   1f95210084cfeaa645f939e28ee249d2265df7805425058e3b94234a657ad769
+    Actual: 1f95210084cfeaa645f939e28ee249d2265df7805425058e3b94234a657ad769
+    Estado: SIN CAMBIO
+src/backdoor.h
+    Base:   de2b87eec71b134f5516d0b95fb2672e884476a496b6b0420dca9d5301225625
+    Actual: de2b87eec71b134f5516d0b95fb2672e884476a496b6b0420dca9d5301225625
+    Estado: SIN CAMBIO
+src/constantes.h
+    Base:   4d834a9417f89a02117f16f69ad50dc05802a03cebe22cb34577068a2093bf0f
+    Actual: 4d834a9417f89a02117f16f69ad50dc05802a03cebe22cb34577068a2093bf0f
+    Estado: SIN CAMBIO
+src/pantalla.cpp
+    Base:   a21465f0321c79802c24aeda1dc0d1b8b388ae67f235207ffd9aacf3b3713e49
+    Actual: a21465f0321c79802c24aeda1dc0d1b8b388ae67f235207ffd9aacf3b3713e49
+    Estado: SIN CAMBIO
+src/pantalla.h
+    Base:   c3b1cc0756695bb6beaa97b8abf56dca1f6aa281a8fdd2893b1bdf20e02d03b4
+    Actual: c3b1cc0756695bb6beaa97b8abf56dca1f6aa281a8fdd2893b1bdf20e02d03b4
+    Estado: SIN CAMBIO
+src/varios.cpp
+    Base:   b8a6d7bae3367f518f39823969a99d833bec7a7a86f740f51a3d82df52e2c58b
+    Actual: 6fe57598dbcede443bdb0a15d27bb39cd601266c91886970bac23f306a24a6e2
+    Estado: MODIFICADO POR MAIN
+src/varios.h
+    Base:   5943a1f272331fec0ab2ebc92362c55f9ddab83b6a3c9228becb4ad3384e7458
+    Actual: 5943a1f272331fec0ab2ebc92362c55f9ddab83b6a3c9228becb4ad3384e7458
+    Estado: SIN CAMBIO
+docs/Compilar y errores.txt
+    Base:   cb023104c49de41403c2755afe96f83592d10b403bcbe99e8eaa909a8d333771
+    Actual: 078ea5a5530af53918ccd21240265dff8bcfc865bb6edd324419828788cafd83
+docs/ApuntaMemoriaDePendientes.md
+    Base:   ff4bdf03eb1a78eed4dc0785724d4dcd8f50cbf5af743c1abffaa2b9c22cd353
+    Actual: 35e4ef6fbf18c2b58f2ae8909dc5e96ee402af3adba385019af39add426604d4
+
+La entrada src/varios.cpp del TXT base L1677 sigue siendo correcta para d9cc5c6.
+Para 5c48cd4 debe emplearse el hash Actual indicado arriba.
+
+========================================================================================
+3. FUNCIONES DE VARIOS.CPP: FIRMAS Y UBICACIONES ACTUALES
+========================================================================================
+Las once firmas son identicas. Nueve rangos cambian; dos permanecen iguales.
+Las declaraciones compatibles y sus ubicaciones en cabeceras no cambian.
+Cada ficha conserva su ID F y su referencia al TXT base.
+
+F40. void autor()
+    Implementacion Base: src/varios.cpp:35-79; Actual: src/varios.cpp:35-78.
+    Declaraciones: src/varios.h:26; TXT base L479-L485.
+F41. void limpiarPantalla()
+    Implementacion Base: src/varios.cpp:87-103; Actual: src/varios.cpp:86-102.
+    Declaraciones: src/varios.h:28; TXT base L486-L490.
+F42. void MSGPAUSA()
+    Implementacion Base: src/varios.cpp:107-112; Actual: src/varios.cpp:106-111.
+    Declaraciones: src/varios.h:27; TXT base L491-L495.
+F43. void colorTexto(const std::string& color)
+    Implementacion Base: src/varios.cpp:114-131; Actual: src/varios.cpp:114-131.
+    Declaraciones: src/varios.h:29; TXT base L496-L500.
+F44. void resetColor()
+    Implementacion Base: src/varios.cpp:134-136; Actual: src/varios.cpp:134-136.
+    Declaraciones: src/varios.h:30; TXT base L501-L505.
+F45. void generarTableroAleatorio(int nivel)
+    Implementacion Base: src/varios.cpp:139-180; Actual: src/varios.cpp:140-181.
+    Declaraciones: src/Sodoku.h:43; src/varios.h:33; TXT base L506-L516.
+F46. bool generarSodokuResuelto()
+    Implementacion Base: src/varios.cpp:183-191; Actual: src/varios.cpp:185-193.
+    Declaraciones: src/varios.h:34; TXT base L517-L522.
+F47. void vaciarCeldas(int nivel)
+    Implementacion Base: src/varios.cpp:195-233; Actual: src/varios.cpp:197-235.
+    Declaraciones: src/varios.h:37; TXT base L523-L529.
+F48. bool esSeguro(int matriz[TAM][TAM], int fila, int columna, int numero)
+    Implementacion Base: src/varios.cpp:235-255; Actual: src/varios.cpp:237-257.
+    Declaraciones: src/varios.h:36; TXT base L530-L534.
+F49. bool resolverSudoku(int matriz[TAM][TAM])
+    Implementacion Base: src/varios.cpp:257-277; Actual: src/varios.cpp:259-279.
+    Declaraciones: src/varios.h:35; TXT base L535-L541.
+F50. void configurarConsola()
+    Implementacion Base: src/varios.cpp:280-293; Actual: src/varios.cpp:282-295.
+    Declaraciones: src/varios.h:40; TXT base L542-L547.
+
+========================================================================================
+4. LLAMADAS PROPIAS EN VARIOS.CPP: CORRESPONDENCIA DE SITIOS
+========================================================================================
+Las 14 relaciones y sus 14 sitios se conservan; 13 sitios cambian de numero de linea.
+Formato: linea del TXT base | llamadora -> llamada | sitio Base -> sitio Actual.
+
+L484 | autor -> colorTexto | 64 -> 64
+L485 | autor -> resetColor | 78 -> 77
+L511 | generarTableroAleatorio -> limpiarPantalla | 140 -> 141
+L512 | generarTableroAleatorio -> generarSodokuResuelto | 143 -> 144
+L513 | generarTableroAleatorio -> mostrarError | 145 -> 146
+L514 | generarTableroAleatorio -> vaciarCeldas | 155 -> 156
+L515 | generarTableroAleatorio -> colorTexto | 177 -> 178
+L516 | generarTableroAleatorio -> resetColor | 179 -> 180
+L522 | generarSodokuResuelto -> resolverSudoku | 190 -> 192
+L528 | vaciarCeldas -> colorTexto | 229 -> 231
+L529 | vaciarCeldas -> resetColor | 232 -> 234
+L540 | resolverSudoku -> esSeguro | 265 -> 267
+L541 | resolverSudoku -> resolverSudoku | 267 -> 269 | RECURSIVA
+L547 | configurarConsola -> resetColor | 292 -> 294
+
+La llamada de autor() a colorTexto() permanece en src/varios.cpp:64.
+La recursion directa de resolverSudoku() pasa de src/varios.cpp:267 a :269.
+Las llamadas ubicadas en otros .cpp no se desplazan; algunas definiciones de destino si.
+Ejemplo: jugarPartida() sigue llamando al generador en src/Sodoku.cpp:340,
+pero generarTableroAleatorio() comienza ahora en src/varios.cpp:140.
+
+========================================================================================
+5. MAPA EXHAUSTIVO DE REFERENCIAS DE CODIGO DESPLAZADAS EN EL TXT BASE
+========================================================================================
+Se identifican 68 lineas del TXT base con ubicaciones de varios.cpp desplazadas.
+No se modifica el TXT historico. Este mapa complementa sus referencias.
+Formato: linea TXT base | referencia(s) src/varios.cpp Base -> Actual.
+
+L66 | 35-76 -> 35-75
+L185 | 87 -> 86
+L192 | 107 -> 106
+L209 | 87 -> 86
+L213 | 107 -> 106
+L221 | 87 -> 86
+L224 | 183 -> 185
+L225 | 139 -> 140
+L229 | 107 -> 106
+L286 | 87 -> 86
+L298 | 107 -> 106
+L302 | 257 -> 259
+L316 | 87 -> 86
+L333 | 87 -> 86
+L338 | 107 -> 106
+L344 | 280 -> 282
+L355 | 107 -> 106
+L375 | 107 -> 106
+L387 | 107 -> 106
+L402 | 107 -> 106
+L432 | 87 -> 86
+L436 | 107 -> 106
+L448 | 87 -> 86
+L450 | 107 -> 106
+L480 | 35-79 -> 35-78
+L485 | 78 -> 77
+L487 | 87-103 -> 86-102
+L492 | 107-112 -> 106-111
+L507 | 139-180 -> 140-181
+L511 | 140 -> 141; 87 -> 86
+L512 | 143 -> 144; 183 -> 185
+L513 | 145 -> 146
+L514 | 155 -> 156; 195 -> 197
+L515 | 177 -> 178
+L516 | 179 -> 180
+L518 | 183-191 -> 185-193
+L522 | 190 -> 192; 257 -> 259
+L524 | 195-233 -> 197-235
+L528 | 229 -> 231
+L529 | 232 -> 234
+L531 | 235-255 -> 237-257
+L536 | 257-277 -> 259-279
+L540 | 265 -> 267; 235 -> 237
+L541 | 267 -> 269; 257 -> 259
+L543 | 280-293 -> 282-295
+L547 | 292 -> 294
+L575 | 139 -> 140
+L731 | 107 -> 106
+L735 | 87 -> 86
+L747 | 139 -> 140
+L751 | 183 -> 185
+L755 | 257 -> 259
+L759 | 235 -> 237
+L763 | 195 -> 197
+L767 | 280 -> 282
+L931 | 145 -> 146
+L938 | 267 -> 269
+L961 | 87-103,280-293 -> 86-102,282-295
+L962 | 99-102 -> 98-101
+L978 | 139 -> 140; 195 -> 197
+L984 | 139 -> 140; 183 -> 185
+L1026 | 195 -> 197; 257 -> 259
+L1092 | 143 -> 144
+L1095 | 195-233 -> 197-235
+L1192 | 107-112 -> 106-111
+L1414 | 257-276 -> 259-278
+L1419 | 195-233 -> 197-235
+L1444 | 110-111 -> 109-110
+
+Este conteo no incluye el hash L1677, tratado en la seccion 2, ni cambios de fecha
+o commit del informe historico, que deben permanecer intactos.
+
+========================================================================================
+6. IMPACTO DOCUMENTAL Y CONSERVACION DE DIAGRAMAS
+========================================================================================
+Se conservan exactamente 16 bloques Mermaid: dos de ARQUITECTURA.md y catorce
+de FUNCIONES.md. No se editan sus nodos, flechas, estilos, etiquetas Lnnn o relaciones.
+
+ARQUITECTURA.md:
+- M12 mantiene generarTableroAleatorio -> mostrarError. El TXT base L931 conserva
+  el sitio historico :145; el sitio actual es :146.
+- G08 conserva rng en src/varios.cpp:17. Sus usuarios nominales en TXT base L1026
+  pasan de vaciarCeldas :195 / resolverSudoku :257 a :197 / :259.
+- Las inclusiones de varios.cpp:19-22 y la topologia de modulos no cambian.
+
+FUNCIONES.md:
+- Nueve rangos de implementacion se actualizan segun la seccion 3 de este informe.
+- Las 50 firmas y las 52 ocurrencias de declaraciones compatibles se conservan.
+- V1 mantiene sus 14 aristas. Sus Lnnn siguen remitiendo al TXT base; la seccion 4
+  aporta los sitios actuales sin alterar las etiquetas del diagrama.
+- El texto explicito sobre recursion referencia ahora src/varios.cpp:269.
+
+Las referencias existentes al TXT base se conservan; se agregan enlaces a este
+informe incremental para leer correctamente las ubicaciones actuales.
+La actualizacion documental posterior al merge fue aprobada para su publicacion.
+
+========================================================================================
+7. METRICAS Y OBSERVACIONES TECNICAS HEREDADAS
+========================================================================================
+Continuidad de metricas del TXT base, contrastada por diferencia de fuentes:
+- Cinco modulos C++; once unidades fuente (.cpp/.h).
+- 50 funciones implementadas; 50 firmas unicas declaradas; 52 prototipos compatibles.
+- Correspondencia conservada: 50/50 y 52/52 = 100 %, sin equivaler a cobertura funcional.
+- 149 pares de llamadas propias; 352 sitios; 12 pares ordenados de modulos.
+- 49 pares internos al modulo y 100 entre modulos.
+- Unica recursion propia registrada: resolverSudoku -> resolverSudoku.
+
+Las 18 observaciones ARQ-01..ARQ-18 permanecen PENDIENTES: 13 P2 y 5 P3.
+No se corrige ni cierra ninguna por desplazarse sus referencias.
+ARQ-08 conserva su observacion sobre precondiciones del resolvedor; su rango
+de TXT base L1414 pasa de varios.cpp:257-276 a :259-278.
+ARQ-09 conserva la unicidad pendiente; TXT base L1419 pasa de :195-233 a :197-235.
+ARQ-14 conserva la observacion de pausas; TXT base L1444 referencia ahora :109-110.
+La incidencia siguiente es un registro independiente de esas 18 observaciones.
+
+========================================================================================
+8. INCIDENCIA INDEPENDIENTE DE BACKDOOR — PENDIENTE
+========================================================================================
+ID documental: INC-5C48CD4-01.
+Estado: PENDIENTE DE VERIFICACION. Prioridad y causa: por determinar.
+Fuente: docs/ApuntaMemoriaDePendientes.md:48 del commit 5c48cd4.
+Texto registrado:
+    cuando entramos desde libre al menu backdoor, y ponemos en el nivel 1 una opción que no esta en vista, hace 2 veces la salida.
+
+Hecho confirmado: la nota existe en main y fue incorporada por el merge autorizado.
+Comportamiento descrito: ingreso desde modo libre, BackDoor nivel 1 y una opcion oculta
+producirian dos salidas. No se ejecuto el juego para reproducirlo.
+Falta precisar la opcion exacta, plataforma, entradas, mensajes y significado de
+dos salidas: retornos, redibujados o pausas. No se presupone un case concreto.
+
+Relacion con ARQ-14: PENDIENTE DE VERIFICACION.
+No se declara resuelta, equivalente ni duplicada de ARQ-14.
+No se modifican permisos, rankings ni el manejo de pausas.
+
+Prueba manual propuesta, NO EJECUTADA:
+1. En un entorno aislado, precisar opcion oculta y secuencia de entrada reportadas.
+2. Ingresar desde modo libre al nivel 1; registrar mensajes, pausas, Enter y retornos.
+3. Determinar si hay repeticion del menu, del retorno o de la espera de entrada.
+4. Solo con esa evidencia contrastar la causa con ARQ-14, conservando ambos registros
+   separados hasta obtener una conclusion verificable.
+
+========================================================================================
+9. VERIFICACIONES Y LIMITACIONES DE ESTA ENTREGA
+========================================================================================
+Verificaciones documentales:
+- Merge con dos padres, sin conflictos y con un unico commit local de integracion.
+- Codigo fuente importado igual a origin/main 5c48cd4; sin edicion manual posterior.
+- Informe historico: mismo contenido y SHA-256 que antes de la integracion.
+- 16 bloques Mermaid y sus etiquetas Lnnn identicos a las versiones aprobadas.
+- Referencias del TXT base conservadas; nuevos enlaces con rangos de este informe.
+- Ningun informe de auditoria ajeno, score o partida incorporado a un commit.
+
+Los bloques Mermaid no cambian; se verifica su identidad con los previamente
+validados. No se repite el renderizador en esta sincronizacion.
+Compilaciones: 0. Ejecuciones del juego o binarios de prueba: 0.
+Publicacion autorizada solo en docs/diagramas-sodoku; sin PR ni integracion hacia main.
+Fase C: SIN INICIAR. Esperar autorizacion para comenzar.

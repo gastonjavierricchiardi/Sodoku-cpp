@@ -3,9 +3,12 @@
 Estado: Fase B aprobada
 
 - Versión declarada: **0.9.4**.
-- Commit analizado: **`d9cc5c6904db2f79930b9d5757a04766cd67502d`** (`d9cc5c6`).
-- Fuente técnica única: [INFORME_ARQUITECTURA_SODOKU.txt](../informes/INFORME_ARQUITECTURA_SODOKU.txt), fechado **19/11/2026**; metadatos en [L1–L8](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1-L8).
-- Alcance: funciones propias implementadas y llamadas directas registradas por análisis estático. No se consultó nuevamente el código fuente para construir este documento.
+- Commit del informe base: **`d9cc5c6904db2f79930b9d5757a04766cd67502d`** (`d9cc5c6`).
+- Fuente técnica base: [INFORME_ARQUITECTURA_SODOKU.txt](../informes/INFORME_ARQUITECTURA_SODOKU.txt), fechado **19/11/2026**; metadatos en [L1–L8](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1-L8).
+- Código actualizado contrastado: **`5c48cd4889ee3c94813ffea99269ae95ff6b80ee`**.
+- Evidencia incremental del **24/11/2026**: [§0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27).
+- Estado de esta actualización: **aprobada para publicación en `docs/diagramas-sodoku`**.
+- Alcance: inventario y llamadas del TXT base, complementados con el contraste estático de `5c48cd4` documentado en el informe incremental. Las firmas y las relaciones se conservan; las ubicaciones de implementación de las tablas corresponden al código actualizado.
 
 ## 1. Cómo leer el inventario y los diagramas
 
@@ -19,7 +22,7 @@ En los diagramas:
 - Los nodos grises identifican destinos de otros módulos y muestran su archivo de implementación. Su rol P/A se consulta en el inventario del módulo correspondiente.
 - Los nodos amarillos son las auxiliares sin llamada entrante propia registrada en el informe.
 - Una flecha continua es una llamada dentro del mismo módulo; una flecha discontinua es una llamada entre módulos. **Ambas son relaciones verificadas estáticamente**, no hipótesis.
-- Cada etiqueta **Lnnn** remite a esa línea exacta del TXT, que enumera los sitios de llamada en el código. Los enlaces junto a cada diagrama cubren las fichas de sus llamadoras.
+- Cada etiqueta **Lnnn** remite a esa línea exacta del TXT base, que enumera los sitios de llamada en el código. Los enlaces junto a cada diagrama cubren las fichas de sus llamadoras.
 - Un par llamadora→llamada se dibuja una vez, aunque tenga varios sitios en el código. Los nodos pueden repetirse entre vistas; siguen siendo las mismas 50 funciones.
 - Cada arista se ubica en el módulo de su llamadora. Las entradas procedentes de otros módulos se ven en sus respectivos diagramas; la ausencia de una flecha en una vista parcial no implica ausencia en el grafo completo.
 - Las flechas no indican orden temporal ni certifican la ejecución de todos los caminos. STL, sistema, inicialización global y acceso a datos quedan fuera del grafo de funciones propias ([L143–L148](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L143-L148); §5.5, [L956–L964](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L956-L964)).
@@ -28,7 +31,7 @@ El módulo principal se divide por responsabilidad y separa mensajes/consola de 
 
 ## 2. Módulo `Sodoku.cpp` — 21 funciones
 
-| ID y rol | Firma completa | Implementación en el commit analizado | Declaración(es) compatible(s) | Ficha del TXT |
+| ID y rol | Firma completa | Implementación en `5c48cd4` | Declaración(es) compatible(s) | Ficha del TXT base |
 | --- | --- | --- | --- | --- |
 | F01 · A | `void limpiarTablero()` | `src/Sodoku.cpp:67–72` | `src/Sodoku.h:40` | §3, [L149–L153](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L149-L153) |
 | F02 · A | `void generarMascara(int fila, int columna, char mascara[TAM][TAM])` | `src/Sodoku.cpp:74–81` | `src/Sodoku.h:41` | §3, [L154–L159](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L154-L159) |
@@ -395,7 +398,7 @@ flowchart LR
 
 ## 3. Módulo `archivos.cpp` — 11 funciones
 
-| ID y rol | Firma completa | Implementación en el commit analizado | Declaración(es) compatible(s) | Ficha del TXT |
+| ID y rol | Firma completa | Implementación en `5c48cd4` | Declaración(es) compatible(s) | Ficha del TXT base |
 | --- | --- | --- | --- | --- |
 | F22 · A | `void mostrarError(string mensaje)` | `src/archivos.cpp:30–35` | `src/archivos.h:12` | §3, [L348–L355](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L348-L355) |
 | F23 · A | `string generarNombreArchivo()` | `src/archivos.cpp:37–52` | `src/archivos.h:10` | §3, [L356–L360](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L356-L360) |
@@ -517,7 +520,7 @@ flowchart LR
 
 ## 4. Módulo `backdoor.cpp` — 2 funciones
 
-| ID y rol | Firma completa | Implementación en el commit analizado | Declaración(es) compatible(s) | Ficha del TXT |
+| ID y rol | Firma completa | Implementación en `5c48cd4` | Declaración(es) compatible(s) | Ficha del TXT base |
 | --- | --- | --- | --- | --- |
 | F33 · P | `void subMenuBackDoor(int nivelAcceso)` | `src/backdoor.cpp:48–634` | `src/Sodoku.h:58`; `src/backdoor.h:7` | §3, [L426–L442](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L426-L442) |
 | F34 · A | `int validarNivelDeAcceso()` | `src/backdoor.cpp:636–671` | `src/backdoor.h:8` | §3, [L443–L451](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L443-L451) |
@@ -576,7 +579,7 @@ Las llamadas a `validarNivelDeAcceso()` y `subMenuBackDoor()` proceden de los mo
 
 ## 5. Módulo `pantalla.cpp` — 5 funciones
 
-| ID y rol | Firma completa | Implementación en el commit analizado | Declaración(es) compatible(s) | Ficha del TXT |
+| ID y rol | Firma completa | Implementación en `5c48cd4` | Declaración(es) compatible(s) | Ficha del TXT base |
 | --- | --- | --- | --- | --- |
 | F35 · A | `void limpiarMascara(char mascara[TAM][TAM])` | `src/pantalla.cpp:24–28` | `src/pantalla.h:7` | §3, [L452–L456](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L452-L456) |
 | F36 · A | `void marcarFila(int fila)` | `src/pantalla.cpp:30–34` | `src/pantalla.h:8` | §3, [L457–L462](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L457-L462) |
@@ -616,19 +619,21 @@ flowchart LR
 
 ## 6. Módulo `varios.cpp` — 11 funciones
 
-| ID y rol | Firma completa | Implementación en el commit analizado | Declaración(es) compatible(s) | Ficha del TXT |
+Las once firmas y las declaraciones permanecen iguales. Los rangos actuales de las nueve implementaciones desplazadas y de las dos conservadas están documentados en [§3, L108–L147](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L108-L147). Las fichas enlazadas en la última columna siguen perteneciendo al TXT base histórico.
+
+| ID y rol | Firma completa | Implementación en `5c48cd4` | Declaración(es) compatible(s) | Ficha del TXT base |
 | --- | --- | --- | --- | --- |
-| F40 · A | `void autor()` | `src/varios.cpp:35–79` | `src/varios.h:26` | §3, [L479–L485](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L479-L485) |
-| F41 · A | `void limpiarPantalla()` | `src/varios.cpp:87–103` | `src/varios.h:28` | §3, [L486–L490](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L486-L490) |
-| F42 · A | `void MSGPAUSA()` | `src/varios.cpp:107–112` | `src/varios.h:27` | §3, [L491–L495](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L491-L495) |
+| F40 · A | `void autor()` | `src/varios.cpp:35–78` | `src/varios.h:26` | §3, [L479–L485](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L479-L485) |
+| F41 · A | `void limpiarPantalla()` | `src/varios.cpp:86–102` | `src/varios.h:28` | §3, [L486–L490](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L486-L490) |
+| F42 · A | `void MSGPAUSA()` | `src/varios.cpp:106–111` | `src/varios.h:27` | §3, [L491–L495](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L491-L495) |
 | F43 · A | `void colorTexto(const std::string& color)` | `src/varios.cpp:114–131` | `src/varios.h:29` | §3, [L496–L500](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L496-L500) |
 | F44 · A | `void resetColor()` | `src/varios.cpp:134–136` | `src/varios.h:30` | §3, [L501–L505](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L501-L505) |
-| F45 · A | `void generarTableroAleatorio(int nivel)` | `src/varios.cpp:139–180` | `src/Sodoku.h:43`; `src/varios.h:33` | §3, [L506–L516](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L506-L516) |
-| F46 · A | `bool generarSodokuResuelto()` | `src/varios.cpp:183–191` | `src/varios.h:34` | §3, [L517–L522](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L517-L522) |
-| F47 · A | `void vaciarCeldas(int nivel)` | `src/varios.cpp:195–233` | `src/varios.h:37` | §3, [L523–L529](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L523-L529) |
-| F48 · A | `bool esSeguro(int matriz[TAM][TAM], int fila, int columna, int numero)` | `src/varios.cpp:235–255` | `src/varios.h:36` | §3, [L530–L534](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L530-L534) |
-| F49 · A | `bool resolverSudoku(int matriz[TAM][TAM])` | `src/varios.cpp:257–277` | `src/varios.h:35` | §3, [L535–L541](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L535-L541) |
-| F50 · A | `void configurarConsola()` | `src/varios.cpp:280–293` | `src/varios.h:40` | §3, [L542–L547](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L542-L547) |
+| F45 · A | `void generarTableroAleatorio(int nivel)` | `src/varios.cpp:140–181` | `src/Sodoku.h:43`; `src/varios.h:33` | §3, [L506–L516](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L506-L516) |
+| F46 · A | `bool generarSodokuResuelto()` | `src/varios.cpp:185–193` | `src/varios.h:34` | §3, [L517–L522](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L517-L522) |
+| F47 · A | `void vaciarCeldas(int nivel)` | `src/varios.cpp:197–235` | `src/varios.h:37` | §3, [L523–L529](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L523-L529) |
+| F48 · A | `bool esSeguro(int matriz[TAM][TAM], int fila, int columna, int numero)` | `src/varios.cpp:237–257` | `src/varios.h:36` | §3, [L530–L534](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L530-L534) |
+| F49 · A | `bool resolverSudoku(int matriz[TAM][TAM])` | `src/varios.cpp:259–279` | `src/varios.h:35` | §3, [L535–L541](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L535-L541) |
+| F50 · A | `void configurarConsola()` | `src/varios.cpp:282–295` | `src/varios.h:40` | §3, [L542–L547](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L542-L547) |
 
 ### V1. Generación, resolución y utilidades
 
@@ -686,7 +691,7 @@ flowchart LR
 
 La lista de §5.3 destaca las dos auxiliares F02 y F04. El recuento por entradas de las fichas de §3 incluye además `main()` como caso especial de entrada. Ninguna de estas observaciones demuestra por sí sola que una API externa o una prueba ajena al alcance no pudiera llamar a una función.
 
-**Recursión directa verificada:** F49 `resolverSudoku(int matriz[TAM][TAM])` se llama a sí misma en `src/varios.cpp:267`, con el candidato validado mediante F48 `esSeguro(...)`. La arista de V1 está etiquetada como recursiva (línea del TXT [L539–L541](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L539-L541); resumen §5.3, [L932–L938](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L932-L938)).
+**Recursión directa verificada:** F49 `resolverSudoku(int matriz[TAM][TAM])` se llama a sí misma en `src/varios.cpp:269` del código actualizado, con el candidato validado mediante F48 `esSeguro(...)`. La arista de V1 está etiquetada como recursiva (línea del TXT [L539–L541](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L539-L541); resumen §5.3, [L932–L938](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L932-L938)). La correspondencia del sitio histórico 267 al actual 269 se documenta en [§4, L149–L174](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L149-L174). La etiqueta Mermaid `L541` no se modifica.
 
 Los ciclos entre módulos descritos en §5.4 ([L945–L954](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L945-L954)) no demuestran recursión entre funciones ni recursión infinita. No se infiere recursión adicional a la registrada.
 
@@ -707,15 +712,25 @@ El inventario coincide con las métricas del informe: **50 implementaciones**, *
 
 **Las 18 observaciones técnicas ARQ-01–ARQ-18 permanecen pendientes**, con la clasificación del informe: 13 P2 y 5 P3. Este documento no corrige código ni cierra observaciones ([L1600–L1604](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1600-L1604)).
 
-Relaciones verificadas: firmas, ubicaciones, declaraciones y llamadas registradas en el TXT para el commit analizado. Pendientes: comportamiento en ejecución por plataforma y por camino, efectos completos de alias/parámetros (§6, [L1032–L1035](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1032-L1035)) y vigencia de las relaciones en revisiones posteriores. No se crean aristas hipotéticas para esos pendientes; la limitación de revisión se mantiene según §15, [L1654–L1662](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1654-L1662).
+Relaciones verificadas: firmas, ubicaciones, declaraciones y llamadas registradas en el TXT para el commit analizado. Pendientes: comportamiento en ejecución por plataforma y por camino, efectos completos de alias/parámetros (§6, [L1032–L1035](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1032-L1035)) y vigencia de las relaciones en revisiones posteriores a `5c48cd4`. No se crean aristas hipotéticas para esos pendientes; la limitación de revisión se mantiene según §15, [L1654–L1662](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1654-L1662).
 
-Los controles de inventario, enlaces y Mermaid son documentales. No se compila ni se ejecuta el juego o un ejecutable de pruebas para elaborar este archivo. La revisión humana y cualquier publicación de la Fase B requieren autorización.
+Los controles de inventario, enlaces y Mermaid son documentales. No se compila ni se ejecuta el juego o un ejecutable de pruebas para elaborar este archivo. La Fase B fue aprobada y publicada previamente. Esta actualización fue aprobada y su publicación autorizada; la Fase C continúa sin iniciar.
 
-## 9. Verificación documental realizada
+## 9. Verificación documental de la Fase B
 
 - Se contrastaron las 50 firmas completas, las ubicaciones de implementación y las 52 ocurrencias de declaración con sus fichas del TXT.
 - Se compararon las 149 aristas de los diagramas con las líneas del informe que registran sus 352 sitios de llamada: sin omisiones ni pares duplicados.
 - Se comprobaron las referencias relativas, los rangos de líneas del informe y la presencia de las 50 funciones en el conjunto de diagramas.
 - **Mermaid 11.12.1: sintaxis aceptada y SVG generado correctamente para los 14 diagramas**, mediante renderizado local en Chromium. Se contrastaron los nodos y las aristas lógicas de cada vista con su contenido documental.
 - La revisión visual de las vistas de consola y administración motivó su división y el ajuste de espaciado para reducir cruces y etiquetas superpuestas.
-- La visualización específica en GitHub y la aprobación humana de esta propuesta permanecen pendientes; la validación local no certifica otra versión del renderizador.
+- La visualización específica en GitHub no se comprobó en esta sesión. La actualización actual fue aprobada para su publicación; la validación local no certifica otra versión del renderizador.
+
+## 10. Continuidad del grafo y actualización incremental
+
+Se conservan íntegros los **14 bloques Mermaid** de este documento y los dos de `ARQUITECTURA.md`: **16 en total**. No cambian nodos, relaciones ni etiquetas `Lnnn`. La continuidad de métricas se documenta en [§7, L279–L296](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L279-L296).
+
+En V1, trece de los catorce sitios de llamada de `varios.cpp` cambian de número de línea. Las flechas siguen citando el TXT base mediante sus etiquetas originales; los sitios actuales se consultan en [§4, L149–L174](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L149-L174). El mapa exhaustivo de las 68 líneas del TXT base con ubicaciones desplazadas está en [§5, L176–L253](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L176-L253).
+
+Las **18 observaciones técnicas heredadas permanecen pendientes**. La nueva incidencia **INC-5C48CD4-01** se mantiene **PENDIENTE DE VERIFICACIÓN**, con causa y relación con ARQ-14 por determinar. No se declara resuelta ni duplicada: [§8, L298–L322](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L298-L322).
+
+Los bloques Mermaid son idénticos a los previamente validados; esta sincronización verifica su conservación y no repite el renderizador. No se compila ni se ejecuta el juego. La publicación de esta actualización está autorizada; el comienzo de la Fase C requiere autorización.

@@ -3,11 +3,14 @@
 Estado: Fase A aprobada.
 
 - Versión declarada del programa: **0.9.4**.
-- Commit analizado: **`d9cc5c6904db2f79930b9d5757a04766cd67502d`**.
-- Fecha del informe: **19/11/2026**.
-- Fuente técnica única: [INFORME_ARQUITECTURA_SODOKU.txt, L1–L8](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1-L8).
+- Commit del informe base: **`d9cc5c6904db2f79930b9d5757a04766cd67502d`**.
+- Fecha del informe base: **19/11/2026**.
+- Fuente técnica base: [INFORME_ARQUITECTURA_SODOKU.txt, L1–L8](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1-L8).
+- Código actualizado contrastado: **`5c48cd4889ee3c94813ffea99269ae95ff6b80ee`**.
+- Evidencia incremental del **24/11/2026**: [§0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27).
+- Estado de esta actualización: **aprobada para publicación en `docs/diagramas-sodoku`**.
 
-Esta arquitectura representa la revisión identificada por el informe. Las relaciones verificadas son comprobaciones estáticas; su ejecución en cada camino y su vigencia en revisiones posteriores requieren verificación. No se reproduce material de autenticación de BackDoor.
+Esta arquitectura conserva el modelo del informe base y añade el contraste estático de `5c48cd4` mediante el informe incremental. Las relaciones entre módulos permanecen iguales. Las citas al TXT original siguen siendo evidencia histórica de `d9cc5c6`; la actualización de ubicaciones se consulta por separado. Su ejecución en cada camino y su vigencia posterior requieren verificación. No se reproduce material de autenticación de BackDoor.
 
 ## 1. Módulos y llamadas
 
@@ -129,10 +132,21 @@ El acceso compartido no atribuye a cada módulo escritura sobre todas las variab
 - Comportamiento en ejecución por plataforma, terminal y combinación de opciones: [§13, L1614–L1620](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1614-L1620).
 - Integridad de archivos ante fallos de persistencia: [§8.4, L1239–L1244](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1239-L1244).
 - Clasificación exhaustiva de efectos por alias y parámetros de arreglos: [§6, L1032–L1035](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1032-L1035).
-- Vigencia de estas relaciones para revisiones posteriores al commit analizado: [§15, L1654–L1662](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1654-L1662).
+- Vigencia de estas relaciones para revisiones posteriores a `5c48cd4`: [§15, L1654–L1662](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1654-L1662).
 
 No se dibujan llamadas hipotéticas para completar esos pendientes. Los estados de partida descritos por el informe requieren condiciones y banderas específicas; este documento no desarrolla todavía una máquina de estados.
 
 La correspondencia estática registrada es de **50/50 firmas únicas** y **52/52 declaraciones compatibles**, ambas del 100 %, sin equivaler a cobertura funcional: [§13, L1570–L1582](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1570-L1582). El informe mantiene **18 observaciones abiertas**; este documento no las corrige ni las cierra: [§13, L1600–L1604](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1600-L1604).
 
-La Fase A fue aprobada. El inicio de la Fase B requiere autorización previa.
+Las Fases A y B fueron aprobadas. Esta actualización previa a la Fase C fue aprobada para su publicación.
+
+## 4. Actualización de trazabilidad a `5c48cd4`
+
+El informe histórico permanece intacto. El código de `main` se integró mediante un merge normal local; la revisión del código contrastado y el commit de integración se distinguen en [§0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27). El alcance y las diferencias están descritos en [§1, L29–L46](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L29-L46).
+
+- **M12:** `generarTableroAleatorio()` → `mostrarError()` conserva la misma relación; el sitio pasa de `src/varios.cpp:145` a `src/varios.cpp:146`. La referencia original al TXT L931 se complementa con [§4, L149–L174](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L149-L174).
+- **G08:** `rng` permanece en `src/varios.cpp:17`; las definiciones de sus usuarios `vaciarCeldas()` y `resolverSudoku()` pasan a las líneas 197 y 259. Véanse [§3, L108–L147](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L108-L147) y el mapa del TXT base en [§5, L176–L253](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L176-L253).
+- Los dos bloques Mermaid de este documento permanecen íntegros. Junto con los catorce de `FUNCIONES.md`, se conservan los **16 diagramas y todas sus relaciones**. Las etiquetas `Lnnn` continúan identificando líneas del informe base; no son números del código actualizado.
+- Las **18 observaciones ARQ-01–ARQ-18 siguen pendientes**. La nueva **INC-5C48CD4-01** se registra como **PENDIENTE DE VERIFICACIÓN**, separada de ARQ-14 y sin declarar duplicación o resolución: [§8, L298–L322](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L298-L322).
+
+La actualización fue aprobada para publicación; la Fase C permanece sin iniciar.
