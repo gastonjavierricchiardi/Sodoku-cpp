@@ -115,3 +115,37 @@ Además de la prueba de modificación/borrado de celdas, conviene cubrir al meno
    * Debe abortar la carga y mantener el estado previo.
 
 ---
+
+## 7. Control de impacto documental y mantenimiento de diagramas
+
+**Actualizacion de la directiva:** v1.1 — 25/11/2026 (referencia de version anterior: v1.0 — 17/07/2025).
+**Linea base de documentacion:** commit \`7e46428eeaae248b0536fcb173c3604f77c3646a\` de \`main\`, con 35 diagramas Mermaid aprobados.
+**Alcance:** toda modificacion autorizada de jugabilidad, funciones, llamadas, variables globales, permisos, estados, persistencia o interfaz del programa.
+
+### 7.1. Antes del cambio
+
+1. Identificar el commit de partida y consultar los informes TXT disponibles en \`docs/informes/\`. Para analizar codigo, utilizar los informes TXT como evidencia; no inferir contenido ausente ni asumir acceso a fuentes originales.
+2. Identificar las funciones, declaraciones, variables y recorridos que podrian cambiar, asi como los diagramas potencialmente afectados.
+3. Proponer el cambio con referencias exactas \`Lx-Ly\` del informe y solicitar: **"¿Confirmas este cambio?"** antes de aplicarlo. Respetar las convenciones y las condiciones de acceso ya autorizadas.
+
+### 7.2. Despues de cada cambio de codigo autorizado
+
+1. Preparar un **informe TXT incremental** que registre: commit base y revision nueva; archivos y rangos modificados; funciones y firmas completas (implementacion frente a declaracion); llamadas propias; variables globales, banderas y condiciones afectadas; cambios de ubicaciones; observaciones y limitaciones. Si la evidencia cubre solo parte del codigo, indicar **PENDIENTE DE VERIFICACION**.
+2. Contrastar el impacto contra estos documentos:
+   - \`docs/diagramas/ARQUITECTURA.md\`: modulos, dependencias y estado compartido.
+   - \`docs/diagramas/FUNCIONES.md\`: funciones, firmas, ubicaciones y llamadas.
+   - \`docs/diagramas/FLUJOS.md\`: menus, decisiones, validaciones y retornos.
+   - \`docs/diagramas/ESTADOS.md\`: transiciones, banderas, permisos y condiciones.
+   - \`docs/diagramas/INTERFAZ.md\`: pantallas, mensajes, tablero y navegacion.
+3. Presentar el resultado por documento: **ACTUALIZAR** o **SIN IMPACTO**, con motivo y referencia al TXT. Los desplazamientos de lineas de codigo tambien deben evaluarse; no modificar las etiquetas \`Lnnn\` cuando refieran al informe historico.
+4. Si se propone actualizar documentacion, mostrar el cambio y pedir aprobacion antes de aplicarlo. No reescribir informes historicos: agregar evidencia incremental con trazabilidad a cada revision.
+5. Para cada refactor o funcion nueva, indicar una **Prueba Minima** concreta. No compilar ni ejecutar sin autorizacion expresa.
+
+### 7.3. Verificacion, incidencias y publicacion
+
+1. Una vez aprobada la actualizacion documental, verificar firmas y declaraciones, referencias y rangos, sintaxis y renderizado Mermaid, y coherencia entre todos los documentos afectados.
+2. Conservar observaciones e incidencias **PENDIENTES** hasta que exista evidencia suficiente para resolverlas; registrar nuevas inconsistencias graves como **PENDIENTE**. No asumir que las 19 pendientes de la linea base siguen siendo las mismas despues de futuras revisiones: informar altas y cierres justificados.
+3. Informar al cierre el porcentaje de funciones implementadas frente a declaradas, las observaciones resueltas y pendientes, los diagramas modificados o no afectados, la revision de codigo y la prueba minima propuesta.
+4. No crear commits, hacer push, abrir PR ni integrar ramas sin autorizacion. Conservar la rama principal estable y mantener documentacion y codigo trazables a commits concretos.
+
+**Regla general:** cambio de codigo -> informe TXT incremental -> control de impacto -> propuesta y aprobacion -> actualizacion documental -> verificacion -> publicacion autorizada. Si el impacto es nulo, dejar constancia expresa del motivo.
