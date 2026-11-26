@@ -5,7 +5,7 @@ Estado: Fase C aprobada.
 - Base documental de trabajo: `docs/diagramas-sodoku`, commit **`79dd75bf9df0b7b4fce640ec0ec64482b82aec60`**.
 - Evidencia **H**: informe histórico del **19/11/2026**, código **`d9cc5c6904db2f79930b9d5757a04766cd67502d`**; [H metadatos, L1–L8](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1-L8).
 - Evidencia **I**: informe incremental del **24/11/2026**, código contrastado **`5c48cd4889ee3c94813ffea99269ae95ff6b80ee`**; [I §0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27).
-- Fuentes técnicas exclusivas: esos dos TXT. Las referencias H conservan sus líneas históricas; I aporta la correspondencia actual de `varios.cpp`, con firmas y relaciones conservadas ([I §3–5, L108–L253](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L108-L253)).
+- Fuentes técnicas: los dos TXT históricos anteriores y, para la actualización local A+B de `[18]` sobre `main` `5f82994`, el [informe incremental del 26/11/2026, §1–2, L5–L36](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L5-L36). Las referencias H conservan sus líneas históricas; I aporta la correspondencia actual de `varios.cpp`, con firmas y relaciones conservadas ([I §3–5, L108–L253](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L108-L253)).
 
 **COMPROBADO ESTÁTICAMENTE** identifica un camino o una asignación descritos por los informes. No acredita ejecución, comportamiento de una terminal ni exhaustividad de todas las combinaciones. **PENDIENTE** conserva los riesgos, la información no transcrita y los controles que necesitan verificación. Los nombres de vistas de este documento son identificadores documentales, no símbolos agregados al programa ([H §0, L39–L58](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L39-L58)).
 
@@ -286,6 +286,10 @@ flowchart TD
 ```
 
 `[15]` solo llama a `resetScores()` con confirmación `S`; el TXT no certifica aquí todas las respuestas malformadas. `[20]` regresa al submenú mediante `break`. Se conserva la retirada de las tres pausas redundantes en `[15]/[20]`, sin retiradas adicionales ni un número de Enter garantizado. `[16]` exporta sin guardia local, `[17]` exige nivel ≥1 aunque no se anuncia a todos esos niveles y `[14]/[19]` no tienen implementación; son límites documentados, no correcciones propuestas ([H §10, L1340–L1368](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1340-L1368); [H §11, L1423–L1446](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1423-L1446)).
+
+Actualización local A+B de `[18]` sobre `main` `5f82994`: el menú y los mensajes describen la habilitación de permisos administrativos de pruebas, sin afirmar que se haya iniciado `[2]` o ejecutado `[8]`. Se mantienen `nivelAcceso >= 1` y las asignaciones `SODOKU_RESUELTO=false`, `modoPruebasHabilitado=true` y `resolucionAutomaticaHabilitada=true` ([informe incremental A+B, §3, L38–L56](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L38-L56)).
+
+En la rama autorizada, `resetColor()` va seguido de `MSGPAUSA()`; en la denegada, `mostrarError()` incluye su pausa y no hay otra llamada común posterior. El `break` conserva el redibujado del submenú. Es una llamada a pausa por rama, sin garantizar un único Enter ni explicar por sí sola dos avisos observados en una ejecución permitida ([§5, L82–L96](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L82-L96)). ARQ-14 y la incidencia independiente conservan su estado pendiente. El párrafo histórico anterior, incluida la referencia a `[17]`, permanece sin cambios.
 
 ## Registro de los 19 pendientes conservados
 

@@ -122,7 +122,7 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  7  ] Borrado de tablero (no borra CELDAFIJA)\n";
             cout << "[ 13  ] Borrar tablero completo (hard reset)\n";
             cout << "[ 14  ] Asignar puntaje manual                         [EN DESARROLLO]\n";
-            cout << "[ 18  ] Habilita Ingresar al [2] Modo competitivo (con niveles) con [8] Resolver automáticamente.\n";
+            cout << "[ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).\n";
             cout << "\n[ 100 ] SALIDA TOTAL\n";
             cout << "[  0  ] Volver\n";
             cout << "=============================================" << endl;
@@ -600,19 +600,19 @@ void subMenuBackDoor(int nivelAcceso) {
                 mostrarError("Nivel insuficiente para esta opción.");
             }
             break;
-        case 18: // cout << "[ 18  ] Habilita Ingresar al [2] Modo competitivo (con niveles) con [8] Resolver automáticamente.\n";
+        case 18: // Habilitar permisos administrativos para pruebas ([2] y [8]).
 
             if (nivelAcceso >= 1) {
-                cout << "Se habilita Ingresar al [2] 'Modo competitivo' habiendo usado el [8] 'Resolver automáticamente'." << endl;
+                cout << "Permiso habilitado para solicitar ingreso de pruebas en [2] cuando el tablero esté completo." << endl;
                 SODOKU_RESUELTO = false;
                 modoPruebasHabilitado = true;
                 resolucionAutomaticaHabilitada = true;
-                cout << "Se autoriza un intento de [8] Resolver automaticamente en el tablero actual.\n";
+                cout << "Permiso habilitado para un intento de [8] en contexto competitivo; se consume incluso si se cancela.\n";
                 resetColor();
+                MSGPAUSA();
             } else {
                 mostrarError("Nivel insuficiente para esta opción.");
             }
-            MSGPAUSA();
             break;
         case 19: // borrar scores.
             break;

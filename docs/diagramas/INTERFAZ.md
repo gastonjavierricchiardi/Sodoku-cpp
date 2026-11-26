@@ -5,7 +5,7 @@ Estado: Fase C aprobada.
 - Base documental de trabajo: `docs/diagramas-sodoku`, commit **`79dd75bf9df0b7b4fce640ec0ec64482b82aec60`**.
 - Evidencia **H**: informe histórico del **19/11/2026**, código **`d9cc5c6904db2f79930b9d5757a04766cd67502d`**; [H metadatos, L1–L8](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1-L8).
 - Evidencia **I**: informe incremental del **24/11/2026**, código contrastado **`5c48cd4889ee3c94813ffea99269ae95ff6b80ee`**; [I §0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27).
-- Fuentes técnicas exclusivas: esos dos TXT. Las referencias H conservan sus líneas históricas; I aporta la correspondencia actual de `varios.cpp`, con firmas y relaciones conservadas ([I §3–5, L108–L253](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L108-L253)).
+- Fuentes técnicas: los dos TXT históricos anteriores y, para la actualización local A+B de `[18]` sobre `main` `5f82994`, el [informe incremental del 26/11/2026, §1–2, L5–L36](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L5-L36). Las referencias H conservan sus líneas históricas; I aporta la correspondencia actual de `varios.cpp`, con firmas y relaciones conservadas ([I §3–5, L108–L253](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L108-L253)).
 
 **COMPROBADO ESTÁTICAMENTE** identifica un camino o una asignación descritos por los informes. No acredita ejecución, comportamiento de una terminal ni exhaustividad de todas las combinaciones. **PENDIENTE** conserva los riesgos, la información no transcrita y los controles que necesitan verificación. Los nombres de vistas de este documento son identificadores documentales, no símbolos agregados al programa ([H §0, L39–L58](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L39-L58)).
 
@@ -191,7 +191,7 @@ HERRAMIENTAS PÚBLICAMENTE DESCRITAS — NO ES MENÚ LITERAL
   [15] Borrar ranking                 guardia: nivel >= 2
   [16] Exportar CSV                   sin guardia local documentada
   [17] Mostrar solución               guardia: nivel >= 1
-  [18] Conceder excepciones           guardia: nivel >= 1
+  [18] Habilitar permisos de pruebas  guardia: nivel >= 1
   [20] Fijar todas las celdas          guardia: nivel >= 2
   [100] Terminar proceso              guardia: nivel >= 2
   [14] / [19]                         sin implementación
@@ -200,6 +200,14 @@ HERRAMIENTAS PÚBLICAMENTE DESCRITAS — NO ES MENÚ LITERAL
 `[15]/[20]` pueden alcanzar sus `case` aun estando ocultas; las guardias operan antes del borrado/fijación. `[15]` autorizado confirma S/N y retorna al llamador; `[20]` usa `break` y redibuja el submenú. `[100]` autorizado termina el proceso.
 
 La visibilidad de `[17]` y su guardia no coinciden plenamente. No se muestra ni se afirma un segundo factor efectivo. `[16]` conserva el comportamiento registrado sin aplicar una corrección de permisos por conveniencia de la maqueta. No se transcriben credenciales, nombres de variables de autenticación, claves, valores de acceso ni la pantalla que los expone.
+
+Actualización local A+B de `[18]` sobre `main` `5f82994`: los siguientes textos literales proceden del [informe incremental, §3, L38–L56](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L38-L56):
+
+- Menú de nivel 2: `[ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).`
+- Primer mensaje: `Permiso habilitado para solicitar ingreso de pruebas en [2] cuando el tablero esté completo.`
+- Segundo mensaje: `Permiso habilitado para un intento de [8] en contexto competitivo; se consume incluso si se cancela.`
+
+Los mensajes anuncian permisos, sin dar por realizadas esas operaciones. El mínimo sigue siendo nivel 1; la opción continúa oculta en ese menú y visible en nivel 2. No se cambia la visibilidad ni la vida de los permisos.
 
 La incidencia **INC-5C48CD4-01** permanece separada: los TXT no permiten asignar su doble salida a un `case` concreto ni declararla reproducida o duplicada de ARQ-14 ([I §8, L298–L322](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L298-L322)).
 
@@ -215,6 +223,8 @@ MENSAJE OPERATIVO — MAQUETA
 ```
 
 `mostrarError()` presenta color, restaura color y llama a `MSGPAUSA()`, incluso en algunos resultados exitosos. En `5c48cd4`, `MSGPAUSA()` está en `src/varios.cpp:106–111`; `ignore()` y `get()` dependen del contenido pendiente del stream. No se garantiza un único Enter para cualquier operación. Se conserva la retirada autorizada de las tres llamadas redundantes en `[15]/[20]`, sin uniformar los demás caminos.
+
+En la revisión local A+B, `[18]` realiza una llamada a pausa por rama: los niveles 1/2 muestran los mensajes, restauran color y llaman a `MSGPAUSA()`; el nivel 0 conserva el error existente y la pausa interna de `mostrarError()`, sin una pausa adicional posterior. Los helpers no cambian. La cantidad de Enter depende de `cin`; la causa de dos avisos percibidos en una rama permitida sigue pendiente de correlación ([informe incremental A+B, §5, L82–L96](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L82-L96)).
 
 ## 10. UI-09 — Navegación desde el menú principal
 

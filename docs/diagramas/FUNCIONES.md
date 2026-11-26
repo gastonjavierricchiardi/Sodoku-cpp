@@ -8,7 +8,7 @@ Estado: Fase B aprobada
 - Código actualizado contrastado: **`5c48cd4889ee3c94813ffea99269ae95ff6b80ee`**.
 - Evidencia incremental del **24/11/2026**: [§0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27).
 - Estado de esta actualización: **aprobada para publicación en `docs/diagramas-sodoku`**.
-- Alcance: inventario y llamadas del TXT base, complementados con el contraste estático de `5c48cd4` documentado en el informe incremental. Las firmas y las relaciones se conservan; las ubicaciones de implementación de las tablas corresponden al código actualizado.
+- Alcance: inventario y llamadas del TXT base, complementados con el contraste estático de `5c48cd4` documentado en el informe incremental. Las firmas y las relaciones se conservan; las ubicaciones de implementación de las tablas corresponden al código actualizado. La revisión local A+B de `[18]` sobre `main` `5f82994` se documenta en el [informe incremental del 26/11/2026, §1–2, L5–L36](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L5-L36); las tablas históricas permanecen intactas.
 
 ## 1. Cómo leer el inventario y los diagramas
 
@@ -524,6 +524,10 @@ flowchart LR
 | --- | --- | --- | --- | --- |
 | F33 · P | `void subMenuBackDoor(int nivelAcceso)` | `src/backdoor.cpp:48–634` | `src/Sodoku.h:58`; `src/backdoor.h:7` | §3, [L426–L442](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L426-L442) |
 | F34 · A | `int validarNivelDeAcceso()` | `src/backdoor.cpp:636–671` | `src/backdoor.h:8` | §3, [L443–L451](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L443-L451) |
+
+Actualización local de BackDoor `[18]` A+B sobre `main` `5f82994`: la llamada a `mostrarError()` pasa de `src/backdoor.cpp:613` a `614`, y la llamada a `MSGPAUSA()` de `615` a `612`, dentro de la rama autorizada y después de `resetColor()` en `611`. Las firmas, rangos de definición y pares de llamadas se conservan; las etiquetas `L433`, `L434` y `L436` siguen refiriéndose al TXT histórico. Véase [informe incremental A+B, §4, L58–L80](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L58-L80).
+
+El informe incremental se conserva íntegro como instantánea de A+B anterior a la actualización del comentario de `src/backdoor.cpp:603` autorizada en este cierre. Ese ajuste de comentario no modifica llamadas, rangos ni comportamiento. Esta revisión no incorpora AUD-12.
 
 ### B1. Administración y autenticación: llamadas públicas
 

@@ -1,0 +1,195 @@
+SODOKU C++ v0.9.4 — INCREMENTAL BACKDOOR [18], PROPUESTAS A+B
+Fecha: 26/11/2026 — America/Buenos_Aires
+Estado: APLICADO LOCALMENTE; sin compilación, ejecución ni publicación.
+
+1. BASE Y ALCANCE
+Rama local: fix/backdoor-18-mensajes-pausas.
+Base origin/main y HEAD: 5f82994f000e8e3a66f8d434419062950649e0b4.
+Revisión nueva: árbol de trabajo sobre esa base; no existe un commit nuevo.
+Único archivo versionado modificado: src/backdoor.cpp; 4 adiciones/4 eliminaciones.
+El informe se entrega fuera del repositorio. No se modifican documentos existentes.
+
+Main todavía no incluye AUD-12. La rama fix/aud-12-backdoor-17 conserva el commit
+f4e4ded5e6f97d24efed07cd8121f259c66ea6d7. Esta rama nueva no incorpora aquel parche;
+[17] permanece exactamente como en main, sin alteraciones adicionales.
+Las diferencias por el checkout de main no se presentan como ediciones de AUD-12.
+No se modifica main ni se integran ramas. AUD-12 sigue disponible en su rama propia.
+
+Autorización: únicamente A+B del informe
+INFORME_BACKDOOR_18_PERMISOS_Y_PAUSAS_20261126.txt, sección 10.A/B (L329–L342).
+Se conserva dicho informe de diagnóstico completo e inalterado, sobre f4e4ded.
+La lectura/edición se limita al cambio aprobado y su comprobación estática.
+No se aplican las propuestas C (visibilidad), D (política de estado) ni E ([17]).
+
+2. EVIDENCIA DOCUMENTAL Y CORRESPONDENCIA DE BASES
+H: docs/informes/INFORME_ARQUITECTURA_SODOKU.txt (d9cc5c6).
+H L426–L451: firmas/llamadas; L997–L1008: banderas; L1295–L1299: concesión;
+L1325–L1336: revocaciones; L1440–L1446: contratos de pausa; L1574–L1580: métricas.
+I: docs/informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt.
+I L121–L129: MSGPAUSA y colores; L279–L322: métricas y pendientes.
+D: docs/DIRECTIVAS.md, §7, L119–L151, vigente en main 5f82994.
+Los informes históricos y etiquetas Lnnn no se reescriben.
+
+El diagnóstico anterior utilizaba f4e4ded: case 18 L602–L615 y pausa L614.
+La base main verificada tiene case 18 L603–L616 y pausa anterior L615.
+Se comprobaron las ubicaciones actuales ANTES de editar; no se reutilizaron
+los números del diagnóstico como si ambas revisiones fueran idénticas.
+
+3. CAMBIOS EXACTOS EN src/backdoor.cpp
+L125: menú de nivel 2; ahora dice:
+[ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).
+L606: primer mensaje, con endl conservado:
+Permiso habilitado para solicitar ingreso de pruebas en [2] cuando el tablero esté completo.
+L610: segundo mensaje, con salto final conservado:
+Permiso habilitado para un intento de [8] en contexto competitivo; se consume incluso si se cancela.
+
+La guardia sigue en L605: if (nivelAcceso >= 1).
+Las asignaciones siguen EXACTAMENTE en L607–L609:
+    SODOKU_RESUELTO = false;
+    modoPruebasHabilitado = true;
+    resolucionAutomaticaHabilitada = true;
+resetColor sigue en L611. MSGPAUSA se mueve de L615 a L612, inmediatamente después
+de resetColor y dentro de la rama autorizada. mostrarError pasa de L613 a L614,
+con el mismo argumento: «Nivel insuficiente para esta opción.».
+El break sigue en L616 y case 19 comienza en L617. No hay desplazamiento neto
+para las funciones o los cases posteriores. Se conserva el final original del archivo.
+El comentario previo de L603 se conserva; no es un mensaje ejecutable de consola.
+
+4. FUNCIONES, FIRMAS Y LLAMADAS
+void subMenuBackDoor(int nivelAcceso)
+  Definición src/backdoor.cpp:L48–L634, sin cambios de firma o rango.
+  Declaraciones: void subMenuBackDoor(int nivel); src/backdoor.h:L7 y src/Sodoku.h:L58.
+  Los nombres nivel/nivelAcceso no cambian la identidad de la función.
+void MSGPAUSA()
+  Definición src/varios.cpp:L106–L111; declaración src/varios.h:L27. Intacta.
+void mostrarError(string mensaje)
+  Definición src/archivos.cpp:L30–L35; declaración src/archivos.h:L12. Intacta.
+  string corresponde a std::string; sigue llamando MSGPAUSA en L34.
+void resetColor()
+  Definición src/varios.cpp:L134–L136; declaración src/varios.h:L30. Intacta.
+int validarNivelDeAcceso()
+  Definición src/backdoor.cpp:L636–L671; declaración src/backdoor.h:L8. Intacta.
+
+Mapa de sitios frente a main, para complementar H sin modificarlo:
+H L433: mostrarError de case 18, src/backdoor.cpp:613 -> 614.
+H L436: MSGPAUSA de case 18, src/backdoor.cpp:615 -> 612.
+H L434: resetColor de case 18, src/backdoor.cpp:611 -> 611.
+Mismos pares de llamadas y sitios léxicos propios: se conserva 149/352 de H/I.
+La distribución por rama sí cambia: se retira la segunda pausa de la denegación.
+No se añade ninguna función, variable, constante, tipo o dependencia.
+No cambian firmas, referencias o constancias ni se modifican headers.
+
+5. RESULTADO ESPERADO POR RAMA — ANÁLISIS ESTÁTICO
+Nivel 0: [18] continúa oculta y denegada. No ejecuta las asignaciones ni mensajes
+de autorización. L614 llama mostrarError -> MSGPAUSA de archivos.cpp:L34.
+Ya no existe una MSGPAUSA posterior común. UNA llamada a pausa en este recorrido.
+Nivel 1: opción todavía oculta, pero permitida al escribir 18. Mensajes nuevos,
+asignaciones intactas, resetColor y UNA MSGPAUSA en L612.
+Nivel 2: opción visible con texto nuevo; misma rama autorizada y UNA pausa.
+El break redibuja el submenú como antes. El permiso sigue siendo >=1.
+
+«Una llamada a pausa» no garantiza un único Enter: MSGPAUSA conserva ignore/get
+(src/varios.cpp:L109–L110), cuyo consumo depende del stream.
+La corrección B aborda la duplicación comprobada de nivel 0. No prueba la causa
+de dos avisos percibidos en una ejecución permitida; esa correlación sigue pendiente.
+Los mensajes describen permisos; no afirman que se haya iniciado [2] o usado [8].
+No se exige uso previo de [8] ni se cambia su consumo/revocación.
+
+6. CONTROL DOCUMENTAL §7 — EVALUACIÓN, SIN APLICAR CAMBIOS DOCUMENTALES
+Se aplican D L125–L129, L133–L142 y L146–L151. La autorización A+B ya es expresa;
+las modificaciones documentales requerirán aprobación posterior.
+ARQUITECTURA.md — SIN IMPACTO.
+  Mismos módulos, globales, dependencias y relaciones. Ningún cambio en sus 2 grafos.
+  Evidencia: secciones 3–5 de este TXT; H L997–L1008 y L1295–L1299.
+FUNCIONES.md — ACTUALIZAR correspondencia de sitios de llamada.
+  Completar F33/B1 con mostrarError 613->614 y MSGPAUSA 615->612, sin alterar
+  firmas, rangos o aristas. Conservar las etiquetas históricas H L433/L436.
+  Sus 14 diagramas no requieren una arista adicional por mover una llamada.
+FLUJOS.md — ACTUALIZAR explicación de FL-12 y nota de pausas.
+  Indicar una pausa por rama de [18], mantener >=1 y las tres asignaciones.
+  No modificar FL-03 ([2]) ni FL-09 ([8]) ni el ajuste aprobado FL-06.
+ESTADOS.md — SIN IMPACTO.
+  A+B no modifica concesión, consumo, revocación o transiciones de partida.
+  E09/ED-04 conserva sus condiciones. No se atribuye una nueva política a las banderas.
+INTERFAZ.md — ACTUALIZAR UI-07/UI-08.
+  Incorporar los tres textos aprobados y la pausa única de [18]; distinguir
+  llamada a pausa de cantidad de Enter. No anunciar [18] en nivel 1 sin autorizar C.
+
+Ninguna de esas actualizaciones se aplica ahora. Los 35 bloques Mermaid y sus
+etiquetas permanecen intactos. No se ejecuta renderizador al no haber cambios gráficos.
+No se modifican directivas, informes históricos, otras observaciones o diagramas.
+La visibilidad de nivel 1 y la vida de los permisos permanecen como antes.
+
+7. PRUEBAS MÍNIMAS PROPUESTAS — NO EJECUTADAS
+P=modoPruebasHabilitado; R=resolucionAutomaticaHabilitada (abreviaturas documentales).
+T01. Nivel 0, ingresar 18 oculto: mismo error, UNA llamada a pausa, banderas previas
+     intactas y retorno al submenú. Observar avisos y Enter por separado.
+T02. Nivel 1, ingresar 18 oculto: ambos mensajes exactos, tres asignaciones
+     originales, una pausa después de resetColor; no se ejecuta [2] ni [8].
+T03. Nivel 2: anuncio exacto en menú y mismos resultados de T02.
+T04. Tableros incompleto/completo: verificar que los mensajes describan permiso
+     sin dar por ejecutado el resolvedor o iniciado el juego.
+T05. Comprobar en copias aisladas, solo con autorización futura, que [2]/[8]
+     mantienen AUD-10 y #19: consumo de R, cancelaciones y revocación de P al
+     aceptar [8]. No modificar scores ni partidas originales.
+T06. Comparar directamente matrices, nivel, modo y banderas antes/después;
+     no certificar preservación solo por mensajes. Distinguir cambios de [18]
+     de cambios posteriores de los llamadores.
+No se compila ni se ejecuta el juego o un ejecutable de pruebas en esta tarea.
+
+8. VERIFICACIONES Y ESTATUS
+- git diff --check: correcto.
+- Solo src/backdoor.cpp cambia respecto de la base; únicamente A+B.
+- Case [17], todos los otros cases, src/Sodoku.cpp (incluidos [2]/[8]), headers,
+  helpers, archivos de scores/partidas, documentos y directivas: intactos frente a main.
+- Las tres asignaciones, guardia >=1 y autenticación se conservan exactamente.
+- Ramas principal y AUD-12 no se modifican; ningún commit, push, PR ni merge.
+- Cinco firmas centrales compatibles / cinco = 100 %; seis declaraciones contando
+  la duplicada de subMenuBackDoor. Métrica global conservada H/I: 50/50 y 52/52.
+  Los porcentajes no equivalen a cobertura funcional.
+- A+B corregidas localmente y verificadas estáticamente; pendientes compilación,
+  pruebas dinámicas, revisión documental y autorización para integrar/publicar.
+- Cierres de observaciones/issues: 0. Los 19 pendientes documentales se conservan.
+- TXT de diagnóstico anterior: preservado íntegro; este incremental no lo sustituye.
+- Nueva revisión identificada por base más diff y hashes, sin inventar un SHA de commit.
+
+9. DIFF COMPLETO
+diff --git a/src/backdoor.cpp b/src/backdoor.cpp
+index 2d7c54c..e0ea860 100644
+--- a/src/backdoor.cpp
++++ b/src/backdoor.cpp
+@@ -122,7 +122,7 @@ void subMenuBackDoor(int nivelAcceso) {
+             cout << "[  7  ] Borrado de tablero (no borra CELDAFIJA)\n";
+             cout << "[ 13  ] Borrar tablero completo (hard reset)\n";
+             cout << "[ 14  ] Asignar puntaje manual                         [EN DESARROLLO]\n";
+-            cout << "[ 18  ] Habilita Ingresar al [2] Modo competitivo (con niveles) con [8] Resolver automáticamente.\n";
++            cout << "[ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).\n";
+             cout << "\n[ 100 ] SALIDA TOTAL\n";
+             cout << "[  0  ] Volver\n";
+             cout << "=============================================" << endl;
+@@ -603,16 +603,16 @@ void subMenuBackDoor(int nivelAcceso) {
+         case 18: // cout << "[ 18  ] Habilita Ingresar al [2] Modo competitivo (con niveles) con [8] Resolver automáticamente.\n";
+ 
+             if (nivelAcceso >= 1) {
+-                cout << "Se habilita Ingresar al [2] 'Modo competitivo' habiendo usado el [8] 'Resolver automáticamente'." << endl;
++                cout << "Permiso habilitado para solicitar ingreso de pruebas en [2] cuando el tablero esté completo." << endl;
+                 SODOKU_RESUELTO = false;
+                 modoPruebasHabilitado = true;
+                 resolucionAutomaticaHabilitada = true;
+-                cout << "Se autoriza un intento de [8] Resolver automaticamente en el tablero actual.\n";
++                cout << "Permiso habilitado para un intento de [8] en contexto competitivo; se consume incluso si se cancela.\n";
+                 resetColor();
++                MSGPAUSA();
+             } else {
+                 mostrarError("Nivel insuficiente para esta opción.");
+             }
+-            MSGPAUSA();
+             break;
+         case 19: // borrar scores.
+             break;
+
+SHA-256 src/backdoor.cpp base: 1f95210084cfeaa645f939e28ee249d2265df7805425058e3b94234a657ad769
+SHA-256 src/backdoor.cpp local: 4fa42012224b620efa7779bc42c489714a9a5af7c485b78a60dfc4d97d369ed9
+SHA-256 del diff: ebfdb06e790939eff533feb7df2ba9876d326f4cf0532b0014045e96bc1f0876
+
+FIN. Esperar revisión; no se autoriza implícitamente ningún paso adicional.
