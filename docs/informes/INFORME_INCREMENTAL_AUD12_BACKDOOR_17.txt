@@ -1,0 +1,339 @@
+INFORME INCREMENTAL AUD-12 — BACKDOOR [17] Y AUDITORÍA DE PERMISOS
+Sodoku C++ v0.9.4 — Issue #24 — 25/11/2026 (America/Buenos_Aires)
+Estado: corrección local aplicada; documentación propuesta; SIN COMPILAR NI EJECUTAR.
+
+==============================================================================
+1. BASE, AUTORIZACIÓN Y TRAZABILIDAD
+==============================================================================
+Repositorio: gastonjavierricchiardi/Sodoku-cpp.
+Rama de trabajo: fix/aud-12-backdoor-17, creada desde origin/main actualizado.
+Commit base y HEAD: 5f82994f000e8e3a66f8d434419062950649e0b4.
+Revisión nueva: árbol de trabajo sobre ese commit; no existe un nuevo commit.
+Único archivo versionado modificado: src/backdoor.cpp. Diff: 3 adiciones/4 bajas.
+La autorización del usuario comprende menú, comentario, guardia y retiro del
+mensaje de [17]; prevalece sobre la decisión A/B antes pendiente del issue.
+No se solicitó una nueva confirmación de esos cambios ya expresamente autorizados.
+Las propuestas documentales de este informe NO están autorizadas para aplicarse.
+No se modificó main ni se integraron otras ramas.
+
+Evidencia documental conservada:
+H0: AUDITORIA_SODOKU_094.txt local, L753–L756, AUD-12; no versionado ni incorporado.
+H: docs/informes/INFORME_ARQUITECTURA_SODOKU.txt, commit analizado d9cc5c6.
+   H L426–L451: F33/F34; L1179–L1197: despacho/pausas; L1340–L1355: permisos;
+   L1423–L1439: ARQ-10/11/13; L1570–L1604: métricas y límites.
+I: docs/informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt.
+   I L121–L129: MSGPAUSA/colores; L279–L322: métricas y pendientes.
+D: docs/DIRECTIVAS.md v1.1, sección 7, L119–L151, de main 5f82994.
+N: este informe; las líneas indicadas más abajo corresponden a su contenido.
+La lectura/edición de fuentes y la auditoría adicional están autorizadas por esta
+solicitud. Los informes históricos no se reescriben ni se renumeran sus etiquetas.
+
+==============================================================================
+2. CORRECCIÓN EXACTA Y FLUJO RESULTANTE
+==============================================================================
+Ubicaciones verificadas antes de editar, todas en src/backdoor.cpp de main:
+- L106: anuncio del menú de nivel 2. Se retira únicamente el paréntesis de 2FA.
+- L593: comentario del case 17. Queda: // Mostrar Matriz Resuelta (nivel >= 2)
+- L594: guardia >=1 reemplazada por >=2, ANTES de mostrar la solución.
+- L596 anterior: se elimina el cout que solicitaba el doble factor inexistente.
+Se conserva la línea en blanco previa y la terminación original sin salto final.
+
+Nuevas ubicaciones en src/backdoor.cpp:
+L106: cout << "[ 17  ] Mostrar Matriz Resuelta\n";
+L593: case 17: // Mostrar Matriz Resuelta (nivel >= 2)
+L594: if (nivelAcceso >= 2) {
+L596: mostrarMatriz(SOLUCION, "SOLUCIÓN DEL TABLERO");
+L597: MSGPAUSA();
+L599: mostrarError("Nivel insuficiente para esta opción.");
+L601: break;
+
+Nivel 0: [17] oculta; si se escribe, error existente y pausa interna de mostrarError.
+Nivel 1: [17] oculta; si se escribe, mismo error; NO se muestra SOLUCION.
+Nivel 2: [17] visible; muestra SOLUCION y pausa; después redibuja BackDoor.
+No se implementa un segundo factor ni una confirmación nueva. El anuncio se elimina.
+mostrarMatriz(), MSGPAUSA() y mostrarError() no se modifican.
+mostrarMatriz no limpia pantalla; el submenú la limpia al siguiente ciclo en :52.
+No hay asignaciones nuevas a matrices, nivel de partida, intentos o banderas.
+El estado de cin y la presentación siguen sujetos a las pausas existentes.
+
+==============================================================================
+3. FIRMAS, LLAMADAS Y CAMBIOS DE UBICACIÓN
+==============================================================================
+void subMenuBackDoor(int nivelAcceso)
+  Definición: src/backdoor.cpp:48–634 antes; 48–633 ahora.
+  Declaraciones: void subMenuBackDoor(int nivel); src/backdoor.h:7; src/Sodoku.h:58.
+  Compatibles: sí; nivel/nivelAcceso son nombres formales, no diferencias de tipo.
+int validarNivelDeAcceso()
+  Definición: src/backdoor.cpp:636–671 antes; 635–670 ahora.
+  Declaración: int validarNivelDeAcceso(); src/backdoor.h:8. Compatible: sí.
+  Su cuerpo permanece idéntico; solo se desplaza una línea.
+void mostrarMatriz(int matriz[TAM][TAM], std::string titulo)
+  Definición: src/Sodoku.cpp:83–106; declaración: src/Sodoku.h:60. Sin cambios.
+void MSGPAUSA()
+  Definición: src/varios.cpp:106–111; declaración: src/varios.h:27. Sin cambios.
+void mostrarError(string mensaje)
+  Definición: src/archivos.cpp:30–35; declaración: src/archivos.h:12. Sin cambios.
+No cambian tipos, constancias, referencias, cabeceras, funciones ni símbolos globales.
+
+Llamadas de [17]: mostrarMatriz en :596 y MSGPAUSA en :597 si nivel>=2;
+mostrarError en :599 en caso contrario. mostrarError sigue incluyendo su pausa.
+No se añade ni elimina ninguna llamada propia: los cout no son funciones propias.
+Se conservan los 149 pares, 352 sitios propios y 12 pares entre módulos de H/I.
+
+Regla de desplazamiento: líneas anteriores 1–595 conservan posición; L596 se
+elimina; todas las líneas anteriores 597–671 pasan a su número menos uno.
+Mapa específico que complementa H L426–L451, SIN editar sus referencias:
+F33 mostrarMatriz: 597 -> 596; MSGPAUSA: 598/615 -> 597/614.
+F33 mostrarError: 600/613/626/630 -> 599/612/625/629.
+F33 resetColor: 611 -> 610; fijarCeldasActuales: 622 -> 621.
+F34 limpiarPantalla: 637 -> 636.
+F34 colorTexto: 638/644/648/666 -> 637/643/647/665.
+F34 MSGPAUSA: 652/657/662/669 -> 651/656/661/668.
+F34 resetColor: 668 -> 667.
+Resto de sitios anteriores a L596: intactos. No se divulgan valores de autenticación.
+
+==============================================================================
+4. AUDITORÍA ADICIONAL: TODAS LAS OPCIONES Y NIVELES
+==============================================================================
+SOLO ANÁLISIS. Líneas referidas al árbol de trabajo ya corregido.
+El switch de nivel :54–133 dibuja; el de opción :162–631 ejecuta. No existe filtro
+central de opciones visibles. Una opción oculta puede llegar a su case, pero
+las guardias locales deben denegar ANTES de su operación cuando el rol no alcanza.
+Roles ajenos a 0/1/2 se rechazan en :130–132 antes del despacho.
+
+Leyenda: V=visible; O=oculta; A=camino autorizado por rol; D=denegado por guardia;
+N=rama vacía, sin acción ni rechazo. A no garantiza que la operación tenga éxito.
+No se ejecutó ninguna opción para construir esta tabla.
+
+Opción | Visibilidad 0/1/2 | Efecto por rol 0/1/2 | Guardia y cuerpo (backdoor.cpp)
+[0]    | V/V/V             | A/A/A                | :145–148; return al llamador
+[1]    | V/V/V             | A/A/A                | sin guardia; :163–166; MATRIZ
+[2]    | V/V/V             | A/A/A                | sin guardia; :167–188; CELDAFIJA
+[3]    | V/V/V             | A/A/A                | sin guardia; :189–216; MASCARA
+[4]    | V/V/V             | A/A/A                | sin guardia; :217–233; diagnóstico
+[5]    | O/V/V             | D/A/A                | >=1 :250; cuerpo :235–278
+[6]    | O/V/V             | D/A/A                | >=1 :280; cuerpo :279–291
+[7]    | O/V/V             | D/A/A                | >=1 :293; cuerpo :292–299
+[8]    | O/V/V             | D/A/A                | >=1 :301; cuerpo :300–370
+[9]    | O/V/V             | D/A/A                | >=1 :372; cuerpo :371–377
+[10]   | O/O/V             | D/D/A                | >=2 :380; cuerpo :379–416
+[11]   | O/O/V             | D/D/A                | >=2 :418; cuerpo :417–463
+[12]   | O/O/V             | D/D/A                | >=2 :465; cuerpo :464–519
+[13]   | O/O/V             | D/D/A                | >=2 :521; cuerpo :520–556
+[14]   | O/O/V             | N/N/N                | sin guardia; solo break :557–558
+[15]   | O/O/V             | D/D/A                | >=2 :560; cuerpo :559–589
+[16]   | V/V/V             | A/A/A                | sin guardia; :590–592; exportar CSV
+[17]   | O/O/V             | D/D/A                | >=2 :594; cuerpo :593–601; corregido
+[18]   | O/O/V             | D/A/A                | >=1 :604; cuerpo :602–615
+[19]   | O/O/O             | N/N/N                | sin guardia; solo break :616–617
+[20]   | O/O/V             | D/D/A                | >=2 :619; cuerpo :618–627
+[100]  | O/O/V             | D/D/A                | >=2 :152; ruta previa :151–159
+
+Líneas de anuncio por nivel 0 / 1 / 2; «—» indica ausencia en su menú:
+[0] 69/92/127; [1] 61/79/103; [2] 62/80/104; [3] 63/81/105; [4] 65/83/113.
+[5] —/86/116; [6] —/84/114; [7] —/87/122; [8] —/88/107; [9] —/89/117.
+[10] —/—/108; [11] —/—/109; [12] —/—/110; [13] —/—/123; [14] —/—/124.
+[15] —/—/119; [16] 67/90/118; [17] —/—/106; [18] —/—/125; [19] —/—/—.
+[20] —/—/111; [100] —/—/126.
+La opción pública de consulta de rankings es [4] del menú PRINCIPAL, no [4] de
+BackDoor; lo aclaran los anuncios :68,91,120. No se cambia esa política de AUD-11.
+
+Comprobaciones de orden antes de las operaciones protegidas:
+[5] guardia :250 antes de copiar :264–265; [6] :280 antes de escribir :282–283.
+[7] :293 antes de limpiarTablero :294; [8] :301 antes de editar :360.
+[9] :372 antes de guardar :373; [10] :380 antes de editar :405.
+[11] :418 antes de desmarcar :450; [12] :465 antes de desmarcar :500.
+[13] :521 antes de borrar :539–540; [15] :560 antes de confirmar :567 y reset :576.
+[17] :594 antes de mostrar :596; [18] :604 antes de banderas :606–608.
+[20] :619 antes de fijar :621; [100] :152 antes de exit :154.
+Los niveles insuficientes de esas rutas tienen un else de error; no acceden a
+la operación protegida aunque ingresen el número oculto. No hay nuevos bypasses
+confirmados en esas guardias por el análisis de despacho y de orden efectuado.
+
+==============================================================================
+5. INCONSISTENCIAS: REGISTRO SIN CORREGIR OTRAS OPCIONES
+==============================================================================
+A. [16], P2, COMPROBADA; ARQ-10 continúa PENDIENTE.
+   CONVENCIONES.md:193 asigna CSV a nivel 2. Se anuncia a 0/1/2 (:67,90,118) y
+   case 16 llama exportarMatrizACSV sin guardia (:590–592).
+   El helper src/archivos.cpp:504–535 tampoco recibe ni verifica rol; abre el
+   CSV en :512. Por tanto 0/1 pueden alcanzar la exportación según el código.
+   Es una diferencia real con la política escrita, no solo una opción oculta.
+   Evidencia previa: H L1423–L1425. No se cambia su permiso en esta tarea.
+B. [18], VISIBILIDAD NO ALINEADA, sin declarar nivel 1 insuficiente.
+   Se anuncia solo al nivel 2 (:125), pero >=1 (:604) permite la excepción.
+   H L1348 y L1295–L1299 describen ese permiso de nivel 1 ya existente.
+   Oculta no significa prohibida. Cambiar su guardia alteraría AUD-10/issue #19;
+   se conserva íntegra. Decidir sobre visibilidad requiere autorización separada.
+C. [14]/[19], P3, COMPROBADA; continuidad de ARQ-13, PENDIENTE.
+   [14] se anuncia solo en nivel 2 y en desarrollo (:124); ambos cases son break
+   (:557–558,616–617), incluso si 0/1 los escriben manualmente. No hay rechazo
+   por nivel, pero tampoco acción implementada ni borrado de scores en [19].
+   CONVENCIONES.md:191 reserva la futura asignación manual al nivel 2. No se
+   certifica protección de una función futura; deberá definirse antes de activarla.
+D. Etiquetas, P3, COMPROBADAS; no se modifican.
+   Nivel 1/2 imprime también cabeceras de niveles inferiores (:75–76,98–100).
+   [0] de nivel 0 dice «Volver al menú principal» (:69), pero hace return (:148)
+   al llamador, que puede ser manual/competitivo. [11] se anuncia como edición
+   (:109), pero solo desmarca fijas (:449–455), conforme H L1438–L1439.
+E. Pausas, continuidad de ARQ-14, PENDIENTE.
+   [5]/[6]/[7] y [18] aún combinan mostrarError con MSGPAUSA posterior
+   (:274/276,288/290,296/298,612/614). mostrarError ya pausa en archivos.cpp:34.
+   Se registra el orden, sin afirmar cantidad universal de Enter ni corregirlo.
+   Se conservan las excepciones aprobadas de [15]/[20] y sus permisos >=2.
+
+AUD-12/ARQ-11: defecto de anuncio y umbral corregido localmente según autorización;
+pendientes validación dinámica, revisión documental e integración. No se cierra
+el issue. No se duplican A/C/E como issues nuevos ni se equipara la incidencia
+INC-5C48CD4-01 a estas pausas sin reproducción. B/D son observaciones de esta matriz,
+no cierres ni nuevas restricciones sobre otras opciones.
+
+==============================================================================
+6. CONTROL DOCUMENTAL D §7: RESULTADO POR DOCUMENTO
+==============================================================================
+Referencias: D L125–L129, L133–L142 y L146–L151. Las evaluaciones se sustentan
+en N L32–L57, L60–L93, L96–L151 y L154–L189; H/I conservan su condición histórica.
+ARQUITECTURA.md — SIN IMPACTO.
+  N L60–L93: mismos módulos, dependencias, pares de llamadas y estado compartido.
+  Sus 2 grafos no describen el umbral de [17]; no requieren cambiar aristas.
+  No se reescriben sus métricas o pendientes históricos como si fueran nuevos.
+FUNCIONES.md — ACTUALIZAR.
+  N L60–L93: cambian rangos F33/F34 y sitios de llamada, aunque no las firmas ni
+  las aristas de B1. Añadir correspondencia incremental; mantener L431–L451 y
+  sus 14 grafos. No sustituir ubicaciones rotuladas explícitamente «5c48cd4».
+FLUJOS.md — ACTUALIZAR.
+  N L32–L57 y L96–L151: explicar nivel>=2 de [17], eliminación del falso prompt,
+  error antes de mostrar y retorno por break. FL-11 :248–264 admite ese detalle
+  en texto sin cambiar su grafo genérico. Registrar el avance local de ARQ-11.
+ESTADOS.md — ACTUALIZAR.
+  N L32–L57 y L154–L189: actualizar la nota de ARQ-11 (:209), manteniéndolo pendiente
+  de validación/integración. No hay nuevas banderas ni transiciones de partida;
+  ED-04, de permisos de [18], conserva su grafo y las condiciones de AUD-10/#19.
+INTERFAZ.md — ACTUALIZAR.
+  N L32–L57 y L96–L151: UI-07 :193 todavía dice >=1 y :202 describe discrepancia de
+  visibilidad. Debe reflejar >=2 y el menú sin 2FA; actualizar nota ARQ-11 :263.
+  UI-NAV no cambia: la opción conserva su pausa y redibujado de BackDoor.
+
+Los 35 bloques Mermaid (2+14+12+6+1) y sus etiquetas se mantienen byte por byte.
+No se afirma haber validado renderizado nuevo: no hay cambios gráficos aplicados.
+Las notas previas de fases/estado ajenas a AUD-12 no se corrigen en esta tarea.
+
+==============================================================================
+7. MODIFICACIONES DOCUMENTALES PROPUESTAS, NO APLICADAS
+==============================================================================
+Propuesta de referencia incremental: este TXT, identificado por base y hashes del
+archivo y del diff locales. Su eventual incorporación/enlace en docs/informes requiere
+aprobación de ubicación y contenido; actualmente está fuera del repositorio.
+No hay nuevo SHA de commit que pueda citarse como publicado.
+
+P1. FUNCIONES.md, junto a fichas F33/F34 (:525–526), añadir un bloque separado:
+  «Actualización local AUD-12 sobre main 5f82994: subMenuBackDoor pasa de
+  backdoor.cpp:48–634 a 48–633; validarNivelDeAcceso de 636–671 a 635–670.
+  Firmas y llamadas conservadas. Correspondencia de sitios: informe incremental
+  AUD-12, N L60–L93. Las ubicaciones 5c48cd4 y etiquetas del TXT histórico se conservan.»
+  No reemplazar la tabla histórica ni las relaciones Mermaid de B1.
+P2. FLUJOS.md:264, sustituir solo su última oración por:
+  «En la revisión local AUD-12, [17] exige nivel >= 2 antes de mostrar SOLUCION;
+  los niveles 0/1 reciben el error existente. No se anuncia ni solicita doble
+  factor. La rama conserva su pausa y redibuja BackDoor mediante break
+  (informe incremental AUD-12, N L32–L57).»
+  Preservar el resto del párrafo, FL-06, FL-12 y todas las aristas.
+P3. INTERFAZ.md:193, reemplazo de la fila de maqueta:
+  Antes: [17] Mostrar solución               guardia: nivel >= 1
+  Después: [17] Mostrar solución             guardia: nivel >= 2
+  Conservar alineación monoespaciada al aplicar la propuesta.
+  En :202, reemplazar las dos primeras oraciones por:
+  «En la revisión local AUD-12, [17] se anuncia y se permite únicamente al
+  nivel 2. El menú dice [ 17  ] Mostrar Matriz Resuelta; no hay mensaje ni
+  validación de doble factor (informe incremental AUD-12, N L32–L57).»
+  Conservar las oraciones de [16] y de protección de información sensible.
+P4. FLUJOS.md:306, ESTADOS.md:209 e INTERFAZ.md:263, conservar la etiqueta
+  ARQ-11 · PENDIENTE, la prioridad P2 y la referencia histórica, y añadir a la
+  descripción, sin declarar cierre:
+  «Corrección AUD-12 aplicada localmente: solo nivel 2, sin anuncio de doble
+  factor; pendiente de validación e integración (N L32–L57).»
+P5. ARQUITECTURA.md: ninguna modificación propuesta por este parche.
+
+Las propuestas P1–P4 se someten a aprobación posterior; no se aplicó ninguna.
+Las referencias N se fijan a las líneas de este TXT; las Lnnn de H no se modifican.
+
+==============================================================================
+8. VERIFICACIONES ESTÁTICAS Y PRUEBAS PROPUESTAS
+==============================================================================
+Realizadas sin compilar ni ejecutar el programa:
+- Diff exacto equivalente a las cuatro sustituciones autorizadas y nada más.
+- git diff --check: correcto; solo src/backdoor.cpp modificado, sin staged changes.
+- Autenticación y todos los cases salvo [17]: contenido idéntico a la base.
+- Guardias de opciones 1–20 y rutas 0/100 comparadas con la matriz de N L96–L151.
+- .h, otras fuentes, diagramas, directivas, informes y scores: hashes intactos.
+- Banderas, funciones y tipos: ninguno añadido; firma de F33 conservada.
+- Main no cambia; la rama de trabajo tiene HEAD igual a la base y cambios locales.
+
+Pruebas mínimas NO EJECUTADAS, requieren autorización futura:
+T01. Nivel 0: ingresar 17 oculto; error existente y pausa; sin mostrar SOLUCION.
+T02. Nivel 1: mismo rechazo que T01; no se concede excepción por escribir 17.
+T03. Nivel 2: anuncio sin paréntesis; solución, pausa existente y redibujado,
+     sin solicitar una credencial nueva. Observar cin y Enter sin asumir cantidad.
+T04. Repetir acceso desde menú, manual y competitivo; respetar el llamador real.
+T05. Comparar directamente matrices y banderas antes/después si es observable;
+     no certificar integridad solo por mensajes. No usar scores/partidas originales.
+T06. Para la auditoría adicional, ejecutar la matriz 0/1/2 en entorno aislado
+     únicamente si se autoriza: [15] y [20] deben negar 0/1 antes de operar;
+     [100] debe negar 0/1; [18] conserva >=1; registrar [16] como inconsistencia,
+     sin considerar su ejecución autorizada como cambio de política.
+T07. Compilar con C++17 y advertencias solo tras autorización; no se compila aquí.
+No se han aprobado pruebas por la mera lectura del código.
+
+==============================================================================
+9. ESTATUS DE CUMPLIMIENTO Y ARTEFACTOS
+==============================================================================
+Corrección AUD-12: APLICADA LOCALMENTE y verificada estáticamente; sin publicación.
+Compilación y pruebas dinámicas: NO EJECUTADAS por restricción expresa.
+Correspondencia F33/F34: 2/2 firmas únicas compatibles; 3 declaraciones contando
+la duplicada de subMenuBackDoor. Métrica global conservada: 50/50 = 100 % y
+52/52 prototipos (H L1574–L1580; I L282–L285), sin equivaler a cobertura funcional.
+Observaciones cerradas: 0; una corrección estática local pendiente de validación.
+Los 19 registros documentales (ARQ-01..18 e INC-5C48CD4-01) siguen pendientes.
+Se informa el avance de ARQ-11 sin fingir un cierre, ni dar otras incidencias por
+resueltas. Las demás inconsistencias analizadas permanecen sin corrección.
+Diagramas modificados: 0/35. Documentos propuestos: cuatro ACTUALIZAR, uno SIN IMPACTO.
+No hay cambios en AUD-10, otras opciones de AUD-11, issue #19, rankings o permisos
+ajenos a [17]. No hay commits nuevos, push, PR, merge, compilación ni ejecución.
+Este TXT nuevo se entrega fuera del árbol del repositorio para revisión.
+
+==============================================================================
+10. DIFF COMPLETO DE CÓDIGO Y HUELLAS
+==============================================================================
+diff --git a/src/backdoor.cpp b/src/backdoor.cpp
+index 2d7c54c..0a4d358 100644
+--- a/src/backdoor.cpp
++++ b/src/backdoor.cpp
+@@ -103,7 +103,7 @@ void subMenuBackDoor(int nivelAcceso) {
+             cout << "[  1  ] Mostrar MATRIZ\n";
+             cout << "[  2  ] Mostrar CELDAFIJA\n";
+             cout << "[  3  ] Mostrar MASCARA\n";
+-            cout << "[ 17  ] Mostrar Matriz Resuelta (Requiere doble factor de autentificación)\n";
++            cout << "[ 17  ] Mostrar Matriz Resuelta\n";
+             cout << "[  8  ] Fijar celda por coordenada\n";
+             cout << "[ 10  ] Editar MATRIZ manualmente\n";
+             cout << "[ 11  ] Editar CELDAFIJA\n";
+@@ -590,10 +590,9 @@ void subMenuBackDoor(int nivelAcceso) {
+         case 16: // [ 16  ] Exportar datos a CSV
+             exportarMatrizACSV();
+             break;
+-        case 17: // cout << "[ 17  ] Ver Matriz Resuelta (Requiere doble factor de autentificación)
+-            if (nivelAcceso >= 1) {
++        case 17: // Mostrar Matriz Resuelta (nivel >= 2)
++            if (nivelAcceso >= 2) {
+ 
+-                cout << "Ingrese doble factor de autentificación: " << endl;
+                 mostrarMatriz(SOLUCION, "SOLUCIÓN DEL TABLERO");
+                 MSGPAUSA();
+             } else {
+
+SHA-256 backdoor.cpp base: 1f95210084cfeaa645f939e28ee249d2265df7805425058e3b94234a657ad769
+SHA-256 backdoor.cpp local: 4363eac893b8ca807f73a717c9d7bca5e4338c327ebc11801a87ff50a26b74d9
+Blob Git del contenido local: 0a4d3584ea29695d31240ab57bd8952098bcc094
+SHA-256 del diff: 7430a9b96ffefcfcb134b819c54a28a2624ffcea36d3f2921a1ac7c52a5bb75e
+
+FIN. Esperar aprobación de las propuestas documentales y autorización para otros pasos.

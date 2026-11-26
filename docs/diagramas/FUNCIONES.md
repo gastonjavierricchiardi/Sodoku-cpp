@@ -525,6 +525,8 @@ flowchart LR
 | F33 · P | `void subMenuBackDoor(int nivelAcceso)` | `src/backdoor.cpp:48–634` | `src/Sodoku.h:58`; `src/backdoor.h:7` | §3, [L426–L442](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L426-L442) |
 | F34 · A | `int validarNivelDeAcceso()` | `src/backdoor.cpp:636–671` | `src/backdoor.h:8` | §3, [L443–L451](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L443-L451) |
 
+Actualización local AUD-12 sobre `main` `5f82994`: `subMenuBackDoor` pasa de `src/backdoor.cpp:48–634` a `48–633`; `validarNivelDeAcceso` de `636–671` a `635–670`. Firmas y llamadas conservadas. Correspondencia de sitios: [informe incremental AUD-12, §3, L60–L93](../informes/INFORME_INCREMENTAL_AUD12_BACKDOOR_17.txt#L60-L93). Las ubicaciones de `5c48cd4` y las etiquetas del TXT histórico se conservan.
+
 ### B1. Administración y autenticación: llamadas públicas
 
 14 nodos representados; 16 pares de llamadas. Fichas de las llamadoras o funciones aisladas: F33 ([L426–L442](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L426-L442)), F34 ([L443–L451](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L443-L451)).

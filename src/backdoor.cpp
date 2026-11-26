@@ -103,7 +103,7 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  1  ] Mostrar MATRIZ\n";
             cout << "[  2  ] Mostrar CELDAFIJA\n";
             cout << "[  3  ] Mostrar MASCARA\n";
-            cout << "[ 17  ] Mostrar Matriz Resuelta (Requiere doble factor de autentificación)\n";
+            cout << "[ 17  ] Mostrar Matriz Resuelta\n";
             cout << "[  8  ] Fijar celda por coordenada\n";
             cout << "[ 10  ] Editar MATRIZ manualmente\n";
             cout << "[ 11  ] Editar CELDAFIJA\n";
@@ -590,10 +590,9 @@ void subMenuBackDoor(int nivelAcceso) {
         case 16: // [ 16  ] Exportar datos a CSV
             exportarMatrizACSV();
             break;
-        case 17: // cout << "[ 17  ] Ver Matriz Resuelta (Requiere doble factor de autentificación)
-            if (nivelAcceso >= 1) {
+        case 17: // Mostrar Matriz Resuelta (nivel >= 2)
+            if (nivelAcceso >= 2) {
 
-                cout << "Ingrese doble factor de autentificación: " << endl;
                 mostrarMatriz(SOLUCION, "SOLUCIÓN DEL TABLERO");
                 MSGPAUSA();
             } else {

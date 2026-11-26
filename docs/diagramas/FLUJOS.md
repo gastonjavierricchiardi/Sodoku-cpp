@@ -261,7 +261,7 @@ flowchart TD
     opcion -->|"[100] y nivel ≥ 2"| fin["exit(0): terminar proceso"]
 ```
 
-Ocultar una opción no evita que llegue a su `case`. El nivel se pasa como parámetro; no hay un rol global de sesión reutilizado automáticamente. Los retornos no se normalizan como vuelta al menú principal: dependen del llamador. No se dibuja un segundo factor efectivo que los informes no verifican.
+Ocultar una opción no evita que llegue a su `case`. El nivel se pasa como parámetro; no hay un rol global de sesión reutilizado automáticamente. Los retornos no se normalizan como vuelta al menú principal: dependen del llamador. En la revisión local AUD-12, `[17]` exige nivel >= 2 antes de mostrar `SOLUCION`; los niveles 0/1 reciben el error existente. No se anuncia ni solicita doble factor. La rama conserva su pausa y redibuja BackDoor mediante `break` ([informe incremental AUD-12, §2, L32–L57](../informes/INFORME_INCREMENTAL_AUD12_BACKDOOR_17.txt#L32-L57)).
 
 ### FL-12. Protecciones de [15], [20] y excepción [18]
 
@@ -303,7 +303,7 @@ Todos los registros siguientes permanecen **PENDIENTES**. Que un aspecto esté c
 | ARQ-08 · PENDIENTE | P2 | Validadores y resolvedor no son sanitizadores. | [H §11, L1411–L1417](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1411-L1417) |
 | ARQ-09 · PENDIENTE | P2 | Unicidad no garantizada. | [H §11, L1418–L1422](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1418-L1422) |
 | ARQ-10 · PENDIENTE | P2 | Discrepancia de permiso de exportación. | [H §11, L1423–L1425](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1423-L1425) |
-| ARQ-11 · PENDIENTE | P2 | Segundo factor anunciado sin verificación adicional. | [H §11, L1426–L1428](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1426-L1428) |
+| ARQ-11 · PENDIENTE | P2 | Segundo factor anunciado sin verificación adicional. Corrección AUD-12 aplicada localmente: solo nivel 2, sin anuncio de doble factor; pendiente de validación e integración ([N L32–L57](../informes/INFORME_INCREMENTAL_AUD12_BACKDOOR_17.txt#L32-L57)). | [H §11, L1426–L1428](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1426-L1428) |
 | ARQ-12 · PENDIENTE | P2 | Fijación pública y administrativa. | [H §11, L1429–L1433](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1429-L1433) |
 | ARQ-13 · PENDIENTE | P3 | Opciones parciales y etiquetas. | [H §11, L1434–L1439](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1434-L1439) |
 | ARQ-14 · PENDIENTE | P3 | Contratos de pausas aún mixtos. | [H §11, L1440–L1446](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1440-L1446) |

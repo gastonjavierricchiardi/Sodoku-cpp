@@ -190,7 +190,7 @@ ACCESO ADMINISTRATIVO — VISTA DOCUMENTAL
 HERRAMIENTAS PÚBLICAMENTE DESCRITAS — NO ES MENÚ LITERAL
   [15] Borrar ranking                 guardia: nivel >= 2
   [16] Exportar CSV                   sin guardia local documentada
-  [17] Mostrar solución               guardia: nivel >= 1
+  [17] Mostrar solución               guardia: nivel >= 2
   [18] Conceder excepciones           guardia: nivel >= 1
   [20] Fijar todas las celdas          guardia: nivel >= 2
   [100] Terminar proceso              guardia: nivel >= 2
@@ -199,7 +199,7 @@ HERRAMIENTAS PÚBLICAMENTE DESCRITAS — NO ES MENÚ LITERAL
 
 `[15]/[20]` pueden alcanzar sus `case` aun estando ocultas; las guardias operan antes del borrado/fijación. `[15]` autorizado confirma S/N y retorna al llamador; `[20]` usa `break` y redibuja el submenú. `[100]` autorizado termina el proceso.
 
-La visibilidad de `[17]` y su guardia no coinciden plenamente. No se muestra ni se afirma un segundo factor efectivo. `[16]` conserva el comportamiento registrado sin aplicar una corrección de permisos por conveniencia de la maqueta. No se transcriben credenciales, nombres de variables de autenticación, claves, valores de acceso ni la pantalla que los expone.
+En la revisión local AUD-12, `[17]` se anuncia y se permite únicamente al nivel 2. El menú dice `[ 17  ] Mostrar Matriz Resuelta`; no hay mensaje ni validación de doble factor ([informe incremental AUD-12, §2, L32–L57](../informes/INFORME_INCREMENTAL_AUD12_BACKDOOR_17.txt#L32-L57)). `[16]` conserva el comportamiento registrado sin aplicar una corrección de permisos por conveniencia de la maqueta. No se transcriben credenciales, nombres de variables de autenticación, claves, valores de acceso ni la pantalla que los expone.
 
 La incidencia **INC-5C48CD4-01** permanece separada: los TXT no permiten asignar su doble salida a un `case` concreto ni declararla reproducida o duplicada de ARQ-14 ([I §8, L298–L322](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L298-L322)).
 
@@ -260,7 +260,7 @@ Todos los registros siguientes permanecen **PENDIENTES**. Que un aspecto esté c
 | ARQ-08 · PENDIENTE | P2 | Validadores y resolvedor no son sanitizadores. | [H §11, L1411–L1417](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1411-L1417) |
 | ARQ-09 · PENDIENTE | P2 | Unicidad no garantizada. | [H §11, L1418–L1422](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1418-L1422) |
 | ARQ-10 · PENDIENTE | P2 | Discrepancia de permiso de exportación. | [H §11, L1423–L1425](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1423-L1425) |
-| ARQ-11 · PENDIENTE | P2 | Segundo factor anunciado sin verificación adicional. | [H §11, L1426–L1428](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1426-L1428) |
+| ARQ-11 · PENDIENTE | P2 | Segundo factor anunciado sin verificación adicional. Corrección AUD-12 aplicada localmente: solo nivel 2, sin anuncio de doble factor; pendiente de validación e integración ([N L32–L57](../informes/INFORME_INCREMENTAL_AUD12_BACKDOOR_17.txt#L32-L57)). | [H §11, L1426–L1428](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1426-L1428) |
 | ARQ-12 · PENDIENTE | P2 | Fijación pública y administrativa. | [H §11, L1429–L1433](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1429-L1433) |
 | ARQ-13 · PENDIENTE | P3 | Opciones parciales y etiquetas. | [H §11, L1434–L1439](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1434-L1439) |
 | ARQ-14 · PENDIENTE | P3 | Contratos de pausas aún mixtos. | [H §11, L1440–L1446](../informes/INFORME_ARQUITECTURA_SODOKU.txt#L1440-L1446) |
