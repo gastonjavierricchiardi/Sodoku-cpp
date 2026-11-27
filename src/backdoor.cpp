@@ -88,6 +88,7 @@ void subMenuBackDoor(int nivelAcceso) {
             cout << "[  8  ] Fijar celda por coordenada\n";
             cout << "[  9  ] Forzar guardado rápido\n";
             cout << "[ 16  ] Exportar datos a CSV\n";
+            cout << "[ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).\n";
             cout << "Consulta de rankings: opcion [4] del menu principal (solo lectura).\n";
             cout << "\n[  0  ] Volver\n";
             cout << "=============================================" << endl;

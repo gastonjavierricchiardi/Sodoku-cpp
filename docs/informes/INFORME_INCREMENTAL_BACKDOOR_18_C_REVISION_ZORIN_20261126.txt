@@ -1,0 +1,107 @@
+SODOKU C++ v0.9.4 — BACKDOOR [18], REVISIÓN C Y EVIDENCIA ZORIN
+Fecha: 26/11/2026 — America/Buenos_Aires
+Estado: C aplicada localmente; propuestas documentales pendientes de aprobación.
+
+1. ESTADO Y ALCANCE
+Rama: fix/backdoor-18-mensajes-pausas.
+HEAD y base conservados: e121e5e232b1ab4612625b383ad29175b993e1e2.
+La instrucción repetida ya estaba implementada: no se vuelve a insertar.
+Único cambio pendiente de código: UNA línea en src/backdoor.cpp:L91.
+Mismo texto que nivel 2 en L126, sin cambios en guardia >=1, mensajes, pausas
+ni asignaciones de las tres banderas. A+B se conserva byte por byte en el case.
+No se modifican [17], [2], [8], main o referencias Git. AUD-12 no se incorpora.
+
+2. EVIDENCIA
+D: docs/DIRECTIVAS.md §7, L119–L151: revisión de impacto, aprobación separada y
+conservación de evidencia histórica; no compilación o ejecución sin autorización.
+H: docs/informes/INFORME_ARQUITECTURA_SODOKU.txt, L426–L451, L1295–L1299,
+L1340–L1355: funciones, concesión y guardias.
+AB: docs/informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt,
+L38–L96: textos, firmas, llamadas y pausas de A+B.
+C: INFORME_INCREMENTAL_BACKDOOR_18_VISIBILIDAD_C_20261126.txt, 152 líneas,
+conservado sin modificaciones como incremental técnico de la única línea añadida.
+Este complemento registra los resultados manuales ahora comunicados por el usuario.
+
+Pruebas de Zorin OS, fuente: mensaje actual del usuario; no ejecutadas por Codex:
+Nivel | Resultado reportado | Estado de la evidencia
+0 | Acceso denegado, una pausa | APROBADA POR EL USUARIO
+1 | Acceso permitido, ambos mensajes correctos, una pausa | APROBADA POR EL USUARIO
+2 | Acceso permitido, ambos mensajes correctos, una pausa | APROBADA POR EL USUARIO
+Se acepta el reporte como evidencia manual de acceso, mensajes y pausas.
+No se indicó SHA del binario probado ni se afirmó comprobar el nuevo anuncio
+visible de C. No se amplía esa evidencia a la visibilidad recién añadida, ranking,
+persistencia o todas las rutas de [2]/[8]. No se cierra un issue por esta entrega.
+
+3. CORRESPONDENCIA DE LÍNEAS Y FIRMAS
+void subMenuBackDoor(int nivelAcceso): src/backdoor.cpp:L48–L634 -> L48–L635.
+Declaraciones compatibles: void subMenuBackDoor(int nivel);
+src/backdoor.h:L7; src/Sodoku.h:L58.
+int validarNivelDeAcceso(): src/backdoor.cpp:L636–L671 -> L637–L672;
+declaración compatible en src/backdoor.h:L8. El cuerpo no cambia.
+Regla: líneas originales 1–90 intactas; nueva L91; originales 91–671 se desplazan +1.
+Case 18: L603–L616 -> L604–L617, cuerpo intacto.
+MSGPAUSA del case: L612 -> L613; mostrarError: L614 -> L615;
+resetColor: L611 -> L612. El umbral >=1 pasa de L605 a L606, sin modificación.
+No hay nuevas funciones, tipos, constantes, variables o llamadas propias.
+
+4. IMPACTO Y ACTUALIZACIONES DOCUMENTALES PROPUESTAS — NO APLICADAS
+ARQUITECTURA.md — SIN IMPACTO: mismos módulos, dependencias y estado compartido.
+FUNCIONES.md — ACTUALIZAR: añadir junto a F33/F34 una nota separada:
+  «Actualización local C sobre e121e5e: se añade el anuncio de [18] al menú
+  de nivel 1 en src/backdoor.cpp:L91. Las líneas previas desde L91 se desplazan
+  +1; subMenuBackDoor pasa a L48–L635 y validarNivelDeAcceso a L637–L672.
+  MSGPAUSA de [18] pasa de L612 a L613, y mostrarError de L614 a L615.
+  Firmas y relaciones conservadas; las etiquetas Lnnn del TXT histórico no cambian.»
+  Referenciar el incremental C y conservar las tablas históricas y la nota A+B.
+FLUJOS.md — SIN IMPACTO en rutas/condiciones: [18] ya admitía nivel 1; se conserva
+FL-11/FL-12, FL-06 y el párrafo de [17] en L288.
+ESTADOS.md — SIN IMPACTO: mismas banderas, concesión, consumo y revocación.
+INTERFAZ.md — ACTUALIZAR:
+  UI-07:L206: sustituir «Menú de nivel 2» por «Menú de niveles 1 y 2»;
+  conservar exactamente el literal [ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).
+  UI-07:L210, proponer:
+  «Los mensajes anuncian permisos, sin dar por realizadas esas operaciones.
+  En la revisión local C, [18] se anuncia en niveles 1 y 2 y permanece oculta
+  y denegada en nivel 0; la guardia sigue siendo nivelAcceso >= 1. Los textos
+  de A+B, las pausas y la vida de los permisos permanecen intactos.»
+  Añadir nota de evidencia manual en UI-08:
+  «El usuario reportó en Zorin OS: nivel 0 denegado con una pausa; niveles 1 y 2
+  permitidos con ambos mensajes correctos y una pausa. Pruebas no ejecutadas
+  por Codex; revisión del binario y comprobación del anuncio nuevo no identificadas.»
+  Incorporar referencias al incremental al aprobar su ubicación documental y
+  actualizar la identificación de fuentes, conservando los informes históricos.
+
+Ninguna propuesta se aplica todavía. Los 35 Mermaid y los 19 pendientes permanecen
+intactos. La evidencia manual no autoriza a reescribir un TXT histórico o a cerrar
+las otras incidencias de pausas sin comprobar sus recorridos concretos.
+
+5. VERIFICACIÓN Y PRUEBAS PENDIENTES
+- git diff --check correcto; una adición y cero bajas.
+- Eliminar la nueva L91 recupera exactamente el archivo del commit e121e5e.
+- Menús de nivel 1 y 2 contienen una vez cada uno la misma instrucción de [18].
+- A+B, nivel 0 y todas las otras opciones conservan sus cuerpos y controles.
+- Cinco documentos y 35 bloques Mermaid sin cambios; 19 pendientes conservados.
+- Firmas F33/F34 compatibles: 2/2; tres declaraciones contando la duplicada.
+- Evidencia manual de accesos/mensajes/pausas: aprobada por el usuario según tabla.
+- Pendiente: comprobar específicamente el anuncio de [18] en niveles 1/2 y su
+  ausencia en nivel 0 en el ejecutable que incluya C, cuando se autorice esa prueba.
+- Codex no compila ni ejecuta el juego ni pruebas en esta revisión.
+- Sin commit, push, PR, merge ni modificación de main.
+- El informe técnico C de 152 líneas y todos los TXT históricos se conservan intactos.
+Este TXT nuevo se entrega fuera del repositorio para revisión.
+
+6. DIFF PENDIENTE FRENTE A e121e5e
+diff --git a/src/backdoor.cpp b/src/backdoor.cpp
+index fdd5d38..29b7781 100644
+--- a/src/backdoor.cpp
++++ b/src/backdoor.cpp
+@@ -88,6 +88,7 @@ void subMenuBackDoor(int nivelAcceso) {
+             cout << "[  8  ] Fijar celda por coordenada\n";
+             cout << "[  9  ] Forzar guardado rápido\n";
+             cout << "[ 16  ] Exportar datos a CSV\n";
++            cout << "[ 18  ] Habilitar permisos administrativos para pruebas ([2] y [8]).\n";
+             cout << "Consulta de rankings: opcion [4] del menu principal (solo lectura).\n";
+             cout << "\n[  0  ] Volver\n";
+             cout << "=============================================" << endl;
+
+FIN. Esperar aprobación separada de las propuestas documentales.

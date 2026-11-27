@@ -8,7 +8,7 @@ Estado: Fase B aprobada
 - Código actualizado contrastado: **`5c48cd4889ee3c94813ffea99269ae95ff6b80ee`**.
 - Evidencia incremental del **24/11/2026**: [§0, L7–L27](../informes/INFORME_ACTUALIZACION_ARQUITECTURA_5c48cd4.txt#L7-L27).
 - Estado de esta actualización: **aprobada para publicación en `docs/diagramas-sodoku`**.
-- Alcance: inventario y llamadas del TXT base, complementados con el contraste estático de `5c48cd4` documentado en el informe incremental. Las firmas y las relaciones se conservan; las ubicaciones de implementación de las tablas corresponden al código actualizado. La revisión local A+B de `[18]` sobre `main` `5f82994` se documenta en el [informe incremental del 26/11/2026, §1–2, L5–L36](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L5-L36); las tablas históricas permanecen intactas.
+- Alcance: inventario y llamadas del TXT base, complementados con el contraste estático de `5c48cd4` documentado en el informe incremental. Las firmas y las relaciones se conservan; las ubicaciones de implementación de las tablas corresponden al código actualizado. La revisión local A+B de `[18]` sobre `main` `5f82994` se documenta en el [informe incremental del 26/11/2026, §1–2, L5–L36](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L5-L36); las tablas históricas permanecen intactas. La revisión local C sobre `e121e5e` se complementa con el [informe de revisión C y evidencia Zorin, §1–3, L5–L45](../informes/INFORME_INCREMENTAL_BACKDOOR_18_C_REVISION_ZORIN_20261126.txt#L5-L45).
 
 ## 1. Cómo leer el inventario y los diagramas
 
@@ -528,6 +528,8 @@ flowchart LR
 Actualización local de BackDoor `[18]` A+B sobre `main` `5f82994`: la llamada a `mostrarError()` pasa de `src/backdoor.cpp:613` a `614`, y la llamada a `MSGPAUSA()` de `615` a `612`, dentro de la rama autorizada y después de `resetColor()` en `611`. Las firmas, rangos de definición y pares de llamadas se conservan; las etiquetas `L433`, `L434` y `L436` siguen refiriéndose al TXT histórico. Véase [informe incremental A+B, §4, L58–L80](../informes/INFORME_INCREMENTAL_BACKDOOR_18_AB_20261126.txt#L58-L80).
 
 El informe incremental se conserva íntegro como instantánea de A+B anterior a la actualización del comentario de `src/backdoor.cpp:603` autorizada en este cierre. Ese ajuste de comentario no modifica llamadas, rangos ni comportamiento. Esta revisión no incorpora AUD-12.
+
+Actualización local C sobre `e121e5e`: se añade el anuncio de `[18]` al menú de nivel 1 en `src/backdoor.cpp:91`. Las líneas anteriores desde `91` se desplazan `+1`; `subMenuBackDoor(int nivelAcceso)` pasa de `48–634` a `48–635`, y `validarNivelDeAcceso()` de `636–671` a `637–672`. La llamada a `MSGPAUSA()` de `[18]` pasa de `612` a `613`, la de `mostrarError()` de `614` a `615` y la de `resetColor()` de `611` a `612`. Firmas y relaciones conservadas; las etiquetas `Lnnn` del TXT histórico no cambian ([informe C, §3, L35–L45](../informes/INFORME_INCREMENTAL_BACKDOOR_18_C_REVISION_ZORIN_20261126.txt#L35-L45)). Las tablas históricas y la nota A+B se conservan como evidencia anterior.
 
 ### B1. Administración y autenticación: llamadas públicas
 
